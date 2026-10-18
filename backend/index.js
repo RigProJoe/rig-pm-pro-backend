@@ -9,7 +9,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-
+app.use(express.static('public'))
 // Database connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://rig_pm_pro_db_user:uO1BVQZPaT7Yvty087y7Pt4tJJqU6R6r@dpg-db9phn0m7kps73e8svrg-a.onrender.com/rig_pm_pro_db'
