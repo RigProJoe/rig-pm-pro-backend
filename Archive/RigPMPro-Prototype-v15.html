@@ -1,0 +1,1710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rig PM Pro Prototype (Sample Data)</title>
+<meta name="description" content="First-pass clickable prototype of the Rig PM Pro core flow. Sample data only. Not published.">
+<style>
+  :root {
+    --blue: #1d4f91; --blue-dark: #153a6b; --orange: #e8741c; --orange-dark: #c55f10;
+    --ink: #1b1f24; --muted: #4a5561; --paper: #ffffff; --soft: #f3f6fa; --line: #d7dee8;
+    --warn: #7a4a00; --warn-bg: #fff4d6; --ok: #1f6b3a; --ok-bg: #e5f5ea; --late: #8a1c1c; --late-bg: #fbe5e5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #eef2f7; --muted: #b6c0cc; --paper: #11161c; --soft: #1a212a; --line: #2d3742;
+      --warn: #ffd23f; --warn-bg: #3a2e0c; --ok: #8fe0a8; --ok-bg: #173122; --late: #ffb3b3; --late-bg: #3a1717;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #eef2f7; --muted: #b6c0cc; --paper: #11161c; --soft: #1a212a; --line: #2d3742;
+    --warn: #ffd23f; --warn-bg: #3a2e0c; --ok: #8fe0a8; --ok-bg: #173122; --late: #ffb3b3; --late-bg: #3a1717;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 1.125rem; line-height: 1.5; color: var(--ink); background: var(--soft);
+    overflow-x: hidden;
+  }
+  .app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--paper); position: relative; padding-bottom: 24px; }
+  @media (min-width: 600px) { .app { border-left: 1px solid var(--line); border-right: 1px solid var(--line); } }
+
+  .sample-bar {
+    background: var(--warn-bg); color: var(--warn); font-weight: 700; text-align: center;
+    padding: 10px 16px; font-size: 1rem; border-bottom: 2px solid var(--warn);
+  }
+  header.top { background: var(--blue); color: #fff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .brand { font-weight: 900; font-size: 1.9rem; letter-spacing: .5px; line-height: 1; }
+  .brand span { color: var(--orange); }
+  .who { font-size: .95rem; color: #e6edf6; text-align: right; }
+
+  .screen { display: none; padding: 16px 16px 24px; }
+  .screen.active { display: block; }
+  h1 { font-size: 1.7rem; line-height: 1.2; margin: 8px 0 10px; }
+  h2 { font-size: 1.35rem; line-height: 1.25; margin: 18px 0 8px; }
+  h3 { font-size: 1.12rem; margin: 0 0 6px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); }
+  .small { font-size: .95rem; color: var(--muted); }
+
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 0 0 12px; background: var(--paper); }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .stack > * + * { margin-top: 10px; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; width: 100%;
+    min-height: 56px; padding: 12px 18px; border-radius: 10px; border: 2px solid transparent;
+    background: var(--orange); color: #fff; font: inherit; font-weight: 800; font-size: 1.15rem;
+    text-decoration: none; cursor: pointer; text-align: center;
+  }
+  .btn:hover { background: var(--orange-dark); }
+  .btn.blue { background: var(--blue); }
+  .btn.blue:hover { background: var(--blue-dark); }
+  .btn.ghost { background: transparent; color: var(--blue); border-color: var(--blue); }
+  .btn.ghost:hover { background: var(--soft); }
+  .btn.small-btn { min-height: 48px; font-size: 1rem; width: auto; padding: 10px 14px; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  label { display: block; font-weight: 700; margin: 14px 0 6px; }
+  input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
+    width: 100%; min-height: 54px; padding: 12px 14px; font: inherit; font-size: 1.1rem;
+    border: 2px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink);
+  }
+  textarea { min-height: 90px; }
+  input:focus, select:focus, textarea:focus, .btn:focus-visible, .pick:focus-visible, .tab:focus-visible {
+    outline: 3px solid var(--orange); outline-offset: 2px;
+  }
+  .hint { font-size: .95rem; color: var(--muted); margin-top: 6px; }
+  .err { color: var(--late); font-weight: 700; margin-top: 8px; min-height: 1.2em; }
+  .ok-msg { color: var(--ok); font-weight: 700; }
+
+  .check { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border: 2px solid var(--line); border-radius: 10px; margin: 8px 0; min-height: 56px; cursor: pointer; }
+  .check input { width: 26px; height: 26px; margin-top: 2px; flex: 0 0 auto; }
+  .check.on { border-color: var(--blue); background: var(--soft); }
+
+  .pick {
+    display: flex; align-items: center; justify-content: space-between; width: 100%;
+    min-height: 60px; padding: 12px 16px; margin: 8px 0; border: 2px solid var(--line); border-radius: 10px;
+    background: var(--paper); color: var(--ink); font: inherit; font-size: 1.15rem; font-weight: 700; text-align: left; cursor: pointer;
+  }
+  .pick { position: relative; }
+  .pick:hover { border-color: var(--blue); }
+  .pick.on { border-color: var(--blue); background: var(--soft); }
+  .pick small { font-weight: 500; color: var(--muted); font-size: .95rem; }
+
+  .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 14px; }
+  .tabs.two { grid-template-columns: repeat(2, 1fr); }
+  .tab {
+    min-height: 52px; border: 2px solid var(--line); border-radius: 10px; background: var(--paper);
+    color: var(--ink); font: inherit; font-weight: 800; font-size: 1rem; cursor: pointer;
+  }
+  .tab.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+  .status { display: inline-block; padding: 4px 10px; border-radius: 999px; font-weight: 800; font-size: .92rem; flex: 0 0 auto; max-width: 42%; text-align: center; line-height: 1.25; }
+  .pick > span:first-child { flex: 1 1 auto; min-width: 0; }
+  .s-late { background: var(--late-bg); color: var(--late); }
+  .s-soon { background: var(--warn-bg); color: var(--warn); }
+  .s-ok { background: var(--ok-bg); color: var(--ok); }
+  .s-pending { background: var(--soft); color: var(--muted); border: 1px dashed var(--muted); }
+
+  .sum { font-size: 1.9rem; font-weight: 900; color: var(--blue); }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 1rem; }
+  .tbl th, .tbl td { text-align: left; padding: 10px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .tbl th { font-size: .95rem; color: var(--muted); }
+  .tbl td.num, .tbl th.num { text-align: right; white-space: nowrap; }
+
+  .disclaimer {
+    border-left: 4px solid var(--orange); background: var(--soft); padding: 14px 16px;
+    border-radius: 8px; font-size: .97rem; color: var(--muted); margin: 16px 0;
+  }
+  .footer-note { font-size: .9rem; color: var(--muted); padding: 14px 16px; border-top: 1px solid var(--line); margin-top: 18px; }
+
+  [hidden] { display: none !important; }
+
+  .toast {
+    position: fixed; left: 50%; top: 12px; transform: translateX(-50%); background: var(--ok); color: #fff; pointer-events: none;
+    padding: 12px 18px; border-radius: 10px; font-weight: 700; display: none; z-index: 9; width: calc(100% - 32px); max-width: 448px; text-align: center;
+  }
+  .toast.show { display: block; }
+  .pinbox { display: flex; gap: 8px; justify-content: space-between; }
+  .pinbox input { text-align: center; font-size: 1.5rem; font-weight: 800; letter-spacing: 0; padding: 0; }
+  .pinbox input { width: 16%; min-width: 0; }
+  .demo-bar { background: var(--blue); color: #fff; padding: 10px 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .demo-bar[hidden] { display: none; }
+  .demo-bar .btn { width: auto; min-height: 44px; font-size: 1rem; }
+  .sr { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .link { background: none; border: 0; color: var(--blue); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; padding: 10px 0; min-height: 48px; }
+  @media (min-width: 900px) {
+    .app { max-width: none; border-left: 0; border-right: 0; }
+    body { font-size: 1.25rem; }
+    .screen { padding: 24px 40px 32px; }
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.6rem; }
+    .btn { min-height: 64px; font-size: 1.25rem; }
+    .pick { min-height: 72px; font-size: 1.25rem; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], select, textarea { min-height: 60px; font-size: 1.2rem; }
+    .tbl { font-size: 1.15rem; }
+    .toast { max-width: 640px; }
+  }
+  .menu-btn { min-height: 48px; padding: 8px 14px; border: 2px solid #fff; border-radius: 8px; background: transparent; color: #fff; font: inherit; font-weight: 800; font-size: 1rem; cursor: pointer; flex: 0 0 auto; }
+  .menu-btn[hidden] { display: none !important; }
+  .side { position: fixed; left: 0; top: 0; bottom: 0; width: 270px; max-width: 84%; overflow-y: auto; background: var(--paper); border-right: 1px solid var(--line); padding: 16px 12px; z-index: 12; transform: translateX(-105%); transition: transform .2s ease; }
+  .side[hidden] { display: none !important; }
+  body.menu-open .side { transform: none; }
+  .side-shade { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 11; }
+  body.menu-open .side-shade { display: block; }
+  .side .side-title { font-weight: 900; font-size: 1.4rem; color: var(--blue); margin: 4px 8px 14px; }
+  .side .side-group { font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 8px 4px; font-weight: 800; }
+  .side button { display: block; width: 100%; text-align: left; min-height: 48px; padding: 10px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+  .side button.sub { padding-left: 28px; font-weight: 600; }
+  .side button:hover { background: var(--soft); }
+  .side button.on { background: var(--soft); color: var(--blue); }
+  @media (min-width: 640px) { .app { max-width: none; } }
+  @media (min-width: 640px) and (orientation: landscape), (min-width: 900px) {
+    .side { transform: none; width: 240px; max-width: none; }
+    .side-shade { display: none !important; }
+    .menu-btn { display: none !important; }
+    body.with-side .app { margin-left: 240px; margin-right: 0; border-left: 0; border-right: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sample-bar">SAMPLE DATA. Not real records. Prototype only, not published.</div>
+<header class="top">
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Open the section menu" hidden>Menu</button>
+  <div class="brand">Rig<span>PM</span>Pro</div>
+  <div class="who" id="whoLine">Not signed in</div>
+</header>
+<div class="demo-bar" id="demoBar" hidden>
+  <span>DEMO. Kept only in this browser until you sign up. Erased if you leave or refresh.</span>
+  <button class="btn" data-go="s1">Create an account</button>
+  <button class="btn ghost" id="leaveDemoBtn">Leave demo</button>
+</div>
+
+<!-- S0 Welcome (landing entry point) -->
+<section class="screen" id="s0" data-title="Welcome">
+  <h1>Keep your rig running. Keep your records straight.</h1>
+  <p class="muted">Track preventive maintenance for your truck, APU, trailer, and reefer. Log what you spent, and keep every receipt where you can find it.</p>
+  <div class="stack" style="margin-top:18px">
+    <button class="btn" data-go="d0">Try the live demo</button>
+    <p class="small">The demo is free and needs no sign-up. It uses sample data only. Nothing you do in the demo is saved to an account.</p>
+    <button class="btn blue" data-go="s1">Create your account</button>
+    <button class="btn ghost" data-go="s5">Sign in</button>
+  </div>
+  <div class="footer-note">PM disclaimer applies to all maintenance information shown on this site.</div>
+</section>
+
+<!-- D0 Before you start the demo -->
+<section class="screen" id="d0" data-title="Demo">
+  <h1>Before you start</h1>
+  <p>The demo works like Rig PM Pro, with these limits:</p>
+  <div class="card">
+    <p><strong>Limited assets.</strong> The demo allows one truck and one trailer. The truck includes its APU, and the trailer includes its reefer.</p>
+    <p><strong>Kept only in this browser session.</strong> Demo records stay here until you sign up. They are erased if you leave the demo without signing up, or refresh the page.</p>
+    <p><strong>Exports are marked DEMO.</strong> Every row of an export file says DEMO - sample data, not saved.</p>
+    <p style="margin-bottom:0"><strong>Receipts stay in this session.</strong> A receipt photo is kept only until you leave or refresh.</p>
+  </div>
+  <div class="stack" style="margin-top:16px">
+    <button class="btn" id="demoBegin">Start the demo</button>
+    <button class="btn ghost" data-go="s1">Create an account to keep records</button>
+  </div>
+</section>
+
+<!-- S1 Sign up -->
+<section class="screen" id="s1" data-title="Sign up">
+  <h1>Start your account</h1>
+  <p class="muted">Set up in minutes. Then add your first truck.</p>
+  <form id="signupForm" novalidate>
+    <label for="suCompany">Company name</label>
+    <input id="suCompany" type="text" autocomplete="organization" placeholder="Sample Trucking Co." required>
+    <label for="suEmail">Email</label>
+    <input id="suEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
+    <label for="suUser">Username (optional)</label>
+    <input id="suUser" type="text" autocomplete="username" placeholder="Pick a name you can remember">
+    <div class="hint">You can sign in with your email or this username.</div>
+    <label for="suPass">Password</label>
+    <input id="suPass" type="password" autocomplete="new-password" required>
+    <label for="suPass2">Type password again</label>
+    <input id="suPass2" type="password" autocomplete="new-password" required>
+    <div class="disclaimer" id="suDisclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+    <label class="check"><input type="checkbox" id="suAgree"><span>I have read the disclaimer above.</span></label>
+    <div class="err" id="suErr" role="alert"></div>
+    <button class="btn" type="submit">Agree and continue</button>
+  </form>
+  <p class="small" style="margin-top:14px">Already have an account? <button class="link" data-go="s5">Sign in</button></p>
+  <div class="footer-note">PM disclaimer applies to all maintenance information shown on this site.</div>
+</section>
+
+<!-- S2 Verify this phone (PIN) -->
+<section class="screen" id="s2" data-title="Verify this phone">
+  <h1>Check your email</h1>
+  <p>We sent a 6-digit code to <strong id="pinEmail">you@example.com</strong>. It works for 10 minutes.</p>
+  <div class="hint" style="margin-bottom:10px">Five wrong tries lock the code.</div>
+  <label for="pinIn">Enter the 6-digit code</label>
+  <input id="pinIn" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" style="font-size:1.6rem;text-align:center;letter-spacing:.3em;font-weight:800">
+  <div class="err" id="pinErr" role="alert"></div>
+  <div class="card" id="pinProto" hidden style="margin-top:12px;border:2px dashed #000">
+    <div class="small"><strong>Prototype only.</strong> Email is not connected yet, so this code is shown here. It must be removed before any shared release.</div>
+    <div style="font-size:1.6rem;font-weight:800;letter-spacing:.3em;margin-top:6px" id="pinShow" aria-label="Prototype verification code"></div>
+  </div>
+  <div class="stack" style="margin-top:12px">
+    <button class="btn" id="pinGo">Verify and continue</button>
+    <button class="btn ghost" id="pinResend">Send a new code</button>
+  </div>
+  <p class="small" style="margin-top:12px">Only needed the first time you use a new phone or computer.</p>
+</section>
+
+<!-- S5 Sign in -->
+<section class="screen" id="s5" data-title="Sign in">
+  <h1>Sign in</h1>
+  <form id="signinForm" novalidate>
+    <label for="siUser">Email or username</label>
+    <input id="siUser" type="text" autocomplete="username" required>
+    <label for="siPass">Password</label>
+    <input id="siPass" type="password" autocomplete="current-password" required>
+    <div class="err" id="siErr" role="alert"></div>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+  <p class="small">Want to look first? <button class="link" data-go="d0">Try the live demo</button></p>
+  <p class="small">New here? <button class="link" data-go="s1">Create an account</button></p>
+</section>
+
+<!-- S6b Forgot password (flow stub) -->
+
+
+<!-- S4 Main PM screen -->
+<section class="screen" id="s4" data-title="Main PM">
+  <h1>What needs attention</h1>
+  <p class="muted">Only the services you chose to track are shown.</p>
+  <div class="card" id="duePanel"></div>
+  <div id="pmList"></div>
+  <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+  <div class="stack"><button class="btn" data-go="s16">Log work</button></div>
+</section>
+
+<!-- S16 Log work -->
+<section class="screen" id="s16" data-title="Log work">
+  <h1>Log work</h1>
+  <form id="logForm" novalidate>
+    <label for="lgAsset">Which unit?</label>
+    <select id="lgAsset"></select>
+    <label>What did you do?</label>
+    <div id="lgKind"></div>
+    <label for="lgDate">Date</label>
+    <input id="lgDate" type="date" required>
+    <label for="lgReading" id="lgReadingLabel">Reading (optional)</label>
+    <input id="lgReading" type="number" inputmode="numeric" min="0" placeholder="Example: 412300">
+    <label for="lgCost">Cost (dollars)</label>
+    <input id="lgCost" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" required>
+    <label for="lgNotes">Notes (optional)</label>
+    <textarea id="lgNotes" placeholder="Shop name, what was replaced"></textarea>
+    <label>Receipt (optional)</label>
+    <div class="stack">
+      <button class="btn ghost" type="button" id="lgReceiptBtn" data-go="s19">Add receipt photo</button>
+      <div class="hint" id="lgReceiptNote">No receipt added.</div>
+    </div>
+    <div class="err" id="lgErr" role="alert"></div>
+    <div class="stack" style="margin-top:16px"><button class="btn" type="submit">Save this work</button></div>
+  </form>
+<div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+<!-- S19 Add receipt -->
+<section class="screen" id="s19" data-title="Add receipt">
+  <h1>Add a receipt</h1>
+  <p>Take a photo of the receipt, or pick one you already have on your phone.</p>
+  <input type="file" id="rcCamInput" accept="image/*" capture="environment" hidden>
+  <input type="file" id="rcLibInput" accept="image/*" hidden>
+  <div class="stack">
+    <button class="btn" id="rcCamera">Take photo</button>
+    <button class="btn blue" id="rcLibrary">Choose from photos</button>
+    <button class="btn ghost" data-go="s16">Skip for now</button>
+  </div>
+  <div class="card" id="rcPreview" hidden style="margin-top:14px">
+    <img id="rcImg" alt="Receipt preview" style="width:100%;border-radius:8px">
+    <div class="small" id="rcName" style="margin-top:8px"></div>
+    <div class="small" id="rcDemoNote" style="margin-top:4px"></div>
+    <div class="stack" style="margin-top:12px"><button class="btn blue" data-go="s16">Use this photo</button></div>
+  </div>
+</section>
+
+<!-- S17 Saved -->
+<section class="screen" id="s17" data-title="Saved">
+  <h1 class="ok-msg">Saved</h1>
+  <div class="card" id="savedCard"></div>
+  <div class="stack">
+    <button class="btn" data-go="s4">Back to Main PM</button>
+    <button class="btn ghost" data-go="s16">Log another</button>
+  </div>
+<div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+<!-- S8 Assets list -->
+<section class="screen" id="s8" data-title="Assets">
+  <h1>Your equipment</h1>
+  <div class="tabs" id="assetTabs"></div>
+  <div id="assetList"></div>
+  <div class="stack"><button class="btn" data-go="s9">Add asset</button></div>
+</section>
+
+<!-- S9 Add asset: one card for a truck or trailer, with its APU or reefer in the same card -->
+<section class="screen" id="s9" data-title="Add asset">
+  <h1>Add asset</h1>
+  <p class="muted">Fill in the card. A truck or trailer is one card. An APU or reefer, if there is one, is entered in the same card.</p>
+  <div class="tabs two" id="addTypeTabs"></div>
+  <div class="card" id="s9NeedTruck" hidden style="border-color:var(--warn)"><strong>Add your truck first.</strong><p class="small" style="margin:6px 0 0">A trailer attaches to a truck. A truck can run on its own (power-only).</p></div>
+  <div class="card" id="s9Limit" hidden style="border-color:var(--warn)"><strong id="s9LimitTitle"></strong><p class="small" id="s9LimitText" style="margin:6px 0 10px"></p><button class="btn" id="s9LimitBtn"></button></div>
+  <div class="card" id="cardBody"></div>
+  <div class="err" id="s9Err" role="alert"></div>
+  <div class="stack"><button class="btn" id="s9Save">Save asset</button><button class="btn ghost" id="s9Back">Back</button><button class="btn ghost" data-go="s8" data-cancel="1">Cancel</button></div>
+  <div class="card" id="totalCardAdd" style="margin-top:12px"></div>
+</section>
+
+<!-- S13 / S14 Choose PM services (add and edit) -->
+<section class="screen" id="s13" data-title="Choose services">
+  <h1>Choose what to track</h1>
+  <p class="muted" id="s13Sub"></p>
+  <div class="card small" id="s13Src"></div>
+  <div id="svcList"></div>
+  <div class="hint">You can shorten an interval, but never make it longer than the manufacturer's interval. Each service you tick shows on the Main PM screen.</div>
+  <div class="err" id="s13Err" role="alert"></div>
+  <div class="stack" style="margin-top:14px"><button class="btn" id="s13Save">Save my list</button></div>
+  <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+<!-- S15 Asset page -->
+<section class="screen" id="s15" data-title="Asset">
+  <div id="assetPage"></div>
+  <div class="stack" style="margin-top:14px">
+    <button class="btn" data-go="s16">Log work on this unit</button>
+    <button class="btn ghost" id="assetEditSvc">Edit services</button>
+    <button class="btn ghost" data-go="s18">Edit asset</button>
+  </div>
+  <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+<!-- S18 Edit asset -->
+<section class="screen" id="s18" data-title="Edit asset">
+  <h1>Edit asset</h1>
+  <p class="muted">Correct anything entered wrong. Nothing changes until you tap Save changes.</p>
+  <label for="eNick">Unit Number</label>
+  <input id="eNick" type="text">
+  <label for="eMkSel">Make</label>
+  <select id="eMkSel"></select>
+  <div id="eMkOtherWrap" hidden><label for="eMkOther">Type the make</label><input id="eMkOther" type="text"></div>
+  <label for="eMdSel">Model</label>
+  <select id="eMdSel"></select>
+  <div id="eMdOtherWrap" hidden><label for="eMdOther">Type the model</label><input id="eMdOther" type="text"></div>
+  <label for="eYear">Model year</label>
+  <input id="eYear" type="number" min="2010" max="2027">
+  <label for="eVin">Last 6 of the VIN (optional)</label>
+  <input id="eVin" type="text" maxlength="6" autocapitalize="characters">
+  <div class="err" id="s18Err" role="alert"></div>
+  <div class="stack" style="margin-top:12px">
+    <button class="btn" id="s18Save">Save changes</button>
+    <button class="btn ghost" id="s18Back">Back</button>
+    <button class="btn ghost" data-go="s15" data-cancel="1">Cancel</button>
+  </div>
+</section>
+
+<!-- S20 Totals -->
+<section class="screen" id="s20" data-title="Totals">
+  <h1>Totals</h1>
+  <div class="tabs" id="periodTabs"></div>
+  <label for="totAsset">Show totals for</label>
+  <select id="totAsset"></select>
+  <p class="hint">Pick one asset to see only its totals and entries. "All assets combined" lists every unit together.</p>
+  <div class="tabs two" id="sortTabs"></div>
+  <div class="card">
+    <div class="small">Total maintenance and repairs</div>
+    <div class="sum" id="grandTotal">$0.00</div>
+    <div class="small" id="periodLabel"></div>
+  </div>
+  <div id="totalsTable"></div>
+  <div class="stack" style="margin-top:12px"><button class="btn blue" data-go="s22">Export for taxes</button></div>
+  <div class="footer-note">Only maintenance costs are totaled. Fuel, DEF, tolls, insurance, and other operating costs are not included.</div>
+<div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+<!-- S21 Work history -->
+<section class="screen" id="s21" data-title="History">
+  <h1>Work history</h1>
+  <div id="historyList"></div>
+<div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+<!-- S22 Export -->
+<section class="screen" id="s22" data-title="Export">
+  <h1>Export for taxes</h1>
+  <div id="exDemoNote" hidden style="background:var(--warn-bg);color:var(--warn);font-weight:800;padding:10px 12px;border-radius:8px;margin-bottom:12px">DEMO - sample data, not saved</div>
+  <p>Maintenance costs grouped by category. Fuel, DEF, tolls, insurance, and other operating costs are never included.</p>
+  <label for="exRange">Date range</label>
+  <select id="exRange">
+    <option value="ytd">Year to date (2026)</option>
+    <option value="2025">Last year (2025)</option>
+    <option value="all">All time</option>
+  </select>
+  <div class="stack" style="margin-top:14px">
+    <button class="btn" id="exGo">Download file</button>
+  </div>
+  <p class="small" style="margin-top:12px">Prototype: downloads a CSV. Excel format is an open question for Joe. Category names are placeholders until Joe confirms the list.</p>
+<div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+<!-- S23 More -->
+<section class="screen" id="s23" data-title="More">
+  <h1>More</h1>
+  <div class="stack">
+    <button class="btn ghost" data-go="s24">Reminders</button>
+    <button class="btn ghost" data-go="s25">Devices</button>
+    <button class="btn ghost" data-go="s26">Plan and billing</button>
+    <button class="btn ghost" data-go="s28">Plans and pricing</button>
+    <button class="btn ghost" data-go="s27">Account</button>
+    <button class="btn ghost" id="signOutBtn">Sign out</button>
+  </div>
+</section>
+
+<!-- S24 Reminders -->
+<section class="screen" id="s24" data-title="Reminders">
+  <h1>Reminders</h1>
+  <p class="muted">Reminders cover only the services you chose to track.</p>
+  <label class="check"><input type="checkbox" id="rmEmail"><span>Email me when a tracked service is coming due</span></label>
+  <label for="rmDays">How far ahead</label>
+  <select id="rmDays"><option value="7">7 days before</option><option value="14">14 days before</option><option value="30">30 days before</option></select>
+  <p class="small" id="rmNote">In the demo, no email is sent. Your choice is kept for this session only.</p>
+  <div class="stack"><button class="btn" id="rmSave">Save reminder choices</button></div>
+</section>
+
+<!-- S25 Devices -->
+<section class="screen" id="s25" data-title="Devices">
+  <h1>Your devices</h1>
+  <p class="muted">Devices you have verified. Remove any you no longer use.</p>
+  <div id="deviceList"></div>
+</section>
+
+<!-- S26 Plan and billing -->
+<section class="screen" id="s26" data-title="Plan">
+  <h1>Plans and billing</h1>
+  <div class="card">
+    <div class="small">Your plan</div>
+    <div style="font-weight:800" id="planName">Truck Only</div>
+    <div class="small" id="planAssets"></div>
+  </div>
+  <p class="small">Billing is not connected yet. Payment coming soon.</p>
+  <div class="stack"><button class="btn ghost" data-go="s28">See plans and billing terms</button></div>
+</section>
+
+<!-- S27 Account -->
+<section class="screen" id="s27" data-title="Account">
+  <h1>Account</h1>
+  <label for="acCompany">Company</label><input id="acCompany" type="text" autocomplete="organization">
+  <label for="acEmail">Email</label><input id="acEmail" type="email" autocomplete="email">
+  <label for="acUser">Username (optional)</label><input id="acUser" type="text" autocomplete="username">
+  <h2>Change password</h2>
+  <p class="small" id="acPassNote"></p>
+  <label for="acCur">Current password</label><input id="acCur" type="password" autocomplete="current-password">
+  <label for="acNew">New password (8 or more characters)</label><input id="acNew" type="password" autocomplete="new-password">
+  <label for="acNew2">Type new password again</label><input id="acNew2" type="password" autocomplete="new-password">
+  <div class="err" id="acErr" role="alert"></div>
+  <div class="stack"><button class="btn" id="acSave">Save changes</button></div>
+</section>
+
+<!-- S30 Request more information (contact form only; address not chosen yet) -->
+<section class="screen" id="s30" data-title="Request more information">
+  <h1>Request more information</h1>
+  <p class="small" id="flWhy"></p>
+  <p class="muted">Tell us what you run. Nothing is sent until you tap Submit.</p>
+  <label for="flName">Name</label><input id="flName" type="text" autocomplete="name" required>
+  <label for="flCompany">Company</label><input id="flCompany" type="text" autocomplete="organization" required>
+  <label for="flEmail">Email</label><input id="flEmail" type="email" autocomplete="email" required>
+  <label for="flPhone">Phone (optional)</label><input id="flPhone" type="tel" autocomplete="tel">
+  <label for="flTrucks">Number of trucks</label><input id="flTrucks" type="number" inputmode="numeric" min="0" required>
+  <label for="flTrailers">Number of trailers</label><input id="flTrailers" type="number" inputmode="numeric" min="0" required>
+  <label for="flNote">Short note (optional)</label><textarea id="flNote" maxlength="500"></textarea>
+  <div class="card" style="border-style:dashed;margin-top:14px">
+    <div class="small"><strong>Where this request goes</strong></div>
+    <p style="margin:6px 0 0;font-weight:800">[PLACEHOLDER: request address not chosen yet. Joe to confirm before any request is sent.]</p>
+  </div>
+  <div class="err" id="flErr" role="alert"></div>
+  <div class="stack" style="margin-top:14px"><button class="btn" id="flSend">Submit request</button><button class="btn ghost" data-go="s9">Back</button></div>
+  <div class="err" id="flMsg" role="status"></div>
+</section>
+
+<!-- S29 Keep demo records? (after sign-up, before anything is saved to the account) -->
+<section class="screen" id="s29" data-title="Keep demo records">
+  <h1>Keep your demo records?</h1>
+  <p>Your account is created. You can copy the records you entered in the demo into it. Nothing is copied until you confirm.</p>
+  <div class="card"><strong>What will be kept</strong><div class="small" id="carryList" style="margin-top:8px"></div></div>
+  <div class="card" style="border-color:var(--warn)"><p class="small" style="margin:0">Demo records are kept only in this browser session until you sign up. If you leave without signing up, or refresh the page, they are erased. Keeping them copies them into your account. The demo copy is then cleared.</p></div>
+  <label class="check"><input type="checkbox" id="carryConfirm"><span>Yes, copy these records into my account.</span></label>
+  <div class="err" id="carryErr" role="alert"></div>
+  <div class="stack"><button class="btn" id="carryKeep" disabled>Keep these records</button><button class="btn ghost" id="carryFresh">Start fresh without them</button></div>
+  <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+<!-- S28 Choose a plan (logged in, before any payment) -->
+<section class="screen" id="s28" data-title="Choose a plan">
+  <h1>Choose a plan</h1>
+  <div class="card" id="totalCardPlan"></div>
+  <div class="stack"><button class="btn blue" data-go="s9">Add a truck or trailer</button><button class="btn ghost" data-go="s30">Request more information (fleet)</button></div>
+  <p class="muted">Billed monthly, or prepay for a year to save. Plans are month to month unless you choose annual prepay.</p>
+  <label class="pick"><span><strong>Truck Only</strong><br><small>Includes APU. Truck and APU tracking, PM screen and cost history, receipt upload, export, share or save reports to your device.</small></span><span style="text-align:right"><strong>$5.00</strong><br><small>/ month</small><br><small>Annual prepay: $55.00 per year</small></span><input class="sr" type="radio" name="pp" value="truck" checked></label>
+  <label class="pick"><span><strong>Truck plus Trailer</strong><br><small>Everything in Truck. Trailer and reefer tracking. Combined cost reports.</small></span><span style="text-align:right"><strong>$9.00</strong><br><small>/ month</small><br><small>Annual prepay: $100.00 per year</small></span><input class="sr" type="radio" name="pp" value="truck_trailer"></label>
+  <div class="card">
+    <strong>Additional assets</strong>
+    <p class="small" style="margin-top:6px">$4.00 / added asset / month. Annual prepay: $44.00 per added asset. Save $4 per asset with annual prepay.</p>
+    <p class="small">Up to six assets (trucks and trailers). APU and reefer are included with each truck and trailer. Fleet pricing starts at asset 7.</p>
+    <p class="small">Example: Truck Only plus five more trucks or trailers for $25.00 a month.</p>
+  </div>
+  <div class="card" style="border-style:dashed">
+    <div class="small">Payment</div>
+    <div style="font-weight:800">Payment coming soon</div>
+    <p class="small" style="margin:6px 0 0">The payment processor is not chosen yet. No payment is taken in this prototype.</p>
+  </div>
+  <div class="stack" style="margin-top:14px">
+    <button class="btn" id="payBtn" disabled>Payment coming soon</button>
+    <button class="btn ghost" data-go="s8">Go to my assets</button>
+  </div>
+  <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
+</section>
+
+</div>
+
+<aside class="side" id="side" hidden aria-label="Sections">
+  <div class="side-title">RigPMPro</div>
+  <button data-go="s4">Main PM</button>
+  <div class="side-group">Assets</div>
+  <button class="sub" data-go="s8">View assets</button>
+  <button class="sub" data-go="s9">Add asset</button>
+  <div class="side-group">Work</div>
+  <button data-go="s16">Log work</button>
+  <button data-go="s20">Totals</button>
+  <button data-go="s21">Work history</button>
+  <button data-go="s22">Export for taxes</button>
+  <div class="side-group">Account</div>
+  <button data-go="s24">Reminders</button>
+  <button data-go="s25">Devices</button>
+  <button data-go="s26">Plan and billing</button>
+  <button data-go="s28">Plans and pricing</button>
+  <button data-go="s27">Account</button>
+  <button data-go="s23">More</button>
+</aside>
+<div class="side-shade" id="sideShade"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- SAMPLE DATA (prototype only; not real) ---------- */
+  var TODAY = "2026-10-17";
+  var PERIOD_LABEL = { month: "October 2026", quarter: "Oct to Dec 2026 (Q4)", year: "2026", lifetime: "All records" };
+  var MAINT_CATS = ["Tires", "Oil and lube", "Fluids", "Filters", "Brakes", "Engine", "Electrical and lights", "Body and glass", "Tow and roadside", "Trailer", "APU: PM", "APU: Belts", "APU: Parts", "Reefer: PM", "Reefer: DPF", "Reefer: Belts and hoses"];
+  var MAKES = { truck: ["Peterbilt", "Freightliner", "Volvo", "Sample Make A"], trailer: ["Sample trailer make", "Utility", "Great Dane", "Wabash", "Hyundai"], apu: ["Sample APU make"], reefer: ["Sample reefer make"] };
+  var MODELS = { "Peterbilt": ["379", "579"], "Freightliner": ["Cascadia"], "Volvo": ["VNL860"], "Sample Make A": ["Sample model"], "Sample trailer make": ["53 ft dry van (sample)"], "Sample APU make": ["Sample APU"], "Sample reefer make": ["Sample reefer"], "Carrier": ["Sample model (from the sourced database)"], "Thermo King": ["S600", "C600", "Sample model (from the sourced database)"] };
+  // Service names are sample. The database has no manufacturer intervals yet, so this stays empty.
+  var SERVICES = {
+    truck: [
+      { id: "t-oil", name: "Engine oil and filter change (sample)", cat: "Oil and lube" },
+      { id: "t-fuel", name: "Fuel filter change (sample)", cat: "Filters" },
+      { id: "t-air", name: "Air filter change (sample)", cat: "Filters" },
+      { id: "t-brake", name: "Brake inspection (sample)", cat: "Brakes" },
+      { id: "t-cool", name: "Coolant service (sample)", cat: "Fluids" }
+    ],
+    apu: [ { id: "a-oil", name: "APU oil and filter change (sample)", cat: "APU: PM" }, { id: "a-belt", name: "APU belt check (sample)", cat: "APU: Belts" } ],
+    trailer: [ { id: "r-tire", name: "Tire inspection (sample)", cat: "Tires" }, { id: "r-brake", name: "Brake inspection (sample)", cat: "Brakes" } ],
+    reefer: [ { id: "f-pm", name: "Reefer PM service (sample)", cat: "Reefer: PM" }, { id: "f-dpf", name: "Reefer DPF service (sample)", cat: "Reefer: DPF" } ]
+  };
+  var DB_INTERVALS = {}; // Empty until Research supplies sourced intervals. Never hard-code.
+  function getMfr(svcId) { return DB_INTERVALS[svcId] || null; }
+  var CUSTOM_SVCS = {};
+  function findSvc(id) {
+    if (CUSTOM_SVCS[id]) return CUSTOM_SVCS[id]; var t; for (t in SERVICES) { var f = SERVICES[t].filter(function (s) { return s.id === id; })[0]; if (f) return f; } return null; }
+
+  var state = {
+    mode: "guest", signedIn: false, account: null, pending: null, pinAttempts: 0, deviceVerified: false,
+    assets: [], entries: [], nextId: 1, currentAssetId: null, editingServices: false,
+    receiptName: null, devices: [], customMakes: { truck: [], trailer: [], apu: [], reefer: [] }
+  };
+  var PLAN_LIMIT = 6;
+  state.reminders = { email: false, days: 14 };
+  var AUTH_SCREENS = ["d0", "s0", "s1", "s2", "s5"];
+  var DEMO_SCREENS = ["s4", "s8", "s9", "s10", "s11", "s12", "s13", "s15", "s16", "s17", "s18", "s19", "s20", "s21", "s22", "s23", "s24", "s25", "s26", "s27", "s28", "s30"];
+  function allowed(id) {
+    if (AUTH_SCREENS.indexOf(id) !== -1) return true;
+    if (!state.signedIn) return false;
+    if (state.mode === "demo") return DEMO_SCREENS.indexOf(id) !== -1;
+    return true;
+  }
+
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function money(cents) { return "$" + (cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function typeLabel(t) { return { truck: "Truck", trailer: "Trailer", apu: "APU", reefer: "Reefer" }[t] || t; }
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 2600); }
+  function allMakes(t) { return MAKES[t].concat(state.customMakes[t]); }
+  function assetsOfType(t) { return state.assets.filter(function (a) { return a.type === t; }); }
+  function assetById(id) { return state.assets.filter(function (a) { return a.id === id; })[0] || null; }
+  function assetName(a) { return (a.nick ? a.nick + " " : "") + "(" + typeLabel(a.type) + ")"; }
+  function countUnits() { return state.assets.filter(function (a) { return a.type === "truck" || a.type === "trailer"; }).length; }
+  function inPeriod(dateStr, period) {
+    if (period === "lifetime") return true;
+    if (period === "year") return dateStr.slice(0, 4) === "2026";
+    if (period === "month") return dateStr.slice(0, 7) === "2026-10";
+    if (period === "quarter") { var m = parseInt(dateStr.slice(5, 7), 10); return dateStr.slice(0, 4) === "2026" && m >= 10; }
+    return false;
+  }
+  function lastEntry(assetId, svcId) {
+    var list = state.entries.filter(function (e) { return e.assetId === assetId && e.svcId === svcId; });
+    list.sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+    return list[0] || null;
+  }
+  // Units. APU and reefer are tracked in hours only. Trailers are tracked in miles only.
+  // Trucks use the sourced unit when one exists; otherwise the user picks miles or hours (user entered).
+  function trackUnit(a, svc) {
+    if (a.type === "apu" || a.type === "reefer") return "hours";
+    if (a.type === "trailer") return "miles";
+    var mfr = svc ? getMfr(svc.id) : null;
+    if (mfr) return mfr.unit;
+    return (svc && a.tracked[svc.id] && a.tracked[svc.id].unit) || "miles";
+  }
+  // Interval for this asset and service: sourced (manufacturer) or user entered. Null when none exists yet.
+  function intervalFor(a, svc) {
+    var tr = a.tracked[svc.id] || {}, mfr = getMfr(svc.id);
+    if (mfr) return { value: tr.userValue || mfr.value, unit: trackUnit(a, svc), src: "manufacturer" };
+    if (svc.custom) return { value: svc.userValue, unit: trackUnit(a, svc), src: "user entered" };
+    if ((a.type === "apu" || a.type === "reefer") && a.sourced !== false) return null;
+    if (tr.userValue) return { value: tr.userValue, unit: trackUnit(a, svc), src: "user entered" };
+    return null;
+  }
+  // Service name as shown on every PM screen. User-entered intervals carry the label.
+  function svcName(a, svc) {
+    var iv = intervalFor(a, svc);
+    if (svc.custom || !iv || iv.src !== "user entered") return svc.name;
+    return svc.name + " (user entered, not manufacturer)";
+  }
+  // Due status for one tracked service. Every figure carries its unit.
+  function dueStatus(asset, svc) {
+    var iv = intervalFor(asset, svc);
+    if (!iv) return { key: "pending", label: "Interval pending source", unit: trackUnit(asset, svc), interval: null, src: null, dueAt: null };
+    var last = lastEntry(asset.id, svc.id), cur = (asset.readings || {})[iv.unit];
+    var out = { key: "ok", label: "On track", unit: iv.unit, interval: iv.value, src: iv.src, dueAt: null };
+    if (!last || last.reading == null) { out.key = "soon"; out.label = "Log a reading to see due status"; return out; }
+    out.dueAt = last.reading + iv.value;
+    if (cur == null) { out.key = "soon"; out.label = "Log a reading to see due status"; return out; }
+    var left = out.dueAt - cur;
+    if (left <= 0) { out.key = "late"; out.label = "Overdue"; }
+    else if (left <= iv.value * 0.1) { out.key = "soon"; out.label = "Due soon"; }
+    return out;
+  }
+  function unitNote(s) {
+    if (s.interval == null) return "Tracked in " + s.unit + ". Interval pending source.";
+    return "Every " + s.interval.toLocaleString("en-US") + " " + s.unit + " (" + s.src + ")";
+  }
+  function dueLine(s) {
+    if (s.interval == null) return "Due: not set until the interval is sourced.";
+    if (s.dueAt != null) return "Due at " + s.dueAt.toLocaleString("en-US") + " " + s.unit;
+    return "Next due: log a " + s.unit + " reading to see it";
+  }
+  function statusHtml(s) {
+    var cls = { late: "s-late", soon: "s-soon", ok: "s-ok", pending: "s-pending" }[s.key];
+    return '<span class="status ' + cls + '">' + esc(s.label) + "</span>";
+  }
+  function trackedRows() {
+    var rows = [];
+    state.assets.forEach(function (a) {
+      Object.keys(a.tracked).forEach(function (sid) {
+        var svc = findSvc(sid); if (!svc) return;
+        rows.push({ asset: a, svc: svc, status: dueStatus(a, svc), last: lastEntry(a.id, sid) });
+      });
+    });
+    return rows;
+  }
+  function trucksN() { return state.assets.filter(function (a) { return a.type === "truck"; }).length; }
+  function trailersN() { return state.assets.filter(function (a) { return a.type === "trailer"; }).length; }
+  // Approved figures: Truck Only $5 a month or $55 a year (includes APU); Truck plus Trailer $9 or $100;
+  // each added truck or trailer beyond the base $4 a month or $44 a year.
+  function priceFor(T, R) {
+    if (T === 0 && R === 0) return null;
+    if (T === 0) return null;
+    var withTrailer = R >= 1;
+    var baseM = withTrailer ? 9 : 5, baseY = withTrailer ? 100 : 55, baseUnits = withTrailer ? 2 : 1;
+    var extra = Math.max(0, T + R - baseUnits);
+    return { name: withTrailer ? "Truck plus Trailer" : "Truck Only", baseM: baseM, baseY: baseY, extra: extra, m: baseM + extra * 4, y: baseY + extra * 44 };
+  }
+  function renderTotal(id) {
+    var el = $(id); if (!el) return;
+    var T = trucksN(), R = trailersN(), pr = priceFor(T, R);
+    var head = '<div class="small">Assets: ' + (T + R) + " of 6 (trucks and trailers). APUs and reefers are included, not counted.</div>";
+    if (!pr) { el.innerHTML = head + '<p style="margin:8px 0 0"><strong>Add a truck to see your total.</strong></p>'; return; }
+    var add = pr.extra ? " plus " + pr.extra + " additional " + (pr.extra === 1 ? "asset" : "assets") + " at $4.00 a month or $44.00 a year each" : "";
+    el.innerHTML = head +
+      '<div style="margin-top:8px"><div class="small">' + pr.name + '</div>' +
+      '<div class="sum" style="font-size:1.6rem">' + money(pr.m * 100) + " / month</div>" +
+      '<div style="font-weight:800">' + money(pr.y * 100) + " / year (annual prepay)</div>" +
+      '<p class="small" style="margin:6px 0 0">Base: ' + money(pr.baseM * 100) + " a month or " + money(pr.baseY * 100) + " a year" + add + ".</p></div>" +
+      (T + R >= 6 ? '<p class="small" style="margin:8px 0 0">Six is the most on this plan. Fleet pricing starts at asset 7.</p>' : "");
+  }
+  function show(id) {
+    if (state.mode === "carry") id = "s29";
+    if (!allowed(id)) { if (state.mode === "demo") { toast("Create an account to do that."); id = "s1"; } else { id = state.signedIn ? "s4" : "s0"; } }
+    document.querySelectorAll(".screen").forEach(function (s) { s.classList.toggle("active", s.id === id); });
+    $("side").hidden = !state.signedIn || state.mode === "carry" || AUTH_SCREENS.indexOf(id) !== -1;
+    $("menuBtn").hidden = $("side").hidden;
+    document.body.classList.remove("menu-open");
+    document.body.classList.toggle("with-side", !$("side").hidden);
+    document.querySelectorAll(".side button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-go") === id); });
+    $("demoBar").hidden = state.mode !== "demo";
+    $("whoLine").textContent = state.signedIn ? state.account.company : "Not signed in";
+    window.scrollTo(0, 0);
+    render(id);
+  }
+  function render(id) {
+    if (id === "s4") renderMain();
+    if (id === "s8") renderAssets();
+    if (id === "s15") renderAssetPage();
+    if (id === "s13") renderServices();
+    if (id === "s20") renderTotals();
+    if (id === "s21") renderHistory();
+    if (id === "s25") renderDevices();
+    if (id === "s26") { $("planName").textContent = { none: "No plan chosen yet", truck: "Truck Only", truck_trailer: "Truck plus Trailer" }[state.account.plan] || "No plan chosen yet"; $("planAssets").textContent = countUnits() + " of 6 assets (trucks and trailers). Fleet pricing starts at asset 7. APUs and reefers are included."; }
+    if (id === "s16") renderLogForm();
+    if (id === "s9") renderAddCard();
+    if (id === "s22") $("exDemoNote").hidden = state.mode !== "demo";
+    if (id === "s28") renderTotal("totalCardPlan");
+    if (id === "s29") renderCarry();
+    if (id === "s24") renderReminders();
+    if (id === "s27") renderAccount();
+    if (id === "s18") renderEditAsset();
+  }
+  function updatePlanPick() { document.querySelectorAll("label.pick").forEach(function (l) { var r = l.querySelector('input[type="radio"]'); if (r) l.classList.toggle("on", r.checked); }); }
+  document.addEventListener("change", updatePlanPick);
+  updatePlanPick();
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-go]");
+    if (t) { e.preventDefault(); show(t.getAttribute("data-go")); }
+  });
+
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("[data-cancel]")) { state.draft = null; state.editDraft = null; state.editingServices = false; }
+  });
+
+  $("menuBtn").addEventListener("click", function () { document.body.classList.toggle("menu-open"); });
+  $("sideShade").addEventListener("click", function () { document.body.classList.remove("menu-open"); });
+
+  /* ---------- Sign up ---------- */
+  $("signupForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("suErr"); err.textContent = "";
+    var company = $("suCompany").value.trim(), email = $("suEmail").value.trim(), user = $("suUser").value.trim(), p1 = $("suPass").value, p2 = $("suPass2").value;
+    if (!company) return err.textContent = "Type your company name.";
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return err.textContent = "Type a valid email address.";
+    if (user && !/^[A-Za-z0-9_.-]{3,30}$/.test(user)) return err.textContent = "Username: 3 to 30 letters, numbers, dots, dashes, or underscores.";
+    if (p1.length < 8) return err.textContent = "Password must be at least 8 characters (prototype rule).";
+    if (p1 !== p2) return err.textContent = "The two passwords do not match.";
+    if (!$("suAgree").checked) return err.textContent = "Tick the box to confirm you read the disclaimer.";
+    state.pending = { mode: "signup", company: company, email: email, username: user, password: p1, plan: "none" };
+    startPin();
+  });
+  var pinCode = null;
+  // Email delivery is not built yet. PROTOTYPE ONLY (remove before any shared release): the code is shown
+  // on the verify screen (s2) only, in a labeled box. Nothing is logged.
+  function newPin() {
+    pinCode = String(Math.floor(100000 + Math.random() * 900000));
+    $("pinShow").textContent = pinCode; $("pinProto").hidden = false;
+  }
+  function startPin() {
+    newPin();
+    state.pinAttempts = 0; $("pinIn").value = ""; $("pinErr").textContent = ""; $("pinGo").disabled = false;
+    $("pinEmail").textContent = state.pending.email; show("s2");
+  }
+  $("pinGo").addEventListener("click", function () {
+    var v = $("pinIn").value.trim(), err = $("pinErr");
+    if (state.pinAttempts >= 5) { err.textContent = "Too many wrong tries. Send a new code."; return; }
+    if (pinCode && v === pinCode) {
+      state.deviceVerified = true; $("pinProto").hidden = true;
+      var p = state.pending;
+      if (p.mode === "signup") {
+        state.account = { company: p.company, email: p.email, username: p.username, password: p.password, plan: "none" };
+        state.signedIn = true;
+        state.devices = [{ label: "This phone", last: TODAY }];
+        if (state.mode === "demo" && (state.assets.length || state.entries.length)) {
+          state.mode = "carry";
+          toast("Account created. Check the demo records you want to keep.");
+          show("s29");
+        } else {
+          state.mode = "account"; state.assets = []; state.entries = [];
+          toast("Account created. Next, choose a plan.");
+          show("s28");
+        }
+      } else {
+        state.mode = "account"; state.signedIn = true; toast("Signed in on this phone."); show("s4");
+      }
+      state.pending = null;
+    } else {
+      state.pinAttempts++;
+      var left = 5 - state.pinAttempts;
+      if (left <= 0) { err.textContent = "Locked after 5 wrong tries. Send a new code."; $("pinGo").disabled = true; }
+      else err.textContent = "That code is not right. " + left + " " + (left === 1 ? "try" : "tries") + " left.";
+    }
+  });
+  $("pinResend").addEventListener("click", function () { state.pinAttempts = 0; $("pinGo").disabled = false; $("pinErr").textContent = ""; newPin(); toast("New code sent to your email."); });
+
+  /* ---------- Sign in ---------- */
+  $("signinForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var u = $("siUser").value.trim(), p = $("siPass").value, err = $("siErr"); err.textContent = "";
+    var a = state.account;
+    if (!a) return err.textContent = "No account yet. Create one first, or use the sample account below.";
+    if ((u.toLowerCase() !== a.email.toLowerCase() && u.toLowerCase() !== (a.username || "").toLowerCase()) || p !== a.password) return err.textContent = "Email, username, or password is not right.";
+    if (state.mode === "demo") { state.assets = []; state.entries = []; state.receiptUrl = null; state.receiptName = null; }
+    state.pending = { mode: "signin" };
+    if (state.deviceVerified) { state.mode = "account"; state.signedIn = true; show("s4"); toast("Signed in."); }
+    else { state.pinAttempts = 0; $("pinIn").value = ""; $("pinErr").textContent = ""; $("pinGo").disabled = false; $("pinEmail").textContent = a.email; newPin(); show("s2"); }
+  });
+  $("demoBegin").addEventListener("click", startDemo);
+  $("leaveDemoBtn").addEventListener("click", leaveDemo);
+  function loadDemo() {
+    state.account = { company: "Demo (not saved)", email: "", username: "", password: "", plan: "none" };
+    state.devices = [];
+    state.assets = []; state.entries = [];
+    state.nextId = 1;
+    state.receiptUrl = null; state.receiptName = null;
+  }
+  // Demo: everything lives in memory for this page view only. Nothing is written to an account or database.
+  function startDemo() { loadDemo(); state.mode = "demo"; state.signedIn = true; show("s4"); toast("Demo started. Your entries stay in this browser until you sign up."); }
+  function leaveDemo() {
+    state.mode = "guest"; state.signedIn = false; state.account = null;
+    state.assets = []; state.entries = []; state.receiptUrl = null; state.receiptName = null;
+    show("s0"); toast("Demo erased.");
+  }
+
+  /* ---------- Main PM ---------- */
+  function renderMain() {
+    var rows = trackedRows();
+    var counts = { late: 0, soon: 0, ok: 0, pending: 0 };
+    rows.forEach(function (r) { counts[r.status.key]++; });
+    $("duePanel").innerHTML =
+      '<div class="row"><div><div class="small">Overdue</div><div class="sum" style="color:var(--late)">' + counts.late + '</div></div>' +
+      '<div><div class="small">Due soon</div><div class="sum" style="color:var(--warn)">' + counts.soon + '</div></div>' +
+      '<div><div class="small">On track</div><div class="sum">' + counts.ok + '</div></div></div>' +
+      (counts.pending ? '<p class="small" style="margin:10px 0 0">' + counts.pending + ' service(s) are waiting for a sourced interval from the database. Due status will show when intervals are added.</p>' : "");
+    if (!rows.length) { $("pmList").innerHTML = '<p class="muted">No services chosen yet. Add an asset, then choose what to track.</p>'; return; }
+    $("pmList").innerHTML = rows.map(function (r, i) {
+      return '<button class="pick" data-row="' + i + '"><span>' + esc(svcName(r.asset, r.svc)) + '<br><small>' + esc(assetName(r.asset)) + ' | ' + esc(unitNote(r.status)) + '<br>' + esc(dueLine(r.status)) + ' | ' +
+        (r.last ? "Last done " + esc(r.last.date) : "Never logged") + '</small></span>' + statusHtml(r.status) + '</button>';
+    }).join("");
+    Array.prototype.forEach.call($("pmList").querySelectorAll("[data-row]"), function (b, i) {
+      b.addEventListener("click", function () { var r = rows[i]; state.currentAssetId = r.asset.id; state.prefillSvc = r.svc.id; show("s16"); });
+    });
+  }
+
+  /* ---------- Assets ---------- */
+  state.assetType = "truck";
+  // One card layout for every asset type (truck, trailer, APU, reefer).
+  function assetFields(a) {
+    var parent = a.parentId ? assetById(a.parentId) : null;
+    var units = a.type === "apu" || a.type === "reefer" ? "Hours only" : a.type === "trailer" ? "Miles only" : "Set per service (miles or hours)";
+    var link = a.type === "trailer" ? ["Attached to truck", parent ? assetName(parent) : "No truck yet"]
+      : a.type === "truck" ? ["Trailer", "Shown in the Trailers tab when attached"]
+      : ["Included with", parent ? assetName(parent) : ""];
+    return [["Type", typeLabel(a.type)], ["Unit Number", a.nick || typeLabel(a.type)], ["Make", a.make], ["Model", a.model], ["Model year", a.year],
+      ["Last 6 of VIN", (a.type === "apu" || a.type === "reefer") ? "Not applicable (included record)" : (a.vin6 || "Not entered")], ["Company", state.account.company], ["Service units", units], link];
+  }
+  function assetCardHtml(a, footer) {
+    return '<div class="card"><h3 style="margin:0 0 8px">' + esc(typeLabel(a.type)) + " file</h3>" +
+      assetFields(a).map(function (f) { return '<div class="small" style="margin-top:8px">' + esc(f[0]) + '</div><div style="font-weight:800">' + esc(f[1]) + '</div>'; }).join("") +
+      '<div class="stack" style="margin-top:12px">' + footer + '</div></div>';
+  }
+  // Under a truck, its APU row; under a trailer, its reefer row. A dry van has no reefer row.
+  function includedRowHtml(a) {
+    if (a.type !== "truck" && a.type !== "trailer") return "";
+    var sub = state.assets.filter(function (x) { return x.parentId === a.id && (x.type === "apu" || x.type === "reefer"); })[0];
+    if (!sub) return "";
+    var label = sub.type === "apu" ? "APU" : "Reefer";
+    return '<div class="card" style="margin:-6px 0 14px 18px;border-left:4px solid var(--blue)"><div class="small">Included ' + label + ' under ' + esc(a.nick || typeLabel(a.type)) + '</div>' +
+      '<div style="font-weight:800">' + esc(sub.make) + ' ' + esc(sub.model) + '</div><div class="small">Tracked in hours only. Not counted, not billed.</div>' +
+      '<button class="btn ghost small-btn" data-asset="' + sub.id + '" style="margin-top:8px">Open ' + label + ' file</button></div>';
+  }
+  function renderAssets() {
+    var types = ["truck", "trailer"];
+    $("assetTabs").innerHTML = types.map(function (t) {
+      return '<button class="tab' + (t === state.assetType ? " on" : "") + '" data-tab="' + t + '">' + typeLabel(t) + "s</button>";
+    }).join("");
+    Array.prototype.forEach.call($("assetTabs").querySelectorAll("[data-tab]"), function (b) {
+      b.addEventListener("click", function () { state.assetType = b.getAttribute("data-tab"); renderAssets(); });
+    });
+    var list = assetsOfType(state.assetType);
+    if (!list.length) { $("assetList").innerHTML = '<p class="muted">No ' + typeLabel(state.assetType).toLowerCase() + 's yet.</p>'; return; }
+    $("assetList").innerHTML = list.map(function (a) {
+      return assetCardHtml(a, '<button class="btn ghost small-btn" data-asset="' + a.id + '">Open file</button>') + includedRowHtml(a);
+    }).join("");
+    Array.prototype.forEach.call($("assetList").querySelectorAll("[data-asset]"), function (b) {
+      b.addEventListener("click", function () { state.currentAssetId = parseInt(b.getAttribute("data-asset"), 10); show("s15"); });
+    });
+  }
+  function subCardHtml(a) {
+    if (a.type === "truck" || a.type === "trailer") {
+      var sub = state.assets.filter(function (x) { return x.parentId === a.id && (x.type === "apu" || x.type === "reefer"); })[0];
+      if (!sub) return '<div class="small">No included record.</div>';
+      return '<div class="small">' + (sub.type === "apu" ? "Included APU" : "Included reefer") + ' (not counted toward the limit, not billed)</div>' +
+        '<div style="font-weight:800">' + esc(sub.make) + " " + esc(sub.model) + '</div>' +
+        '<button class="btn ghost small-btn" data-sub="' + sub.id + '" style="margin-top:8px">Open ' + (sub.type === "apu" ? "APU" : "reefer") + ' PM page</button>';
+    }
+    var parent = assetById(a.parentId);
+    return '<div class="small">' + (a.type === "apu" ? "APU" : "Reefer") + ' included with</div><div style="font-weight:800">' + esc(parent ? assetName(parent) : "") + '</div>' +
+      '<button class="btn ghost small-btn" data-sub="' + (parent ? parent.id : "") + '" style="margin-top:8px">Open ' + (parent && parent.type === "truck" ? "truck" : "trailer") + ' page</button>';
+  }
+  function renderAssetPage() {
+    var a = assetById(state.currentAssetId); if (!a) { show("s8"); return; }
+    var rows = Object.keys(a.tracked).map(function (sid) { var svc = findSvc(sid); return svc ? { svc: svc, s: dueStatus(a, svc), last: lastEntry(a.id, sid) } : null; }).filter(Boolean);
+    var recent = state.entries.filter(function (e) { return e.assetId === a.id; }).sort(function (x, y) { return x.date < y.date ? 1 : -1; }).slice(0, 5);
+    var tot = function (p) { return money(state.entries.filter(function (e) { return e.assetId === a.id && inPeriod(e.date, p); }).reduce(function (s, e) { return s + e.cents; }, 0)); };
+    $("assetPage").innerHTML =
+      assetCardHtml(a, '<button class="btn ghost small-btn" id="cardEdit">Edit this asset</button>') +
+      '<div class="card" id="subCard">' + subCardHtml(a) + '</div>' +
+      '<h2>Tracked services</h2>' +
+      (rows.length ? rows.map(function (r) {
+        return '<div class="card"><div class="row"><div><h3>' + esc(svcName(a, r.svc)) + '</h3>' + remLine(a, r.svc.id) + '<div class="small">' + esc(unitNote(r.s)) + '</div><div class="small">' + esc(dueLine(r.s)) + '</div><div class="small">' + (r.last ? "Last done " + esc(r.last.date) : "Never logged") + '</div></div>' + statusHtml(r.s) + '</div></div>';
+      }).join("") : '<p class="muted">No services chosen yet.</p>') +
+      '<h2>Costs</h2>' +
+      '<table class="tbl"><tr><th>Month</th><th>Quarter</th><th>Year</th><th>Lifetime</th></tr><tr><td class="num">' + tot("month") + '</td><td class="num">' + tot("quarter") + '</td><td class="num">' + tot("year") + '</td><td class="num">' + tot("lifetime") + '</td></tr></table>' +
+      '<h2>Recent work</h2>' +
+      (recent.length ? recent.map(function (e) { return '<div class="card"><div class="row"><div><strong>' + esc(e.desc) + '</strong><div class="small">' + esc(e.date) + ' | ' + esc(e.kind) + '</div></div><div class="num" style="font-weight:800">' + money(e.cents) + '</div></div></div>'; }).join("") : '<p class="muted">No work logged yet.</p>');
+    $("assetEditSvc").onclick = function () { state.editingServices = true; show("s13"); };
+    var ce = $("cardEdit"); if (ce) ce.onclick = function () { show("s18"); };
+    Array.prototype.forEach.call($("assetPage").querySelectorAll("[data-sub]"), function (btn) {
+      btn.addEventListener("click", function () { state.currentAssetId = parseInt(btn.getAttribute("data-sub"), 10); show("s15"); });
+    });
+  }
+
+  /* ---------- Add asset: one card (truck or trailer, with its APU or reefer) ---------- */
+  function fillMakeSel(selId, wrapId, inputId, type, mk) {
+    var list = allMakes(type), isOther = !!mk && list.indexOf(mk) === -1;
+    $(selId).innerHTML = list.map(function (m) { return '<option>' + esc(m) + '</option>'; }).join("") + '<option value="__other">Not on the list (type it)</option>';
+    $(selId).value = isOther ? "__other" : (mk || list[0]);
+    $(inputId).value = isOther ? mk : "";
+    $(wrapId).hidden = $(selId).value !== "__other";
+  }
+  function fillModelSel(selId, wrapId, inputId, mk, md) {
+    var list = MODELS[mk] || [], isOther = !!md && list.indexOf(md) === -1;
+    $(selId).innerHTML = list.map(function (m) { return '<option>' + esc(m) + '</option>'; }).join("") + '<option value="__other">Not on the list (type it)</option>';
+    $(selId).value = isOther ? "__other" : (md || list[0] || "__other");
+    $(inputId).value = isOther ? md : "";
+    $(wrapId).hidden = $(selId).value !== "__other";
+  }
+  function readSel(selId, inputId) { var v = $(selId).value; return v === "__other" ? $(inputId).value.trim() : v; }
+  function wireMake(selId, wrapId, mdSelId, mdWrapId, mdInputId, inputId) {
+    $(selId).addEventListener("change", function () {
+      $(wrapId).hidden = $(selId).value !== "__other";
+      fillModelSel(mdSelId, mdWrapId, mdInputId, readSel(selId, inputId), "");
+    });
+  }
+  function wireModel(selId, wrapId) { $(selId).addEventListener("change", function () { $(wrapId).hidden = $(selId).value !== "__other"; }); }
+  function fillSubMake(d) {
+    var list = ["Carrier", "Thermo King"], mk = d.subMk || "", isOther = !!mk && list.indexOf(mk) === -1;
+    $("subMkSel").innerHTML = list.map(function (m) { return '<option>' + m + '</option>'; }).join("") + '<option value="__other">Other (off-brand, type it)</option>';
+    $("subMkSel").value = isOther ? "__other" : (mk || "Carrier");
+    $("subMkOther").value = isOther ? mk : "";
+    $("subMkOtherWrap").hidden = $("subMkSel").value !== "__other";
+    fillModelSel("subMdSel", "subMdOtherWrap", "subMdOther", readSel("subMkSel", "subMkOther"), d.subMd || "");
+  }
+  // Copies what is on screen into the draft, so Back and type changes keep what was entered.
+  function syncAdd() {
+    var d = state.draft; if (!d || !$("mkSel")) return;
+    d.make = readSel("mkSel", "mkOther"); d.model = readSel("mdSel", "mdOther");
+    d.year = $("modelYear").value; d.vin6 = $("vin6").value; d.nick = $("nick").value;
+    if ($("onUnit")) d.onUnit = $("onUnit").value;
+    var c = document.querySelector('input[name="hasSub"]:checked'); d.hasSub = c ? c.value : "";
+    if ($("subMkSel")) { d.subMk = readSel("subMkSel", "subMkOther"); d.subMd = readSel("subMdSel", "subMdOther"); }
+    syncRem();
+  }
+  // Demo: one truck and one trailer. Account: six assets (trucks and trailers); the seventh goes to the fleet form.
+  function addBlock(type) {
+    var demo = state.mode === "demo";
+    if (demo && type === "truck" && trucksN() >= 1) return "The demo allows one truck. Create an account to add more.";
+    if (demo && type === "trailer" && trailersN() >= 1) return "The demo allows one trailer. Create an account to add more.";
+    if (!demo && countUnits() >= 6) return "Fleet pricing starts at asset 7. Your plan includes up to six assets, so the seventh asset goes to the fleet request form.";
+    return null;
+  }
+  function renderAddCard() {
+    var d = state.draft || (state.draft = { type: "truck", hasSub: "", make: "", model: "", year: "", vin6: "", nick: "", onUnit: "", subMk: "", subMd: "" });
+    var T = trucksN(), demo = state.mode === "demo";
+    $("addTypeTabs").innerHTML = '<button class="tab' + (d.type === "truck" ? " on" : "") + '" data-addtype="truck">Truck</button>' +
+      '<button class="tab' + (d.type === "trailer" ? " on" : "") + '" data-addtype="trailer"' + (T === 0 ? " disabled" : "") + '>Trailer</button>';
+    $("s9NeedTruck").hidden = T >= 1;
+    var blk = addBlock(d.type);
+    $("s9Limit").hidden = !blk;
+    if (blk) {
+      $("s9LimitTitle").textContent = demo ? "The demo limit is reached." : "Your plan is full.";
+      $("s9LimitText").textContent = blk;
+      $("s9LimitBtn").textContent = demo ? "Create an account to add more" : "Request more information (fleet pricing)";
+      $("s9LimitBtn").onclick = function () { if (!demo) $("flWhy").textContent = blk; show(demo ? "s1" : "s30"); };
+    }
+    $("s9Save").disabled = !!blk || (d.type === "trailer" && T === 0);
+    var isT = d.type === "truck", subLabel = isT ? "APU" : "reefer";
+    var html = '<h3>' + (isT ? "Truck" : "Trailer") + ' card</h3>' +
+      '<label for="mkSel">Make</label><select id="mkSel"></select>' +
+      '<div id="mkOtherWrap" hidden><label for="mkOther">Type the make</label><input id="mkOther" type="text"></div>' +
+      '<label for="mdSel">Model</label><select id="mdSel"></select>' +
+      '<div id="mdOtherWrap" hidden><label for="mdOther">Type the model</label><input id="mdOther" type="text"></div>' +
+      '<label for="modelYear">Model year</label><input id="modelYear" type="number" inputmode="numeric" min="2010" max="2027" placeholder="Example: 2019" value="' + esc(d.year) + '">' +
+      '<label for="vin6">Last 6 of the VIN (optional)</label><input id="vin6" type="text" maxlength="6" autocapitalize="characters" placeholder="ABC123" value="' + esc(d.vin6) + '">' +
+      '<label for="nick">Unit Number (optional)</label><input id="nick" type="text" placeholder="Example: Unit 14" value="' + esc(d.nick) + '">';
+    if (!isT) html += '<label for="onUnit">Which truck is this trailer with?</label><select id="onUnit"></select>';
+    html += '<div class="card" style="margin-top:14px"><strong>' + (isT ? "Does your truck have an APU?" : "Is this trailer a reefer?") + '</strong>' +
+      '<div class="stack" style="margin-top:8px">' +
+      '<label class="check"><input type="radio" name="hasSub" value="yes"' + (d.hasSub === "yes" ? " checked" : "") + '><span>Yes</span></label>' +
+      '<label class="check"><input type="radio" name="hasSub" value="no"' + (d.hasSub === "no" ? " checked" : "") + '><span>No</span></label></div>';
+    if (d.hasSub === "yes") {
+      html += '<div style="margin-top:10px"><label for="subMkSel">' + subLabel + ' make</label><select id="subMkSel"></select>' +
+        '<div id="subMkOtherWrap" hidden><label for="subMkOther">Type the ' + subLabel + ' make</label><input id="subMkOther" type="text"></div>' +
+        '<label for="subMdSel">' + subLabel + ' model</label><select id="subMdSel"></select>' +
+        '<div id="subMdOtherWrap" hidden><label for="subMdOther">Type the ' + subLabel + ' model</label><input id="subMdOther" type="text"></div>' +
+        '<p class="hint">Tracked in hours only. Carrier and Thermo King use the sourced list (sample placeholders for now). Other is off-brand: you enter its service names and intervals yourself, labeled user entered, not manufacturer.</p></div>';
+    }
+    html += '</div>';
+    html += remHtml();
+    $("cardBody").innerHTML = html;
+    fillMakeSel("mkSel", "mkOtherWrap", "mkOther", d.type, d.make);
+    fillModelSel("mdSel", "mdOtherWrap", "mdOther", readSel("mkSel", "mkOther"), d.model);
+    wireMake("mkSel", "mkOtherWrap", "mdSel", "mdOtherWrap", "mdOther", "mkOther");
+    wireModel("mdSel", "mdOtherWrap");
+    if (!isT) {
+      $("onUnit").innerHTML = state.assets.filter(function (x) { return x.type === "truck"; }).map(function (u) { return '<option value="' + u.id + '">' + esc(assetName(u)) + '</option>'; }).join("");
+      if (d.onUnit) $("onUnit").value = d.onUnit;
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('input[name="hasSub"]'), function (r) {
+      r.addEventListener("change", function () { syncAdd(); state.draft.hasSub = r.value; renderAddCard(); });
+    });
+    if (d.hasSub === "yes") {
+      fillSubMake(d);
+      $("subMkSel").addEventListener("change", function () {
+        $("subMkOtherWrap").hidden = $("subMkSel").value !== "__other";
+        fillModelSel("subMdSel", "subMdOtherWrap", "subMdOther", readSel("subMkSel", "subMkOther"), "");
+        syncAdd(); buildRemSvcs(state.draft); restoreRem(state.draft); updateRem();
+      });
+      $("subMdSel").addEventListener("change", function () { $("subMdOtherWrap").hidden = $("subMdSel").value !== "__other"; });
+    }
+    $("s9Err").textContent = "";
+    buildRemSvcs(d); wireRem(); restoreRem(d); updateRem();
+    renderTotal("totalCardAdd");
+  }
+  $("addTypeTabs").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-addtype]"); if (!b || b.disabled) return;
+    syncAdd();
+    state.draft = { type: b.getAttribute("data-addtype"), hasSub: "", make: "", model: "", year: "", vin6: "", nick: "", onUnit: "", subMk: "", subMd: "" };
+    renderAddCard();
+  });
+  $("s9Back").addEventListener("click", function () { syncAdd(); show("s8"); });
+  $("s9Save").addEventListener("click", function () {
+    syncAdd();
+    var d = state.draft, err = $("s9Err"); err.textContent = "";
+    if (!d) return;
+    var blk = addBlock(d.type); if (blk) { err.textContent = blk; return; }
+    if (d.type === "trailer" && trucksN() === 0) { err.textContent = "Add your truck first. A trailer attaches to a truck."; return; }
+    var mk = (d.make || "").trim(), md = (d.model || "").trim(), yr = parseInt(d.year, 10), v = (d.vin6 || "").trim().toUpperCase();
+    if (mk.length < 2) { err.textContent = "Choose a make, or type one (at least 2 letters)."; return; }
+    if (!md) { err.textContent = "Choose a model, or type one."; return; }
+    if (!(yr >= 2010 && yr <= 2027)) { err.textContent = "Model year must be between 2010 and 2027."; return; }
+    if (v && !/^[A-Z0-9]{6}$/.test(v)) { err.textContent = "Type exactly 6 letters or numbers (the last 6 of the VIN), or leave it blank."; return; }
+    var parentId = null;
+    if (d.type === "trailer") { parentId = parseInt(d.onUnit, 10); if (!assetById(parentId)) { err.textContent = "Choose the truck this trailer is with."; return; } }
+    var hasSub = d.hasSub === "yes", subMk = (d.subMk || "").trim(), subMd = (d.subMd || "").trim();
+    if (hasSub && subMk.length < 2) { err.textContent = (d.type === "truck" ? "APU" : "Reefer") + ": choose a make, or type one."; return; }
+    if (hasSub && !subMd) { err.textContent = (d.type === "truck" ? "APU" : "Reefer") + ": choose a model, or type one."; return; }
+    var remErr = validateRem(d); if (remErr) { err.textContent = remErr; return; }
+    var a = { id: state.nextId++, type: d.type, make: mk, model: md, year: yr, vin6: v || null, nick: (d.nick || "").trim() || typeLabel(d.type), parentId: parentId, readings: {}, tracked: {} };
+    state.assets.push(a);
+    var subRec = null;
+    if (hasSub) {
+      var subType = d.type === "truck" ? "apu" : "reefer", sourced = subMk === "Carrier" || subMk === "Thermo King";
+      state.assets.push({ id: state.nextId++, type: subType, make: subMk, model: subMd, year: yr, vin6: null, nick: typeLabel(subType) + " on " + a.nick, parentId: a.id, readings: {}, tracked: {}, sourced: sourced, customRows: sourced ? null : [] });
+      state.chainSubId = state.assets[state.assets.length - 1].id;
+      subRec = state.assets[state.assets.length - 1];
+    }
+    applyRem(d, a, subRec);
+    state.currentAssetId = a.id; state.editingServices = false; state.assetType = d.type;
+    state.draft = null;
+    show("s13");
+  });
+
+  /* ---------- Reminders on the add card (off unless the driver says yes) ---------- */
+  function fmtN(n) { return Number(n).toLocaleString("en-US"); }
+  function remHtml() {
+    return '<div class="card" style="margin-top:14px"><strong>Do you want reminders for services due?</strong>' +
+      '<div class="stack" style="margin-top:8px"><label class="check"><input type="radio" name="remOn" value="yes"><span>Yes</span></label>' +
+      '<label class="check"><input type="radio" name="remOn" value="no" checked><span>No</span></label></div>' +
+      '<p class="small">Reminders are off unless you say yes. In the demo, nothing is sent; your choices are kept for this session only.</p>' +
+      '<div id="remBox" hidden>' +
+      '<strong>How should we remind you?</strong><p class="hint">Pick email, text, or both.</p>' +
+      '<label class="check"><input type="checkbox" id="remEmailOn"><span>Email</span></label>' +
+      '<div id="remEmailWrap" hidden><label for="remEmail">Email address for reminders</label><input id="remEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>' +
+      '<label class="check"><input type="checkbox" id="remTextOn"><span>Text message</span></label>' +
+      '<div id="remTextWrap" hidden><label for="remPhone">Mobile number for text reminders</label><input id="remPhone" type="tel" autocomplete="tel" placeholder="(555) 555-0100">' +
+      '<label class="check"><input type="checkbox" id="remConsent"><span>I agree to receive text reminders from Rig PM Pro at this number. Message and data rates may apply.</span></label>' +
+      '<div class="disclaimer" style="margin-top:8px"><strong>To stop texts, reply STOP.</strong> You can also turn text reminders off in Reminders at any time.</div></div>' +
+      '<h2 style="font-size:1.1rem">Services to remind about</h2><div id="remSvcs"></div>' +
+      '<div class="err" id="remErr" role="alert"></div></div></div>';
+  }
+  // Services that can take reminders: the unit's own services, plus the APU or reefer when it is sourced.
+  function remServicesFor(d) {
+    var out = [];
+    (SERVICES[d.type] || []).forEach(function (s) { out.push({ key: "m-" + s.id, svc: s, rec: "main", type: d.type, pending: false }); });
+    if (d.hasSub === "yes" && (d.subMk === "Carrier" || d.subMk === "Thermo King")) {
+      var st = d.type === "truck" ? "apu" : "reefer";
+      (SERVICES[st] || []).forEach(function (s) { out.push({ key: "s-" + s.id, svc: s, rec: "sub", type: st, pending: !getMfr(s.id) }); });
+    }
+    return out;
+  }
+  function remBlockHtml(e) {
+    var mfr = getMfr(e.svc.id), fixed = e.type === "apu" || e.type === "reefer" ? "hours" : e.type === "trailer" ? "miles" : null, u = fixed || "miles";
+    var ivHtml;
+    if (e.pending) ivHtml = '<p class="hint">Interval pending source. Reminders for this service start once the interval is sourced.</p>';
+    else if (mfr) ivHtml = '<p class="small">Interval: ' + fmtN(mfr.value) + ' ' + mfr.unit + ' (manufacturer)</p>';
+    else if (e.type === "truck") ivHtml = '<label for="ri-' + e.key + '">Interval (user entered, not manufacturer)</label><input id="ri-' + e.key + '" type="number" min="1" inputmode="numeric">' +
+      '<label for="ru-' + e.key + '">Measured in</label><select id="ru-' + e.key + '"><option value="miles">miles</option><option value="hours">hours</option></select>';
+    else ivHtml = '<label for="ri-' + e.key + '">Interval in ' + u + ' (user entered, not manufacturer)</label><input id="ri-' + e.key + '" type="number" min="1" inputmode="numeric">';
+    var dis = e.pending ? " disabled" : "";
+    return '<div class="card" style="padding:12px"><label class="check" style="margin:0"><input type="checkbox" id="rs-on-' + e.key + '" data-remsvc="' + e.key + '"><span><strong>' + esc(e.svc.name) + '</strong></span></label>' +
+      '<div data-remwrap="' + e.key + '" hidden>' + ivHtml +
+      '<label for="rf-' + e.key + '">Remind me this many <span id="lu-' + e.key + '">' + u + '</span> before it is due</label><input id="rf-' + e.key + '" type="number" min="1" inputmode="numeric"' + dis + '>' +
+      '<fieldset style="border:0;padding:0;margin:10px 0 0"><legend style="font-weight:800">Do you want more reminders until the service is logged?</legend>' +
+      '<label class="check"><input type="radio" name="rm-' + e.key + '" value="yes"' + dis + '><span>Yes</span></label>' +
+      '<label class="check"><input type="radio" name="rm-' + e.key + '" value="no" checked><span>No</span></label></fieldset>' +
+      '<div data-rmwrap="' + e.key + '" hidden><label for="rt-' + e.key + '">Remind me again every <span id="lv-' + e.key + '">' + u + '</span></label><input id="rt-' + e.key + '" type="number" min="1" inputmode="numeric"></div>' +
+      '<p class="small" id="rp-' + e.key + '" style="margin-top:8px"></p></div></div>';
+  }
+  function buildRemSvcs(d) {
+    var box = $("remSvcs"); if (!box) return;
+    var note = (d.hasSub === "yes" && !(d.subMk === "Carrier" || d.subMk === "Thermo King")) ? '<p class="hint">Off-brand APU or reefer: reminders for its services are set after you enter them.</p>' : "";
+    box.innerHTML = remServicesFor(d).map(remBlockHtml).join("") + note;
+  }
+  function remRead(e) {
+    var on = $("rs-on-" + e.key), iv = $("ri-" + e.key), ru = $("ru-" + e.key), fi = $("rf-" + e.key), st = $("rt-" + e.key);
+    var mo = document.querySelector('input[name="rm-' + e.key + '"]:checked');
+    return { on: !!(on && on.checked), iv: iv ? iv.value : "", unit: ru ? ru.value : null, first: fi ? fi.value : "", more: !!(mo && mo.value === "yes"), step: st ? st.value : "" };
+  }
+  function remUnit(e, st) {
+    if (e.type === "apu" || e.type === "reefer") return "hours";
+    if (e.type === "trailer") return "miles";
+    var mfr = getMfr(e.svc.id); if (mfr) return mfr.unit;
+    return st.unit || "miles";
+  }
+  function remDueOf(e, st) {
+    if (e.pending) return null;
+    var mfr = getMfr(e.svc.id);
+    if (mfr) return { due: mfr.value, unit: remUnit(e, st), src: "manufacturer" };
+    var iv = parseInt(st.iv, 10);
+    return iv > 0 ? { due: iv, unit: remUnit(e, st), src: "user entered" } : null;
+  }
+  // The first reminder is due minus the amount typed; repeats add the step until the due point.
+  function remPoints(due, first, step, more) {
+    if (!(first > 0)) return null;
+    var p = due - first; if (p <= 0) return null;
+    var out = [p];
+    if (more && step > 0) { var q = p + step; while (q < due && out.length < 12) { out.push(q); q += step; } }
+    return out;
+  }
+  function updateRem() {
+    var d = state.draft; if (!d || !$("remSvcs")) return;
+    remServicesFor(d).forEach(function (e) {
+      var st = remRead(e), u = remUnit(e, st);
+      if ($("lu-" + e.key)) $("lu-" + e.key).textContent = u;
+      if ($("lv-" + e.key)) $("lv-" + e.key).textContent = u;
+      var out = $("rp-" + e.key); if (!out) return;
+      if (!st.on) { out.textContent = ""; return; }
+      if (e.pending) { out.textContent = "Interval pending source. Reminders for this service start once it is sourced."; return; }
+      var du = remDueOf(e, st);
+      if (!du) { out.textContent = "Enter the interval to see the reminder points."; return; }
+      var first = parseInt(st.first, 10), step = parseInt(st.step, 10);
+      if (st.more && !(step > 0)) { out.textContent = "Enter how often to remind you until it is logged."; return; }
+      var pts = remPoints(du.due, first, step, st.more);
+      if (!pts) { out.textContent = "Enter how long before due to remind you (less than " + fmtN(du.due) + " " + u + ")."; return; }
+      var txt = "Reminder 1 at " + fmtN(pts[0]) + " " + u;
+      if (st.more && step > 0) {
+        for (var i = 1; i < pts.length; i++) txt += ", reminder " + (i + 1) + " at " + fmtN(pts[i]) + " " + u;
+        if (pts.length >= 12) txt += ", and more";
+      }
+      out.textContent = txt + ". Due at " + fmtN(du.due) + " " + u + ".";
+    });
+  }
+  function wireRem() {
+    Array.prototype.forEach.call(document.querySelectorAll('input[name="remOn"]'), function (r) {
+      r.addEventListener("change", function () { $("remBox").hidden = !(r.checked && r.value === "yes"); updateRem(); });
+    });
+    $("remEmailOn").addEventListener("change", function () { $("remEmailWrap").hidden = !this.checked; });
+    $("remTextOn").addEventListener("change", function () { $("remTextWrap").hidden = !this.checked; });
+    $("remBox").addEventListener("input", updateRem);
+    $("remBox").addEventListener("change", updateRem);
+    $("remSvcs").addEventListener("change", function (ev) {
+      var t = ev.target;
+      if (t.hasAttribute("data-remsvc")) { var w = $("remSvcs").querySelector('[data-remwrap="' + t.getAttribute("data-remsvc") + '"]'); if (w) w.hidden = !t.checked; }
+      if (t.name && t.name.indexOf("rm-") === 0) { var rw = $("remSvcs").querySelector('[data-rmwrap="' + t.name.slice(3) + '"]'); if (rw) rw.hidden = t.value !== "yes"; }
+    });
+  }
+  function syncRem() {
+    var d = state.draft; if (!d || !$("remBox")) return;
+    var on = document.querySelector('input[name="remOn"]:checked');
+    var r = { on: on ? on.value : "no", emailOn: $("remEmailOn").checked, email: $("remEmail").value, textOn: $("remTextOn").checked, phone: $("remPhone").value, consent: $("remConsent").checked, svc: {} };
+    remServicesFor(d).forEach(function (e) { r.svc[e.key] = remRead(e); });
+    d.rem = r;
+  }
+  function restoreRem(d) {
+    var r = d.rem; if (!r || !$("remBox")) return;
+    var on = document.querySelector('input[name="remOn"][value="' + r.on + '"]'); if (on) on.checked = true;
+    $("remBox").hidden = r.on !== "yes";
+    $("remEmailOn").checked = !!r.emailOn; $("remEmailWrap").hidden = !r.emailOn; $("remEmail").value = r.email || "";
+    $("remTextOn").checked = !!r.textOn; $("remTextWrap").hidden = !r.textOn; $("remPhone").value = r.phone || ""; $("remConsent").checked = !!r.consent;
+    remServicesFor(d).forEach(function (e) {
+      var s = (r.svc || {})[e.key]; if (!s) return;
+      if ($("rs-on-" + e.key)) $("rs-on-" + e.key).checked = s.on;
+      var w = $("remSvcs").querySelector('[data-remwrap="' + e.key + '"]'); if (w) w.hidden = !s.on;
+      if ($("ri-" + e.key)) $("ri-" + e.key).value = s.iv || "";
+      if ($("ru-" + e.key) && s.unit) $("ru-" + e.key).value = s.unit;
+      if ($("rf-" + e.key)) $("rf-" + e.key).value = s.first || "";
+      if (s.more) {
+        var mr = document.querySelector('input[name="rm-' + e.key + '"][value="yes"]'); if (mr) mr.checked = true;
+        var rw = $("remSvcs").querySelector('[data-rmwrap="' + e.key + '"]'); if (rw) rw.hidden = false;
+      }
+      if ($("rt-" + e.key)) $("rt-" + e.key).value = s.step || "";
+    });
+  }
+  // Returns a message, or null when the reminder setup is complete (or reminders are off).
+  function validateRem(d) {
+    var on = document.querySelector('input[name="remOn"]:checked');
+    if (!on || on.value !== "yes") return null;
+    var emailOn = $("remEmailOn").checked, textOn = $("remTextOn").checked;
+    if (!emailOn && !textOn) return "Reminders: pick email, text, or both.";
+    if (emailOn && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($("remEmail").value.trim())) return "Reminders: type a valid email address for email reminders.";
+    if (textOn && $("remPhone").value.replace(/\D/g, "").length < 10) return "Reminders: type a mobile number (10 digits) for text reminders.";
+    if (textOn && !$("remConsent").checked) return "Reminders: tick the text consent box, or pick email only.";
+    var picked = remServicesFor(d).filter(function (e) { return remRead(e).on; });
+    if (!picked.length) return "Reminders: pick at least one service to remind about.";
+    for (var i = 0; i < picked.length; i++) {
+      var e = picked[i], st = remRead(e), nm = e.svc.name;
+      if (e.pending) return nm + ": the interval is pending source, so a reminder cannot be set yet. Untick it to continue.";
+      var du = remDueOf(e, st);
+      if (!du) return nm + ": enter the interval.";
+      if (st.more && !(parseInt(st.step, 10) > 0)) return nm + ": enter how often to remind you until it is logged.";
+      if (!remPoints(du.due, parseInt(st.first, 10), parseInt(st.step, 10), st.more)) return nm + ": the first reminder must be less than the due point (" + fmtN(du.due) + " " + du.unit + ").";
+    }
+    return null;
+  }
+  // Saves the reminder setup on the asset (and its APU or reefer). Text consent is recorded with its date.
+  function applyRem(d, a, subRec) {
+    var on = document.querySelector('input[name="remOn"]:checked');
+    if (!on || on.value !== "yes") { a.reminders = { on: false }; return; }
+    var emailOn = $("remEmailOn").checked, textOn = $("remTextOn").checked;
+    a.reminders = { on: true, channels: [emailOn ? "email" : null, textOn ? "text" : null].filter(Boolean), email: emailOn ? $("remEmail").value.trim() : null,
+      phone: textOn ? $("remPhone").value.trim() : null, textConsent: textOn ? { given: true, date: TODAY, wording: "I agree to receive text reminders from Rig PM Pro at this number. Message and data rates may apply." } : null };
+    remServicesFor(d).forEach(function (e) {
+      var st = remRead(e); if (!st.on) return;
+      var rec = e.rec === "sub" ? subRec : a; if (!rec) return;
+      var du = remDueOf(e, st), u = remUnit(e, st), step = parseInt(st.step, 10), first = parseInt(st.first, 10);
+      rec.remServices = rec.remServices || {};
+      rec.remServices[e.svc.id] = { unit: u, due: du.due, first: first, step: st.more && step > 0 ? step : null, points: remPoints(du.due, first, step, st.more) };
+      rec.tracked[e.svc.id] = du.src === "user entered" ? { userValue: du.due, unit: u } : {};
+    });
+  }
+  function remLine(a, svcId) {
+    var rs = a.remServices && a.remServices[svcId]; if (!rs) return "";
+    var txt = "Reminder at " + fmtN(rs.points[0]) + " " + rs.unit + (rs.step ? ", then every " + fmtN(rs.step) + " " + rs.unit + " until logged" : " (one reminder)");
+    return '<div class="small" style="margin-top:4px">' + esc(txt) + '</div>';
+  }
+
+  /* ---------- Choose PM services ---------- */
+  function renderServices() {
+    var a = assetById(state.currentAssetId); if (!a) { show("s8"); return; }
+    if (a.sourced === false) { renderCustomEditor(a); return; }
+    $("s13Sub").textContent = assetName(a) + " | " + a.make + " " + a.model + " " + a.year;
+    var fixed = a.type === "apu" || a.type === "reefer" ? "APU and reefer services are tracked in hours only. " : a.type === "trailer" ? "Trailer services are tracked in miles only. " : "";
+    $("s13Src").innerHTML = fixed + (a.type === "truck" ? "A truck uses the unit from its sourced interval. If none is sourced yet, pick miles or hours; those services are labeled user entered. " : "") +
+      "Recommended services come from the database. Sample services are shown until Research adds sourced intervals.";
+    var list = SERVICES[a.type] || [];
+    $("svcList").innerHTML = list.map(function (s) {
+      var on = !!a.tracked[s.id], mfr = getMfr(s.id), tr = a.tracked[s.id] || {};
+      var unsourced = !mfr && (a.type === "truck" || a.type === "trailer");
+      var unit = trackUnit(a, s);
+      var head = '<label class="check' + (on ? " on" : "") + '" style="margin:0"><input type="checkbox" data-svc="' + s.id + '"' + (on ? " checked" : "") + '><span><strong>' + esc(s.name) + '</strong><br><small class="muted">' +
+        (mfr ? "Manufacturer interval: " + mfr.value + " " + mfr.unit : unsourced ? "Not sourced yet. Enter your own interval (user entered, not manufacturer)." : "Manufacturer interval: pending source. Tracked in " + unit + ".") + '</small></span></label>';
+      var body = "";
+      if (on && mfr) body = '<label for="iv-' + s.id + '" style="font-size:.95rem">Your interval, shorter only, in ' + unit + ' (optional)</label><input id="iv-' + s.id + '" type="number" min="1" inputmode="numeric" placeholder="Up to ' + mfr.value + '" value="' + (tr.userValue || "") + '">';
+      if (on && unsourced) {
+        body = '<label for="iv-' + s.id + '" style="font-size:.95rem">' + (a.type === "truck" ? "Your interval (user entered)" : "Your interval in miles (user entered)") + '</label><input id="iv-' + s.id + '" type="number" min="1" inputmode="numeric" placeholder="Whole number" value="' + (tr.userValue || "") + '">';
+        if (a.type === "truck") body += '<label for="un-' + s.id + '" style="font-size:.95rem">Measure this service in</label><select id="un-' + s.id + '"><option value="miles"' + (unit === "miles" ? " selected" : "") + '>miles</option><option value="hours"' + (unit === "hours" ? " selected" : "") + '>hours</option></select>';
+      }
+      if (on && !mfr && !unsourced) body = '<p class="hint">Tracked in ' + unit + '. Interval pending source.</p>';
+      return '<div class="card' + (on ? " on" : "") + '" style="padding:12px">' + head + body + '</div>';
+    }).join("") || '<p class="muted">No recommended services for this type yet.</p>';
+    Array.prototype.forEach.call($("svcList").querySelectorAll("[data-svc]"), function (cb) {
+      cb.addEventListener("change", function () {
+        var id = cb.getAttribute("data-svc");
+        if (cb.checked) a.tracked[id] = {}; else delete a.tracked[id];
+        renderServices();
+      });
+    });
+    $("s13Save").onclick = function () {
+      var err = $("s13Err"); err.textContent = "";
+      var ok = true;
+      Object.keys(a.tracked).forEach(function (id) {
+        if (!ok) return;
+        var svc = findSvc(id), mfr = getMfr(id), inp = $("iv-" + id), sel = $("un-" + id);
+        if (sel) a.tracked[id].unit = sel.value;
+        if (!mfr && (a.type === "truck" || a.type === "trailer") && (!inp || inp.value === "")) { err.textContent = "Enter an interval for " + svc.name + "."; ok = false; return; }
+        if (!inp || inp.value === "") { a.tracked[id].userValue = null; return; }
+        var v = parseInt(inp.value, 10);
+        if (!(v > 0)) { err.textContent = "Intervals must be a whole number above zero."; ok = false; return; }
+        if (mfr && v > mfr.value) { err.textContent = "Your interval cannot be longer than the manufacturer's (" + mfr.value + " " + mfr.unit + ")."; ok = false; return; }
+        a.tracked[id].userValue = v;
+      });
+      if (!ok) return;
+      var n = Object.keys(a.tracked).length;
+      toast("Saved. " + n + " service" + (n === 1 ? "" : "s") + " now tracked.");
+      state.editingServices = false;
+      var nextSub = state.chainSubId; state.chainSubId = null;
+      if (nextSub) { state.currentAssetId = nextSub; state.returnToParent = true; toast("Now choose services for the included " + (assetById(nextSub).type === "apu" ? "APU." : "reefer.")); show("s13"); return; }
+      if (state.returnToParent) { var cur = assetById(state.currentAssetId); if (cur && cur.parentId) state.currentAssetId = cur.parentId; state.returnToParent = false; }
+      show("s15");
+    };
+  }
+
+  /* ---------- Off-brand APU or reefer: user-entered services, hours only ---------- */
+  function renderCustomEditor(a) {
+    var kind = a.type === "apu" ? "APU" : "Reefer";
+    $("s13Sub").textContent = assetName(a) + " | " + a.make + " " + a.model;
+    $("s13Src").innerHTML = "Off-brand " + kind + ": you enter the service names and intervals. Tracked in hours only. Every interval you enter is marked user entered, not manufacturer, on every PM screen.";
+    if (!a.customRows || !a.customRows.length) a.customRows = [{ name: "", value: "" }];
+    $("svcList").innerHTML = a.customRows.map(function (r, i) {
+      return '<div class="card" style="padding:12px"><label for="cn' + i + '">Service name</label><input id="cn' + i + '" type="text" value="' + esc(r.name) + '">' +
+        '<label for="cv' + i + '">Interval in hours</label><input id="cv' + i + '" type="number" min="1" inputmode="numeric" value="' + esc(r.value) + '">' +
+        '<p class="hint">User entered, not manufacturer.</p></div>';
+    }).join("") + '<div class="stack"><button class="btn ghost" id="cAdd">Add another service</button></div>';
+    $("cAdd").addEventListener("click", function () { syncCustomRows(a); a.customRows.push({ name: "", value: "" }); renderCustomEditor(a); });
+    $("s13Err").textContent = "";
+    $("s13Save").onclick = function () { saveCustomRows(a); };
+  }
+  function syncCustomRows(a) {
+    a.customRows = a.customRows.map(function (r, i) { return { name: $("cn" + i).value.trim(), value: $("cv" + i).value.trim() }; });
+  }
+  function saveCustomRows(a) {
+    var err = $("s13Err"); err.textContent = "";
+    syncCustomRows(a);
+    var rows = a.customRows.filter(function (r) { return r.name || r.value; });
+    if (!rows.length) { err.textContent = "Add at least one service with its interval."; return; }
+    for (var i = 0; i < rows.length; i++) {
+      if (!rows[i].name) { err.textContent = "Every service needs a name."; return; }
+      if (!(parseInt(rows[i].value, 10) > 0)) { err.textContent = "Every interval must be a whole number above zero."; return; }
+    }
+    a.customRows = rows; a.tracked = {};
+    rows.forEach(function (r, i) {
+      var id = "c" + a.id + "-" + i, v = parseInt(r.value, 10);
+      CUSTOM_SVCS[id] = { id: id, name: r.name + " (user entered, not manufacturer)", cat: a.type === "apu" ? "APU: PM" : "Reefer: PM", custom: true, userValue: v, userUnit: "hours" };
+      a.tracked[id] = { userValue: v, unit: "hours" };
+    });
+    toast("Saved. " + rows.length + " user entered service" + (rows.length === 1 ? "" : "s") + ".");
+    if (state.returnToParent) { var cur = assetById(a.id); if (cur && cur.parentId) state.currentAssetId = cur.parentId; state.returnToParent = false; }
+    state.editingServices = false;
+    show("s15");
+  }
+
+  /* ---------- Log work ---------- */
+  var logDraftSvcs = null;
+  function renderLogForm() {
+    var sel = $("lgAsset");
+    sel.innerHTML = state.assets.map(function (a) { return '<option value="' + a.id + '">' + esc(assetName(a)) + '</option>'; }).join("");
+    if (state.currentAssetId && assetById(state.currentAssetId)) sel.value = state.currentAssetId;
+    if (!$("lgDate").value) $("lgDate").value = TODAY;
+    $("lgReceiptNote").textContent = state.receiptName ? "Attached: " + state.receiptName + (state.mode === "demo" ? " (demo: kept in this session only)" : "") : "No receipt added.";
+    $("lgErr").textContent = "";
+    if (!sel.dataset.bound) { sel.dataset.bound = "1"; sel.addEventListener("change", function () { state.currentAssetId = parseInt(sel.value, 10); renderKind(); }); }
+    renderKind();
+  }
+  function logUnit(a, what) {
+    if (what === "__repair") return $("lgRepairUnit") ? $("lgRepairUnit").value : trackUnit(a, null);
+    return trackUnit(a, what ? findSvc(what) : null);
+  }
+  function updateReadingLabel() {
+    var a = assetById(parseInt($("lgAsset").value, 10)); if (!a) return;
+    var w = $("lgWhat") ? $("lgWhat").value : "";
+    $("lgReadingLabel").textContent = w ? "Reading in " + logUnit(a, w) + " (optional)" : "Reading (optional). The unit follows the service you choose.";
+  }
+  function renderKind() {
+    var a = assetById(parseInt($("lgAsset").value, 10)); if (!a) { $("lgKind").innerHTML = ""; return; }
+    var tracked = Object.keys(a.tracked).map(findSvc).filter(Boolean);
+    var opts = tracked.map(function (s) { return '<option value="' + s.id + '"' + (state.prefillSvc === s.id ? " selected" : "") + '>' + esc(svcName(a, s)) + ' | ' + esc(unitNote(dueStatus(a, s))) + '</option>'; }).join("");
+    var catOpts = MAINT_CATS.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join("");
+    var units = a.type === "truck" ? ["miles", "hours"] : [trackUnit(a, null)];
+    var unitOpts = units.map(function (u) { return '<option value="' + u + '">' + u + '</option>'; }).join("");
+    $("lgKind").innerHTML =
+      '<select id="lgWhat"><option value="">Choose one</option>' + opts + '<option value="__repair">Repair or other work</option></select>' +
+      '<div id="lgRepairBox" style="display:none"><label for="lgDesc">Describe the repair</label><input id="lgDesc" type="text" placeholder="Example: Air line leak at rear axle">' +
+      '<label for="lgCat">Category</label><select id="lgCat">' + catOpts + '</select>' +
+      '<label for="lgRepairUnit">Reading unit for this repair</label><select id="lgRepairUnit">' + unitOpts + '</select></div>';
+    $("lgWhat").addEventListener("change", function () { $("lgRepairBox").style.display = this.value === "__repair" ? "block" : "none"; updateReadingLabel(); });
+    $("lgRepairUnit").addEventListener("change", updateReadingLabel);
+    if (state.prefillSvc) { $("lgWhat").value = state.prefillSvc; state.prefillSvc = null; $("lgWhat").dispatchEvent(new Event("change")); }
+    updateReadingLabel();
+  }
+  $("logForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("lgErr"); err.textContent = "";
+    var a = assetById(parseInt($("lgAsset").value, 10));
+    var what = $("lgWhat") ? $("lgWhat").value : "";
+    var date = $("lgDate").value, cost = parseFloat($("lgCost").value), reading = $("lgReading").value === "" ? null : parseInt($("lgReading").value, 10);
+    if (!a) return err.textContent = "Choose a unit.";
+    if (!what) return err.textContent = "Choose what you did.";
+    if (!date || date > TODAY) return err.textContent = "Pick a date that is today or earlier.";
+    if (!(cost >= 0)) return err.textContent = "Type the cost in dollars, for example 285.00.";
+    var entry = { id: state.nextId++, assetId: a.id, date: date, cents: Math.round(cost * 100), reading: reading, receipt: !!state.receiptName, notes: $("lgNotes").value.trim() };
+    if (what === "__repair") {
+      var desc = ($("lgDesc") ? $("lgDesc").value.trim() : "");
+      if (!desc) return err.textContent = "Describe the repair.";
+      entry.kind = "Repair"; entry.svcId = null; entry.desc = desc; entry.cat = $("lgCat").value;
+    } else {
+      var svc = findSvc(what);
+      entry.kind = "PM"; entry.svcId = svc.id; entry.desc = svcName(a, svc); entry.cat = svc.cat;
+    }
+    entry.unit = logUnit(a, what);
+    if (reading !== null && reading >= 0) { a.readings = a.readings || {}; a.readings[entry.unit] = Math.max(a.readings[entry.unit] || 0, reading); }
+    state.entries.push(entry);
+    $("savedCard").innerHTML = '<div class="small">Saved to</div><div style="font-weight:800">' + esc(assetName(a)) + '</div>' +
+      '<div class="small" style="margin-top:8px">What</div><div style="font-weight:800">' + esc(entry.desc) + '</div>' +
+      '<div class="small" style="margin-top:8px">Date and cost</div><div style="font-weight:800">' + esc(entry.date) + ' | ' + money(entry.cents) + '</div>' +
+      (entry.receipt ? '<div class="small" style="margin-top:8px">Receipt attached: ' + esc(state.receiptName) + '</div>' : "");
+    var yearUnit = state.entries.filter(function (e) { return e.assetId === a.id && inPeriod(e.date, "year"); }).reduce(function (t, e) { return t + e.cents; }, 0);
+    $("savedCard").innerHTML += '<div class="small" style="margin-top:8px">Year to date for this unit</div><div style="font-weight:800">' + money(yearUnit) + '</div>';
+    entry.receiptUrl = state.receiptUrl;
+    state.receiptName = null; state.receiptUrl = null; $("rcPreview").hidden = true; $("lgNotes").value = ""; $("lgCost").value = ""; $("lgReading").value = "";
+    toast(state.mode === "demo" ? "Demo only. Not saved to an account." : "Work saved.");
+    show("s17");
+  });
+  function receiptPick(input) {
+    var f = input.files && input.files[0]; if (!f) return;
+    if (state.receiptUrl) { try { URL.revokeObjectURL(state.receiptUrl); } catch (e) {} }
+    state.receiptUrl = URL.createObjectURL(f); state.receiptName = f.name || "receipt photo";
+    $("rcImg").src = state.receiptUrl; $("rcName").textContent = "Attached: " + state.receiptName;
+    $("rcDemoNote").textContent = state.mode === "demo" ? "Demo: kept in this session only. Erased when you leave or refresh." : "";
+    $("rcPreview").hidden = false;
+    toast("Receipt attached.");
+    input.value = "";
+  }
+  $("rcCamera").addEventListener("click", function () { $("rcCamInput").click(); });
+  $("rcLibrary").addEventListener("click", function () { $("rcLibInput").click(); });
+  $("rcCamInput").addEventListener("change", function () { receiptPick(this); });
+  $("rcLibInput").addEventListener("change", function () { receiptPick(this); });
+
+  /* ---------- Totals ---------- */
+  state.period = "month"; state.sort = "unit";
+  function renderTotals() {
+    var periods = [["month", "Month"], ["quarter", "Quarter"], ["year", "Year"], ["lifetime", "Lifetime"]];
+    $("periodTabs").innerHTML = periods.map(function (p) { return '<button class="tab' + (state.period === p[0] ? " on" : "") + '" data-p="' + p[0] + '">' + p[1] + '</button>'; }).join("");
+    $("sortTabs").innerHTML = '<button class="tab' + (state.sort === "unit" ? " on" : "") + '" data-s="unit">By unit</button><button class="tab' + (state.sort === "type" ? " on" : "") + '" data-s="type">By asset type</button>';
+    Array.prototype.forEach.call($("periodTabs").querySelectorAll("[data-p]"), function (b) { b.addEventListener("click", function () { state.period = b.getAttribute("data-p"); renderTotals(); }); });
+    Array.prototype.forEach.call($("sortTabs").querySelectorAll("[data-s]"), function (b) { b.addEventListener("click", function () { state.sort = b.getAttribute("data-s"); renderTotals(); }); });
+    var sel = $("totAsset");
+    if (!sel.dataset.bound) { sel.dataset.bound = "1"; sel.addEventListener("change", function () { state.totAsset = sel.value; renderTotals(); }); }
+    sel.innerHTML = '<option value="all">All assets combined (every unit listed)</option>' + state.assets.map(function (a) { return '<option value="' + a.id + '">' + esc(assetName(a)) + '</option>'; }).join("");
+    if (!state.totAsset || (state.totAsset !== "all" && !assetById(parseInt(state.totAsset, 10)))) state.totAsset = "all";
+    sel.value = state.totAsset;
+    if (state.totAsset !== "all") {
+      var one = assetById(parseInt(state.totAsset, 10)), pp = state.period;
+      var mine = state.entries.filter(function (e) { return e.assetId === one.id && inPeriod(e.date, pp); }).sort(function (x, y) { return x.date < y.date ? -1 : 1; });
+      $("sortTabs").hidden = true;
+      $("grandTotal").textContent = money(mine.reduce(function (t, e) { return t + e.cents; }, 0));
+      $("periodLabel").textContent = PERIOD_LABEL[pp] + " | " + assetName(one) + " (" + typeLabel(one.type) + ")";
+      $("totalsTable").innerHTML = mine.length ? '<table class="tbl"><tr><th>Date</th><th>Work</th><th class="num">Cost</th></tr>' + mine.map(function (e) {
+        return '<tr><td>' + esc(e.date) + '</td><td>' + esc(e.desc) + '<br><small class="muted">' + esc(e.cat) + (e.unit && e.reading != null ? " | reading " + esc(e.reading) + " " + esc(e.unit) : "") + '</small></td><td class="num">' + money(e.cents) + '</td></tr>';
+      }).join("") + '</table>' : '<p class="muted">No entries for this asset in this period.</p>';
+      return;
+    }
+    $("sortTabs").hidden = false;
+    var p = state.period;
+    var sums = state.assets.map(function (a) { return { a: a, cents: state.entries.filter(function (e) { return e.assetId === a.id && inPeriod(e.date, p); }).reduce(function (s, e) { return s + e.cents; }, 0) }; });
+    var grand = sums.reduce(function (s, r) { return s + r.cents; }, 0);
+    $("grandTotal").textContent = money(grand);
+    $("periodLabel").textContent = PERIOD_LABEL[p];
+    var rowHtml = function (r) { return '<tr><td>' + esc(r.a.nick || typeLabel(r.a.type)) + '<br><small class="muted">' + esc(typeLabel(r.a.type)) + '</small></td><td class="num">' + money(r.cents) + '</td></tr>'; };
+    var html;
+    if (state.sort === "unit") {
+      var sorted = sums.slice().sort(function (x, y) { return (x.a.nick || "").localeCompare(y.a.nick || ""); });
+      html = '<table class="tbl"><tr><th>Unit</th><th class="num">Total</th></tr>' + sorted.map(rowHtml).join("") + '</table>';
+    } else {
+      var types = ["truck", "trailer", "apu", "reefer"];
+      html = '<table class="tbl">';
+      types.forEach(function (t) {
+        var group = sums.filter(function (r) { return r.a.type === t; });
+        if (!group.length) return;
+        var sub = group.reduce(function (s, r) { return s + r.cents; }, 0);
+        html += '<tr><th colspan="2">' + typeLabel(t) + 's | ' + money(sub) + '</th></tr>' + group.map(rowHtml).join("");
+      });
+      html += '</table>';
+    }
+    $("totalsTable").innerHTML = html;
+  }
+
+  /* ---------- History ---------- */
+  function renderHistory() {
+    var list = state.entries.slice().sort(function (x, y) { return x.date < y.date ? 1 : -1; });
+    $("historyList").innerHTML = list.length ? list.map(function (e) {
+      var a = assetById(e.assetId);
+      return '<div class="card"><div class="row"><div><strong>' + esc(e.desc) + '</strong><div class="small">' + esc(a ? assetName(a) : "") + ' | ' + esc(e.date) + ' | ' + esc(e.cat) + '</div></div><div style="font-weight:800">' + money(e.cents) + '</div></div></div>';
+    }).join("") : '<p class="muted">No work logged yet.</p>';
+  }
+  // Add a link to Work history on the More screen.
+  var histBtn = document.createElement("button");
+  histBtn.className = "btn ghost"; histBtn.textContent = "Work history"; histBtn.setAttribute("data-go", "s21");
+  histBtn.style.marginBottom = "10px";
+  $("s23").querySelector(".stack").insertAdjacentElement("afterbegin", histBtn);
+
+  /* ---------- Devices ---------- */
+  function renderDevices() {
+    $("deviceList").innerHTML = state.devices.map(function (d, i) {
+      return '<div class="card"><div class="row"><div><strong>' + esc(d.label) + '</strong><div class="small">Last seen ' + esc(d.last) + '</div></div><button class="btn ghost small-btn" data-rm="' + i + '">Remove</button></div></div>';
+    }).join("") || '<p class="muted">No devices.</p>';
+    Array.prototype.forEach.call($("deviceList").querySelectorAll("[data-rm]"), function (b) {
+      b.addEventListener("click", function () { state.devices.splice(parseInt(b.getAttribute("data-rm"), 10), 1); toast("Device removed. It will need a code next time."); renderDevices(); });
+    });
+  }
+
+  /* ---------- Export (CSV, maintenance categories only) ---------- */
+  $("exGo").addEventListener("click", function () {
+    var r = $("exRange").value;
+    var keep = function (e) { return MAINT_CATS.indexOf(e.cat) !== -1 && (r === "all" || (r === "ytd" && e.date.slice(0, 4) === "2026") || (r === "2025" && e.date.slice(0, 4) === "2025")); };
+    var rows = state.entries.filter(keep).sort(function (x, y) { return x.date < y.date ? -1 : 1; });
+    var isDemo = state.mode === "demo", DEMO_LABEL = "DEMO - sample data, not saved";
+    var lines = (isDemo ? [DEMO_LABEL] : []).concat(["Label,Date,Unit,Asset type,Category,Description,Kind,Cost (USD)"]);
+    var total = 0;
+    rows.forEach(function (e) {
+      var a = assetById(e.assetId); total += e.cents;
+      lines.push([isDemo ? DEMO_LABEL : "", e.date, a ? (a.nick || "") : "", a ? typeLabel(a.type) : "", e.cat, e.desc, e.kind, (e.cents / 100).toFixed(2)].map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(","));
+    });
+    lines.push([isDemo ? '"' + DEMO_LABEL + '"' : "", '"Total"', "", "", "", "", "", '"' + (total / 100).toFixed(2) + '"'].join(","));
+    lines.push('"Sample data only. Category names are placeholders until Joe confirms the list."');
+    try {
+      var blob = new Blob([lines.join("\n")], { type: "text/csv" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a"); a.href = url; a.download = isDemo ? "rig-pm-pro-DEMO-sample-data-not-saved.csv" : "rig-pm-pro-export.csv";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      toast("Export ready (sample).");
+    } catch (err) { toast("Export is not available in this browser."); }
+  });
+
+  /* ---------- Keep demo records (one way, only after confirmation) ---------- */
+  function renderCarry() {
+    var trucks = state.assets.filter(function (a) { return a.type === "truck"; }).length;
+    var others = state.assets.filter(function (a) { return a.type === "trailer"; }).length;
+    var incl = state.assets.filter(function (a) { return a.type === "apu" || a.type === "reefer"; }).length;
+    var pm = state.entries.filter(function (e) { return e.kind === "PM"; }).length;
+    var rep = state.entries.filter(function (e) { return e.kind === "Repair"; }).length;
+    var receipts = state.entries.filter(function (e) { return e.receipt; }).length;
+    var total = state.entries.reduce(function (t, e) { return t + e.cents; }, 0);
+    $("carryList").innerHTML = "Trucks: " + trucks + "<br>Trailers: " + others +
+      "<br>PM entries: " + pm + "<br>Repairs (expenses): " + rep + "<br>Total of all entries: " + money(total) +
+      "<br>Receipt photos: " + receipts + ". Receipt storage is not connected yet, so receipt photos stay in this session until storage is chosen (open question for Joe).";
+    $("carryConfirm").checked = false; $("carryKeep").disabled = true; $("carryErr").textContent = "";
+  }
+  $("flSend").addEventListener("click", function () {
+    var err = $("flErr"); err.textContent = ""; $("flMsg").textContent = "";
+    var name = $("flName").value.trim(), company = $("flCompany").value.trim(), email = $("flEmail").value.trim();
+    var trucks = $("flTrucks").value.trim(), trailers = $("flTrailers").value.trim();
+    if (!name || !company) { err.textContent = "Type your name and company."; return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "Type a valid email address."; return; }
+    if (trucks === "" || trailers === "" || parseInt(trucks, 10) < 0 || parseInt(trailers, 10) < 0) { err.textContent = "Type the number of trucks and trailers (0 is fine)."; return; }
+    // Nothing is stored and nothing is sent in the prototype. The request address is a placeholder.
+    $("flMsg").textContent = "Ready to send. Sending is not connected: the request address is still a placeholder.";
+  });
+  $("carryConfirm").addEventListener("change", function () { $("carryKeep").disabled = !this.checked; });
+  function finishCarry(keep) {
+    if (!keep) { state.assets = []; state.entries = []; state.receiptUrl = null; state.receiptName = null; }
+    state.mode = "account";
+    toast(keep ? "Records saved to your account." : "Started fresh. Demo records erased.");
+    show("s28");
+  }
+  $("carryKeep").addEventListener("click", function () {
+    if (!$("carryConfirm").checked) { $("carryErr").textContent = "Tick the box to confirm."; return; }
+    finishCarry(true);
+  });
+  $("carryFresh").addEventListener("click", function () { finishCarry(false); });
+
+  /* ---------- Sign out ---------- */
+  $("signOutBtn").addEventListener("click", function () {
+    if (state.mode === "demo") { leaveDemo(); return; }
+    state.signedIn = false; state.mode = "guest"; state.pending = null; show("s0"); toast("Signed out.");
+  });
+  // Reminders (session only in the demo; no email is sent)
+  function renderReminders() { $("rmEmail").checked = state.reminders.email; $("rmDays").value = String(state.reminders.days); }
+  $("rmSave").addEventListener("click", function () {
+    state.reminders = { email: $("rmEmail").checked, days: parseInt($("rmDays").value, 10) };
+    toast(state.mode === "demo" ? "Saved for this demo session. No email is sent in the demo." : "Reminder choices saved.");
+  });
+  // Account
+  function renderAccount() {
+    var a = state.account || {}, demo = state.mode === "demo";
+    $("acCompany").value = a.company || ""; $("acEmail").value = a.email || ""; $("acUser").value = a.username || "";
+    ["acCur", "acNew", "acNew2"].forEach(function (i) { $(i).value = ""; $(i).disabled = demo; });
+    $("acPassNote").textContent = demo ? "Create an account to set a password. The demo has no login." : "";
+    $("acErr").textContent = "";
+  }
+  $("acSave").addEventListener("click", function () {
+    var err = $("acErr"); err.textContent = "";
+    var company = $("acCompany").value.trim(), email = $("acEmail").value.trim(), user = $("acUser").value.trim();
+    if (!company) { err.textContent = "Type your company name."; return; }
+    if (!(state.mode === "demo" && !email) && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "Type a valid email address."; return; }
+    if (user && !/^[A-Za-z0-9_.-]{3,30}$/.test(user)) { err.textContent = "Username: 3 to 30 letters, numbers, dots, dashes, or underscores."; return; }
+    var cur = $("acCur").value, nw = $("acNew").value, nw2 = $("acNew2").value;
+    if (cur || nw || nw2) {
+      if (state.mode === "demo") { err.textContent = "Create an account to set a password."; return; }
+      if (cur !== state.account.password) { err.textContent = "Current password is not right."; return; }
+      if (nw.length < 8) { err.textContent = "New password must be at least 8 characters."; return; }
+      if (nw !== nw2) { err.textContent = "The two new passwords do not match."; return; }
+      state.account.password = nw;
+    }
+    state.account.company = company; state.account.email = email; state.account.username = user;
+    $("whoLine").textContent = company;
+    toast(state.mode === "demo" ? "Changed for this demo session only." : "Account saved.");
+    renderAccount();
+  });
+  // Edit asset: make, model, year, VIN (optional), unit number. Back keeps unsaved edits; Cancel discards them.
+  function renderEditAsset() {
+    var a = assetById(state.currentAssetId); if (!a) { show("s8"); return; }
+    var incl = a.type === "apu" || a.type === "reefer";
+    var f = state.editDraft || { nick: a.nick || "", make: a.make || "", model: a.model || "", year: a.year || "", vin: a.vin6 || "" };
+    fillMakeSel("eMkSel", "eMkOtherWrap", "eMkOther", a.type, f.make);
+    fillModelSel("eMdSel", "eMdOtherWrap", "eMdOther", readSel("eMkSel", "eMkOther"), f.model);
+    $("eNick").value = f.nick; $("eYear").value = f.year; $("eVin").value = f.vin;
+    $("eVin").disabled = incl; $("eVin").placeholder = incl ? "Not applicable (included record)" : "";
+    $("s18Err").textContent = "";
+  }
+  wireMake("eMkSel", "eMkOtherWrap", "eMdSel", "eMdOtherWrap", "eMdOther", "eMkOther");
+  wireModel("eMdSel", "eMdOtherWrap");
+  $("s18Back").addEventListener("click", function () {
+    state.editDraft = { nick: $("eNick").value, make: readSel("eMkSel", "eMkOther"), model: readSel("eMdSel", "eMdOther"), year: $("eYear").value, vin: $("eVin").value };
+    show("s15");
+  });
+  $("s18Save").addEventListener("click", function () {
+    var a = assetById(state.currentAssetId), err = $("s18Err"); err.textContent = "";
+    if (!a) return;
+    var nick = $("eNick").value.trim(), mk = readSel("eMkSel", "eMkOther"), md = readSel("eMdSel", "eMdOther");
+    var vin = $("eVin").value.trim().toUpperCase(), yr = parseInt($("eYear").value, 10);
+    var incl = a.type === "apu" || a.type === "reefer";
+    if (!nick) { err.textContent = "Type a unit number."; return; }
+    if (mk.length < 2) { err.textContent = "Choose a make, or type one (at least 2 letters)."; return; }
+    if (!md) { err.textContent = "Choose a model, or type one."; return; }
+    if (!incl && vin && !/^[A-Z0-9]{6}$/.test(vin)) { err.textContent = "Last 6 of the VIN: exactly 6 letters or numbers, or leave it blank."; return; }
+    if (!(yr >= 2010 && yr <= 2027)) { err.textContent = "Model year must be between 2010 and 2027."; return; }
+    a.nick = nick; a.make = mk; a.model = md; a.year = yr; if (!incl) a.vin6 = vin || null;
+    state.editDraft = null;
+    toast("Asset saved."); show("s15");
+  });
+
+  if (location.hash === "#fleet") { startDemo(); show("s30"); } else { show("s0"); }
+})();
+</script>
+</body>
+</html>
