@@ -6,9 +6,22 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+// Routes for HTML pages
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/lpv8.html');
+});
+
+app.get('/app.html', (req, res) => {
+  res.sendFile(__dirname + '/fabv22.html');
+});
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+
+// Serve static files from root directory
+app.use(express.static('.'));
+
 
 // Database connection
 const pool = new Pool({
