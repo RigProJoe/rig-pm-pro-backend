@@ -9,7 +9,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-
+app.use(express.static('public'))
 // Database connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://rig_pm_pro_db_user:uO1BVQZPaT7Yvty087y7Pt4tJJqU6R6r@dpg-db9phn0m7kps73e8svrg-a.onrender.com/rig_pm_pro_db'
@@ -38,31 +38,15 @@ async function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS assets (
         id SERIAL PRIMARY KEY,
         user_id VARCHAR(255),
-        type VARCHAR(50),
+        name VARCHAR(255) NOT NULL,
         make VARCHAR(100),
         model VARCHAR(100),
         year INTEGER,
         vin VARCHAR(50),
-        unitNumber VARCHAR(50),
-        engineType VARCHAR(100),
         notes TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
-    `);
-
-    // Add missing columns if they don't exist (for migration)
-    await pool.query(`
-      ALTER TABLE assets
-      ADD COLUMN IF NOT EXISTS type VARCHAR(50)
-    `);
-    await pool.query(`
-      ALTER TABLE assets
-      ADD COLUMN IF NOT EXISTS unitNumber VARCHAR(50)
-    `);
-    await pool.query(`
-      ALTER TABLE assets
-      ADD COLUMN IF NOT EXISTS engineType VARCHAR(100)
     `);
 
     // Repairs table
@@ -131,136 +115,56 @@ app.post('/api/login', (req, res) => {
 });
 
 // ASSETS ENDPOINTS
-
-// GET /api/assets - Get all assets
 app.get('/api/assets', authenticate, async (req, res) => {
-  console.log('GET /api/assets - Fetching all assets');
   try {
     const result = await pool.query('SELECT * FROM assets ORDER BY created_at DESC');
-    console.log(`Retrieved ${result.rows.length} assets`);
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching assets:', err);
-    res.status(500).json({ error: 'Failed to fetch assets', details: err.message });
+    res.status(500).json({ error: 'Failed to fetch assets' });
   }
 });
 
-// GET /api/assets/:assetId - Get single asset by ID
-app.get('/api/assets/:assetId', authenticate, async (req, res) => {
-  console.log(`GET /api/assets/${req.params.assetId} - Fetching single asset`);
-  try {
-    const { assetId } = req.params;
-
-    // Validate assetId is a number
-    if (!Number.isInteger(parseInt(assetId))) {
-      return res.status(400).json({ error: 'Invalid asset ID' });
-    }
-
-    const result = await pool.query('SELECT * FROM assets WHERE id = $1', [assetId]);
-
-    if (result.rows.length === 0) {
-      console.log(`Asset ${assetId} not found`);
-      return res.status(404).json({ error: 'Asset not found' });
-    }
-
-    console.log(`Asset ${assetId} retrieved successfully`);
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(`Error fetching asset ${req.params.assetId}:`, err);
-    res.status(500).json({ error: 'Failed to fetch asset', details: err.message });
-  }
-});
-
-// POST /api/assets - Create new asset
 app.post('/api/assets', authenticate, async (req, res) => {
-  console.log('POST /api/assets - Creating new asset');
   try {
-    const { type, make, model, year, vin, unitNumber, engineType, notes } = req.body;
-
-    // Validate required fields
-    if (!type || !make || !model) {
-      console.warn('Missing required fields:', { type, make, model });
-      return res.status(400).json({
-        error: 'Missing required fields',
-        required: ['type', 'make', 'model']
-      });
-    }
-
+    const { name, make, model, year, vin, notes } = req.body;
     const result = await pool.query(
-      'INSERT INTO assets (type, make, model, year, vin, unitNumber, engineType, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [type, make, model, year, vin, unitNumber, engineType, notes]
+      'INSERT INTO assets (name, make, model, year, vin, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [name, make, model, year, vin, notes]
     );
-
-    console.log(`Asset created with ID: ${result.rows[0].id}`);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Error creating asset:', err);
-    res.status(500).json({ error: 'Failed to create asset', details: err.message });
+    res.status(500).json({ error: 'Failed to create asset' });
   }
 });
 
-// PUT /api/assets/:assetId - Update asset
-app.put('/api/assets/:assetId', authenticate, async (req, res) => {
-  console.log(`PUT /api/assets/${req.params.assetId} - Updating asset`);
+app.put('/api/assets/:id', authenticate, async (req, res) => {
   try {
-    const { assetId } = req.params;
-    const { type, make, model, year, vin, unitNumber, engineType, notes } = req.body;
-
-    // Validate assetId is a number
-    if (!Number.isInteger(parseInt(assetId))) {
-      return res.status(400).json({ error: 'Invalid asset ID' });
-    }
-
-    // Validate required fields
-    if (!type || !make || !model) {
-      console.warn(`Missing required fields for asset ${assetId}:`, { type, make, model });
-      return res.status(400).json({
-        error: 'Missing required fields',
-        required: ['type', 'make', 'model']
-      });
-    }
-
+    const { id } = req.params;
+    const { name, make, model, year, vin, notes } = req.body;
     const result = await pool.query(
-      'UPDATE assets SET type = $1, make = $2, model = $3, year = $4, vin = $5, unitNumber = $6, engineType = $7, notes = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING *',
-      [type, make, model, year, vin, unitNumber, engineType, notes, assetId]
+      'UPDATE assets SET name = $1, make = $2, model = $3, year = $4, vin = $5, notes = $6, updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING *',
+      [name, make, model, year, vin, notes, id]
     );
-
     if (result.rows.length === 0) {
-      console.log(`Asset ${assetId} not found for update`);
       return res.status(404).json({ error: 'Asset not found' });
     }
-
-    console.log(`Asset ${assetId} updated successfully`);
-    res.json({ success: true, updatedAsset: result.rows[0] });
+    res.json(result.rows[0]);
   } catch (err) {
-    console.error(`Error updating asset ${req.params.assetId}:`, err);
-    res.status(500).json({ error: 'Failed to update asset', details: err.message });
+    console.error('Error updating asset:', err);
+    res.status(500).json({ error: 'Failed to update asset' });
   }
 });
 
-// DELETE /api/assets/:assetId - Delete asset
-app.delete('/api/assets/:assetId', authenticate, async (req, res) => {
-  console.log(`DELETE /api/assets/${req.params.assetId} - Deleting asset`);
+app.delete('/api/assets/:id', authenticate, async (req, res) => {
   try {
-    const { assetId } = req.params;
-
-    // Validate assetId is a number
-    if (!Number.isInteger(parseInt(assetId))) {
-      return res.status(400).json({ error: 'Invalid asset ID' });
-    }
-
-    const result = await pool.query('DELETE FROM assets WHERE id = $1 RETURNING id', [assetId]);
-
-    if (result.rows.length === 0) {
-      console.log(`Asset ${assetId} not found for deletion`);
-      return res.status(404).json({ error: 'Asset not found' });
-    }
-
-    console.log(`Asset ${assetId} deleted successfully`);
-    res.json({ success: true, message: 'Asset deleted' });
+    const { id } = req.params;
+    await pool.query('DELETE FROM assets WHERE id = $1', [id]);
+    res.json({ message: 'Asset deleted successfully' });
   } catch (err) {
-    console.error(`Error deleting asset ${req.params.assetId}:`, err);
-    res.status(500).json({ error: 'Failed to delete asset', details: err.message });
+    console.error('Error deleting asset:', err);
+    res.status(500).json({ error: 'Failed to delete asset' });
   }
 });
 
