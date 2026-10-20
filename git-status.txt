@@ -1,0 +1,53 @@
+ 
+=== Git Status === 
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	deleted:    ASSET_CRUD_SUMMARY.md
+	deleted:    Rig PM Pro Checklist.xlsx
+	deleted:    Rig-PM-Pro-Flow-Map-v15.docx
+	deleted:    Rig-PM-Pro-Handoff-Card-2026-10-18.docx
+	deleted:    Rig-PM-Pro-Handoff-Log.md
+	deleted:    Rig-PM-Pro-Left-Menu-Proposal.docx
+	deleted:    Rig-PM-Pro-Manufacturer-PM-Research-2026-10-17.docx
+	deleted:    Rig-PM-Pro-Sourced-Intervals-Batch-1-2026-10-18.docx
+	deleted:    Rig-PM-Pro-Sourced-Intervals-Batch-2-2026-10-18.docx
+	deleted:    Rig-PM-Pro-Sourcing-Gaps-2026-10-17.docx
+	deleted:    Rig-PM-Pro-To-Do.md
+	deleted:    Rig-PM-Pro-Zoho-Check-2026-10-17.docx
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	Archive/Rig-PM-Pro-Flow-Map-v15.docx
+	Archive/Rig-PM-Pro-Handoff-Card-2026-10-18.docx
+	Archive/Rig-PM-Pro-Handoff-Log.md
+	Archive/Rig-PM-Pro-Left-Menu-Proposal.docx
+	Archive/Rig-PM-Pro-Manufacturer-PM-Research-2026-10-17.docx
+	Archive/Rig-PM-Pro-Sourced-Intervals-Batch-1-2026-10-18.docx
+	Archive/Rig-PM-Pro-Sourced-Intervals-Batch-2-2026-10-18.docx
+	Archive/Rig-PM-Pro-Sourcing-Gaps-2026-10-17.docx
+	Archive/Rig-PM-Pro-To-Do.md
+	Archive/Rig-PM-Pro-Zoho-Check-2026-10-17.docx
+	Archive/asset-crud-summary.md
+	Archive/research-instructions.docx
+	Archive/rig-pm-pro-checklist.xlsx
+	Configuration/
+	Documentation/
+	Passdown Logs/
+	QA/
+	commit.bat
+	git-status.txt
+	team-instructions.md
+	verify-commit.bat
+
+no changes added to commit (use "git add" and/or "git commit -a")
+ 
+=== Git Log (Last 3 commits) === 
+c347277 Fix: Menu now opens by default with toggle functionality across all devices
+5c65188 Keep hamburger menu button always visible
+34087b3 Enable hamburger menu by removing hidden attribute
+ 
