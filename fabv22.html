@@ -7,19 +7,19 @@
 <meta name="description" content="First-pass clickable prototype of the Rig PM Pro core flow. Sample data only. Not published.">
 <style>
   :root {
-    --black: #111111; --red: #B3121E; --red-dark: #8E0E18; --yellow: #FFC72C; --white: #FFFFFF; --text: #111111; --muted-pal: #4A4A4A; --divider: #D0D0D0;
+    --black: #111111; --red: #B3121E; --red-dark: #8E0E18; --yellow: #FFD700; --white: #FFFFFF; --text: #111111; --muted-pal: #4A4A4A; --divider: #D0D0D0;
     --ink: #111111; --muted: #4A4A4A; --paper: #FFFFFF; --soft: #FFFFFF; --line: #111111;
-    --error: #B3121E; --warn: #111111; --warn-bg: #FFC72C; --ok: #111111; --ok-bg: #FFFFFF; --late: #FFFFFF; --late-bg: #B3121E;
+    --error: #B3121E; --warn: #111111; --warn-bg: #FFD700; --ok: #111111; --ok-bg: #FFFFFF; --late: #FFFFFF; --late-bg: #B3121E;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --ink: #FFFFFF; --muted: #D0D0D0; --paper: #111111; --soft: #000000; --line: #FFFFFF; --divider: #D0D0D0;
-      --error: #FF8A8A; --warn: #111111; --warn-bg: #FFC72C; --ok: #FFFFFF; --ok-bg: #111111; --late: #FFFFFF; --late-bg: #B3121E;
+      --error: #FF8A8A; --warn: #111111; --warn-bg: #FFD700; --ok: #FFFFFF; --ok-bg: #111111; --late: #FFFFFF; --late-bg: #B3121E;
     }
   }
   :root[data-theme="dark"] {
     --ink: #FFFFFF; --muted: #D0D0D0; --paper: #111111; --soft: #000000; --line: #FFFFFF; --divider: #D0D0D0;
-    --error: #FF8A8A; --warn: #111111; --warn-bg: #FFC72C; --ok: #FFFFFF; --ok-bg: #111111; --late: #FFFFFF; --late-bg: #B3121E;
+    --error: #FF8A8A; --warn: #111111; --warn-bg: #FFD700; --ok: #FFFFFF; --ok-bg: #111111; --late: #FFFFFF; --late-bg: #B3121E;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
@@ -207,14 +207,14 @@
   }
   .menu-btn { min-height: 44px; min-width: 44px; padding: 6px 8px; border: 1px solid var(--divider); border-radius: 6px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; font-size: 1.2rem; cursor: pointer; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; position: relative; z-index: 13; }
   header.top .menu-btn { color: #fff; border-color: #fff; }
-  #headerMenuBtn { display: block; }
+  #headerMenuBtn { display: none; }
   #menuBtn { display: none; margin-left: auto; }
   @media (min-width: 768px) {
     #headerMenuBtn { display: none; }
     #menuBtn { display: none; }
   }
   .menu-btn[hidden] { display: none !important; }
-  .side { position: fixed; left: 0; top: 60px; bottom: 0; width: 280px; overflow-y: auto; background: var(--paper); border-right: 1px solid var(--line); padding: 16px 12px; z-index: 12; transform: translateX(-105%); transition: transform .2s ease; }
+  .side { position: fixed; left: 0; top: 60px; bottom: 0; width: 280px; overflow-y: auto; background: var(--paper); border-right: 1px solid var(--line); padding: 16px 12px; z-index: 12; transform: translateX(0); transition: transform .2s ease; }
   .side[hidden] { display: none !important; }
   body.menu-open .side { transform: translateX(0); }
   .side-shade { display: block; position: fixed; left: 0; top: 60px; right: 0; bottom: 0; background: rgba(0,0,0,.3); z-index: 11; cursor: pointer; }
@@ -229,7 +229,7 @@
   .side button.on { background: var(--red); color: var(--white); font-weight: 700; }
   @media (max-width: 639px) {
     .app-content { flex-direction: column; }
-    .side { position: fixed; left: 0; top: 54px; bottom: 0; width: 280px; max-width: 84%; transform: translateX(-105%); }
+    .side { position: fixed; left: 0; top: 54px; bottom: 0; width: 280px; max-width: 84%; transform: translateX(0); }
     body.menu-open .side { transform: translateX(0); }
     .side-shade { display: none; }
     body.menu-open .side-shade { display: block; }
@@ -237,7 +237,7 @@
   @media (min-width: 640px) {
     .app { max-width: none; }
     .app-content { flex-direction: row; }
-    .side { position: static !important; width: 280px; padding: 16px 12px !important; top: auto !important; bottom: auto !important; transform: translateX(0) !important; border-right: 1px solid var(--line); flex-shrink: 0; overflow-y: auto; z-index: 5; }
+    .side { position: static !important; width: 280px; padding: 16px 12px !important; top: auto !important; bottom: auto !important; transform: translateX(0) !important; border-right: 1px solid var(--line); flex-shrink: 0; overflow-y: auto; z-index: 5; order: -1; }
     body.menu-open .side, body:not(.menu-open) .side { transform: translateX(0) !important; }
     .side-shade { display: none !important; }
     .menu-header { display: none; }
@@ -916,53 +916,58 @@
   </div>
 </section>
 
-</div><!-- .screens -->
-</div><!-- .app-content -->
+<!-- S37 Settings -->
+<section class="screen" id="s37" data-title="Settings">
+  <h1>Settings</h1>
+  <p class="muted">Manage your account and preferences</p>
 
-</div><!-- .app -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:24px">
+    <button class="card" style="padding:24px;text-align:center;border:1px solid var(--line);border-radius:8px;background:transparent;cursor:pointer;transition:all .2s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px" data-go="s24" onmouseover="this.style.background='var(--highlight)'" onmouseout="this.style.background='transparent'">
+      <div style="font-size:32px;margin-bottom:8px">🔔</div>
+      <div style="font-weight:700;color:var(--ink);margin-bottom:4px">Reminders</div>
+      <div style="font-size:.85rem;color:var(--muted)">Manage notifications</div>
+    </button>
+
+    <button class="card" style="padding:24px;text-align:center;border:1px solid var(--line);border-radius:8px;background:transparent;cursor:pointer;transition:all .2s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px" data-go="s26" onmouseover="this.style.background='var(--highlight)'" onmouseout="this.style.background='transparent'">
+      <div style="font-size:32px;margin-bottom:8px">💳</div>
+      <div style="font-weight:700;color:var(--ink);margin-bottom:4px">Plan & Billing</div>
+      <div style="font-size:.85rem;color:var(--muted)">Manage your plan</div>
+    </button>
+
+    <button class="card" style="padding:24px;text-align:center;border:1px solid var(--line);border-radius:8px;background:transparent;cursor:pointer;transition:all .2s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px" data-go="s28" onmouseover="this.style.background='var(--highlight)'" onmouseout="this.style.background='transparent'">
+      <div style="font-size:32px;margin-bottom:8px">📋</div>
+      <div style="font-weight:700;color:var(--ink);margin-bottom:4px">Pricing</div>
+      <div style="font-size:.85rem;color:var(--muted)">View plan options</div>
+    </button>
+  </div>
+</section>
+
+</div><!-- .screens -->
 
 <aside class="side" id="side" aria-label="Sections">
   <div class="menu-header">
     <div class="side-title">RigPMPro</div>
     <button class="menu-btn" id="menuBtn" type="button" aria-label="Close the menu" title="Close menu">✕</button>
   </div>
-  <button class="side-collapse-toggle" id="assetToggle" style="width:100%;text-align:left;min-height:48px;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:var(--ink);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center">Asset <span style="font-size:.8rem">▼</span></button>
-  <div id="assetMenu" style="display:block">
+  <button class="side-collapse-toggle" id="assetToggle" style="width:100%;text-align:left;min-height:48px;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:var(--ink);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center">Assets <span style="font-size:.8rem">▼</span></button>
+  <div id="assetMenu" style="display:none">
     <button class="sub" data-go="s9">Add asset</button>
     <button class="sub" data-go="s18">Edit asset</button>
   </div>
-  <button data-go="s4">Maintenance</button>
-  <button class="side-collapse-toggle" id="repairToggle" style="width:100%;text-align:left;min-height:48px;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:var(--ink);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center">Repair <span style="font-size:.8rem">▼</span></button>
-  <div id="repairMenu" style="display:block">
-    <button class="sub" data-go="s16">Log repair</button>
-    <button class="sub" data-go="s20">Totals</button>
+  <button class="side-collapse-toggle" id="maintenanceToggle" style="width:100%;text-align:left;min-height:48px;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:var(--ink);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center">Maintenance <span style="font-size:.8rem">▼</span></button>
+  <div id="maintenanceMenu" style="display:none">
+    <button class="sub" data-go="s16">Log Repair</button>
+    <button class="sub" data-go="s4">Log PM</button>
     <button class="sub" data-go="s21">Repair history</button>
-    <button class="sub" data-go="s22">Export for taxes</button>
-    <button class="sub" data-go="s32">Category</button>
+    <button class="sub" data-go="s20">Totals</button>
   </div>
-  <div class="side-group">Account</div>
-  <button data-go="s24">Reminders</button>
-  <button data-go="s25">Devices</button>
-  <button data-go="s26">Plan and billing</button>
-  <button data-go="s28">Plans and pricing</button>
-  <button data-go="s27">Account</button>
-  <button data-go="s23">More</button>
-
-  <div class="side-categories">
-    <div class="side-cat-title">Categories</div>
-    <div id="catChips"></div>
-  </div>
-
-  <div class="side-test-vehicles">
-    <div class="side-cat-title">Test Vehicles</div>
-    <select id="testVehicleSelect" class="side-test-vehicle-select">
-      <option value="">Load a test vehicle</option>
-      <option value="freightliner">Freightliner Cascadia</option>
-      <option value="peterbilt">Peterbilt 579</option>
-      <option value="volvo">Volvo VNL860</option>
-    </select>
-  </div>
+  <button data-go="s37">Account Settings</button>
 </aside>
+
+</div><!-- .app-content -->
+
+</div><!-- .app -->
+
 <div class="side-shade" id="sideShade"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -1196,59 +1201,16 @@
     if (e.target.closest("[data-cancel]")) { state.draft = null; state.editDraft = null; state.editingServices = false; }
   });
 
-  // Handle header menu button (open)
-  var headerMenuBtn = document.getElementById("headerMenuBtn");
-  if (headerMenuBtn) {
-    headerMenuBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      document.body.classList.toggle("menu-open");
-    });
-  }
 
-  // Handle side menu close button
-  var sideMenuBtn = document.getElementById("menuBtn");
-  if (sideMenuBtn) {
-    sideMenuBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      document.body.classList.toggle("menu-open");
-    });
-  }
 
-  $("sideShade").addEventListener("click", function () {
-    document.body.classList.remove("menu-open");
-  });
 
-  // Close menu when a menu item is clicked (on mobile)
-  document.querySelectorAll(".side button[data-go]").forEach(function(btn) {
-    btn.addEventListener("click", function() {
-      if (window.innerWidth < 768) {
-        document.body.classList.remove("menu-open");
-      }
-    });
-  });
 
-  // Close menu when clicking outside on mobile
-  document.addEventListener("click", function(e) {
-    var side = $("side");
-    var headerMenuBtn = document.getElementById("headerMenuBtn");
-    var menuBtn = document.getElementById("menuBtn");
-    var sideShade = $("sideShade");
-
-    var isClickOnMenu = side && side.contains(e.target);
-    var isClickOnMenuBtn = (headerMenuBtn && headerMenuBtn.contains(e.target)) ||
-                          (menuBtn && menuBtn.contains(e.target)) ||
-                          (sideShade && sideShade.contains(e.target));
-
-    if (!isClickOnMenu && !isClickOnMenuBtn && document.body.classList.contains("menu-open") && window.innerWidth < 768) {
-      document.body.classList.remove("menu-open");
-    }
-  }, true);
 
   // Asset menu collapse toggle
   var assetToggle = document.getElementById("assetToggle");
   var assetMenu = document.getElementById("assetMenu");
   if (assetToggle && assetMenu) {
-    var isOpen = true;
+    var isOpen = false;
     assetToggle.addEventListener("click", function() {
       isOpen = !isOpen;
       assetMenu.style.display = isOpen ? "block" : "none";
@@ -1256,15 +1218,15 @@
     });
   }
 
-  // Repair menu collapse toggle
-  var repairToggle = document.getElementById("repairToggle");
-  var repairMenu = document.getElementById("repairMenu");
-  if (repairToggle && repairMenu) {
-    var repairOpen = true;
-    repairToggle.addEventListener("click", function() {
-      repairOpen = !repairOpen;
-      repairMenu.style.display = repairOpen ? "block" : "none";
-      repairToggle.querySelector("span").style.transform = repairOpen ? "rotate(0deg)" : "rotate(-90deg)";
+  // Maintenance menu collapse toggle
+  var maintenanceToggle = document.getElementById("maintenanceToggle");
+  var maintenanceMenu = document.getElementById("maintenanceMenu");
+  if (maintenanceToggle && maintenanceMenu) {
+    var maintenanceOpen = false;
+    maintenanceToggle.addEventListener("click", function() {
+      maintenanceOpen = !maintenanceOpen;
+      maintenanceMenu.style.display = maintenanceOpen ? "block" : "none";
+      maintenanceToggle.querySelector("span").style.transform = maintenanceOpen ? "rotate(0deg)" : "rotate(-90deg)";
     });
   }
 
@@ -1614,18 +1576,21 @@
   }
   function renderCategory() {
     $("selCat").innerHTML = selectorHtml(false);
-    $("catChips").innerHTML = catMenuHtml();
-    Array.prototype.forEach.call($("catChips").querySelectorAll("[data-group]"), function (t) {
-      var items = $("catChips").querySelector('[data-group="' + t.getAttribute("data-group") + '"][class="catmenu-items"]');
-      t.addEventListener("click", function () {
-        var exp = t.getAttribute("aria-expanded") === "true";
-        t.setAttribute("aria-expanded", !exp);
-        items.hidden = exp;
+    // Categories section removed from menu
+    if ($("catChips")) {
+      $("catChips").innerHTML = catMenuHtml();
+      Array.prototype.forEach.call($("catChips").querySelectorAll("[data-group]"), function (t) {
+        var items = $("catChips").querySelector('[data-group="' + t.getAttribute("data-group") + '"][class="catmenu-items"]');
+        t.addEventListener("click", function () {
+          var exp = t.getAttribute("aria-expanded") === "true";
+          t.setAttribute("aria-expanded", !exp);
+          items.hidden = exp;
+        });
       });
-    });
-    Array.prototype.forEach.call($("catChips").querySelectorAll("[data-cat]"), function (b) {
-      b.addEventListener("click", function () { state.cat = b.getAttribute("data-cat"); renderCategory(); });
-    });
+      Array.prototype.forEach.call($("catChips").querySelectorAll("[data-cat]"), function (b) {
+        b.addEventListener("click", function () { state.cat = b.getAttribute("data-cat"); renderCategory(); });
+      });
+    }
     if (!state.cat) { $("catList").innerHTML = '<p class="muted">Pick a category above.</p>'; return; }
     var rows = trackedRows().filter(function (r) { return selected(r.asset) && r.svc.cat === state.cat; });
     var logs = state.entries.filter(function (e) { var a = assetById(e.assetId); return a && selected(a) && e.cat === state.cat; }).sort(function (x, y) { return x.date < y.date ? 1 : -1; });
@@ -2637,14 +2602,6 @@
   });
 
   // Test vehicle dropdown listener
-  $("testVehicleSelect").addEventListener("change", function () {
-    var val = this.value;
-    if (val && state.mode === "demo") {
-      loadTestVehicle(val);
-      this.value = "";
-    }
-  });
-
   // DASHBOARD: Render KPI cards, due items, cost summary
   function renderDashboard() {
     var period = $("dbPeriod") ? $("dbPeriod").value : "year";
