@@ -219,12 +219,9 @@
   .side button:hover { background: var(--divider); }
   .side button.on { background: var(--ink); color: var(--paper); }
   @media (min-width: 640px) { .app { max-width: none; } }
-  /* HYBRID RESPONSIVE: Hamburger on mobile (< 768px), sidebar visible on tablet+ (768px+) */
+  /* HAMBURGER MENU ON ALL WIDTHS */
   @media (min-width: 768px) {
-    .side { display: none; position: sticky; top: 0; transform: none; width: 240px; max-width: none; background: var(--soft); border-right: 1px solid var(--line); padding: 12px; height: calc(100vh - 70px); overflow-y: auto; z-index: auto; margin: 0; }
     .side-shade { display: none !important; }
-    .menu-btn { display: none !important; }
-    body.menu-open .side { transform: none; }
     body.menu-open .side-shade { display: none !important; }
   }
   .lgline .icard-top, .lgline .icard-sub { gap: 12px; }
@@ -903,7 +900,7 @@
 
 </div><!-- .app -->
 
-<aside class="side" id="side" hidden aria-label="Sections">
+<aside class="side" id="side" aria-label="Sections">
   <div class="side-title">RigPMPro</div>
   <button class="side-collapse-toggle" id="assetToggle" style="width:100%;text-align:left;min-height:48px;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:var(--ink);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center">Asset <span style="font-size:.8rem">▼</span></button>
   <div id="assetMenu" style="display:block">
