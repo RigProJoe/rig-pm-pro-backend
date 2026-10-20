@@ -1112,7 +1112,8 @@
     if (!allowed(id)) { if (state.mode === "demo") { toast("Create an account to do that."); id = "s1"; } else { id = state.signedIn ? "s4" : "s0"; } }
     document.querySelectorAll(".screen").forEach(function (s) { s.classList.toggle("active", s.id === id); });
     $("side").hidden = !state.signedIn || state.mode === "carry" || AUTH_SCREENS.indexOf(id) !== -1;
-    $("menuBtn").hidden = $("side").hidden;
+    // Menu button always visible for hamburger menu
+    $("menuBtn").hidden = false;
     document.body.classList.remove("menu-open");
     document.body.classList.toggle("with-side", !$("side").hidden);
     document.querySelectorAll(".side button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-go") === id); });
