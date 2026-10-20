@@ -1006,6 +1006,65 @@
   </div>
 </section>
 
+<!-- S40 Profile editing -->
+<section class="screen" id="s40" data-title="Profile">
+  <h1>Profile</h1>
+  <p class="muted">Update your company and personal information</p>
+
+  <form id="profileForm" novalidate>
+    <div class="icard">
+      <h2 style="margin-top:0;font-size:1.2rem">Company Information</h2>
+      <label for="pfCompany">Company name</label>
+      <input id="pfCompany" type="text" placeholder="Your company name" maxlength="60" required>
+      <label for="pfEmail">Email</label>
+      <input id="pfEmail" type="email" placeholder="your@email.com" maxlength="60" readonly style="background-color:var(--soft);color:var(--muted)">
+      <div class="small" style="margin-top:6px;color:var(--muted)">Email cannot be changed here. Contact support to update.</div>
+    </div>
+
+    <div class="icard">
+      <h2 style="margin-top:0;font-size:1.2rem">Personal Information</h2>
+      <div class="frow">
+        <div>
+          <label for="pfFirstName">First name</label>
+          <input id="pfFirstName" type="text" placeholder="First" maxlength="30" required>
+        </div>
+        <div>
+          <label for="pfLastName">Last name</label>
+          <input id="pfLastName" type="text" placeholder="Last" maxlength="30" required>
+        </div>
+      </div>
+      <label for="pfPhone">Phone number</label>
+      <input id="pfPhone" type="tel" placeholder="(555) 123-4567" maxlength="20">
+    </div>
+
+    <div class="icard">
+      <h2 style="margin-top:0;font-size:1.2rem">Address</h2>
+      <label for="pfStreet">Street address</label>
+      <input id="pfStreet" type="text" placeholder="123 Main Street" maxlength="60">
+      <div class="frow" style="margin-top:14px">
+        <div>
+          <label for="pfCity">City</label>
+          <input id="pfCity" type="text" placeholder="City" maxlength="30">
+        </div>
+        <div>
+          <label for="pfState">State</label>
+          <input id="pfState" type="text" placeholder="TX" maxlength="2" autocapitalize="characters">
+        </div>
+        <div>
+          <label for="pfZip">ZIP code</label>
+          <input id="pfZip" type="text" placeholder="78112" maxlength="10">
+        </div>
+      </div>
+    </div>
+
+    <div class="err" id="pfErr" role="alert"></div>
+    <div class="stack" style="margin-top:16px">
+      <button class="btn" type="submit">Save profile</button>
+      <button class="btn ghost" type="button" data-go="s37">Cancel</button>
+    </div>
+  </form>
+</section>
+
 </div><!-- .screens -->
 
 <aside class="side" id="side" aria-label="Sections">
