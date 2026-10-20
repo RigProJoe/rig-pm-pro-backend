@@ -39,7 +39,7 @@
     background: var(--warn-bg); color: var(--warn); font-weight: 700; text-align: center;
     padding: 10px 16px; font-size: 1rem; border-bottom: 2px solid var(--warn);
   }
-  header.top { background: var(--black); color: var(--white); border-bottom: 3px solid var(--yellow); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  header.top { background: var(--black); color: var(--white); border-bottom: 3px solid var(--yellow); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .brand { font-weight: 900; font-size: 1.9rem; letter-spacing: .5px; line-height: 1; }
   .brand span { color: var(--yellow); }
   .who { font-size: .95rem; color: var(--ink); text-align: right; }
@@ -205,24 +205,57 @@
     .tbl { font-size: 1.15rem; }
     .toast { max-width: 640px; }
   }
-  .menu-btn { min-height: 48px; min-width: 48px; padding: 6px 12px; border: 2px solid #fff; border-radius: 8px; background: transparent; color: #fff; font: inherit; font-weight: 800; font-size: 1.4rem; cursor: pointer; flex: 0 0 auto; display: block; }
+  .menu-btn { min-height: 44px; min-width: 44px; padding: 6px 8px; border: 1px solid var(--divider); border-radius: 6px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; font-size: 1.2rem; cursor: pointer; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; position: relative; z-index: 13; }
+  header.top .menu-btn { color: #fff; border-color: #fff; }
+  #headerMenuBtn { display: block; }
+  #menuBtn { display: none; margin-left: auto; }
+  @media (min-width: 768px) {
+    #headerMenuBtn { display: none; }
+    #menuBtn { display: none; }
+  }
   .menu-btn[hidden] { display: none !important; }
-  .side { position: fixed; left: 0; top: 0; bottom: 0; width: 270px; max-width: 84%; overflow-y: auto; background: var(--paper); border-right: 1px solid var(--line); padding: 16px 12px; z-index: 12; transform: translateX(-105%); transition: transform .2s ease; }
+  .side { position: fixed; left: 0; top: 60px; bottom: 0; width: 280px; overflow-y: auto; background: var(--paper); border-right: 1px solid var(--line); padding: 16px 12px; z-index: 12; transform: translateX(-105%); transition: transform .2s ease; }
   .side[hidden] { display: none !important; }
   body.menu-open .side { transform: translateX(0); }
-  .side-shade { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 11; }
+  .side-shade { display: block; position: fixed; left: 0; top: 60px; right: 0; bottom: 0; background: rgba(0,0,0,.3); z-index: 11; cursor: pointer; }
   body.menu-open .side-shade { display: block; }
+  body:not(.menu-open) .side-shade { display: none; }
   .side .side-title { font-weight: 900; font-size: 1.4rem; color: var(--ink); margin: 4px 8px 14px; }
-  .side .side-group { font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 8px 4px; font-weight: 800; }
-  .side button { display: block; width: 100%; text-align: left; min-height: 48px; padding: 10px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
-  .side button.sub { padding-left: 28px; font-weight: 600; }
-  .side button:hover { background: var(--divider); }
-  .side button.on { background: var(--ink); color: var(--paper); }
-  @media (min-width: 640px) { .app { max-width: none; } }
-  /* HAMBURGER MENU ON ALL WIDTHS */
-  @media (min-width: 768px) {
+  .side .side-group { font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 8px 8px; font-weight: 800; }
+  .side-menu-item { display: block; width: 100%; text-align: left; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+  .side button { display: block; width: 100%; text-align: left; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+  .side button.sub { padding-left: 28px; font-weight: 500; font-size: 0.9rem; }
+  .side button:hover, .side-menu-item:hover { background: var(--soft); }
+  .side button.on { background: var(--red); color: var(--white); font-weight: 700; }
+  @media (max-width: 639px) {
+    .app-content { flex-direction: column; }
+    .side { position: fixed; left: 0; top: 54px; bottom: 0; width: 280px; max-width: 84%; transform: translateX(-105%); }
+    body.menu-open .side { transform: translateX(0); }
+    .side-shade { display: none; }
+    body.menu-open .side-shade { display: block; }
+  }
+  @media (min-width: 640px) {
+    .app { max-width: none; }
+    .app-content { flex-direction: row; }
+    .side { position: static !important; width: 280px; padding: 16px 12px !important; top: auto !important; bottom: auto !important; transform: translateX(0) !important; border-right: 1px solid var(--line); flex-shrink: 0; overflow-y: auto; z-index: 5; }
+    body.menu-open .side, body:not(.menu-open) .side { transform: translateX(0) !important; }
     .side-shade { display: none !important; }
-    body.menu-open .side-shade { display: none !important; }
+    .menu-header { display: none; }
+    #headerMenuBtn { display: none; }
+  }
+  .side-categories { margin-top: 12px; }
+  .side-cat-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 12px 8px 6px; font-weight: 800; }
+  .side-test-vehicles { margin-top: 16px; }
+  .side-test-vehicle-select { width: 100%; padding: 8px; font-size: .85rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); cursor: pointer; }
+  .menu-header { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; margin-bottom: 4px; }
+  .menu-header .side-title { margin: 0; }
+  @media (min-width: 768px) {
+    .side { display: flex !important; position: static !important; width: 280px !important; padding: 16px 12px !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; transform: translateX(0) !important; border-right: 1px solid var(--line); overflow-y: auto; flex-direction: column; z-index: 5; }
+    .side-shade { display: none !important; }
+    .menu-btn { display: none !important; }
+    #headerMenuBtn { display: none !important; }
+    header.top { margin-left: 0; }
+    .app-content { margin-left: 0; }
   }
   .lgline .icard-top, .lgline .icard-sub { gap: 12px; }
   .lgf { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -235,7 +268,7 @@
 <div class="app">
 <div class="sample-bar">SAMPLE DATA. Not real records. Prototype only, not published.</div>
 <header class="top">
-  <button class="menu-btn" id="menuBtn" type="button" aria-label="Open the section menu">☰</button>
+  <button class="menu-btn" id="headerMenuBtn" type="button" aria-label="Open the menu" title="Open menu" style="margin-right: 10px;">☰</button>
   <div class="brand">Rig<span>PM</span>Pro</div>
   <div class="who" id="whoLine">Not signed in</div>
 </header>
@@ -246,18 +279,6 @@
 </div>
 
 <div class="app-content">
-<aside class="sidebar">
-  <div class="sidebar-title">Categories</div>
-  <div id="catChips"></div>
-
-  <div class="sidebar-title" style="margin-top:16px">Test Vehicles</div>
-  <select id="testVehicleSelect" style="width:100%;padding:6px;margin-bottom:8px;font-size:.9rem">
-    <option value="">Load a test vehicle</option>
-    <option value="freightliner">Freightliner Cascadia</option>
-    <option value="peterbilt">Peterbilt 579</option>
-    <option value="volvo">Volvo VNL860</option>
-  </select>
-</aside>
 <div class="screens">
 
 <!-- S0 Welcome (landing entry point) -->
@@ -901,7 +922,10 @@
 </div><!-- .app -->
 
 <aside class="side" id="side" aria-label="Sections">
-  <div class="side-title">RigPMPro</div>
+  <div class="menu-header">
+    <div class="side-title">RigPMPro</div>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Close the menu" title="Close menu">✕</button>
+  </div>
   <button class="side-collapse-toggle" id="assetToggle" style="width:100%;text-align:left;min-height:48px;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:var(--ink);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center">Asset <span style="font-size:.8rem">▼</span></button>
   <div id="assetMenu" style="display:block">
     <button class="sub" data-go="s9">Add asset</button>
@@ -923,6 +947,21 @@
   <button data-go="s28">Plans and pricing</button>
   <button data-go="s27">Account</button>
   <button data-go="s23">More</button>
+
+  <div class="side-categories">
+    <div class="side-cat-title">Categories</div>
+    <div id="catChips"></div>
+  </div>
+
+  <div class="side-test-vehicles">
+    <div class="side-cat-title">Test Vehicles</div>
+    <select id="testVehicleSelect" class="side-test-vehicle-select">
+      <option value="">Load a test vehicle</option>
+      <option value="freightliner">Freightliner Cascadia</option>
+      <option value="peterbilt">Peterbilt 579</option>
+      <option value="volvo">Volvo VNL860</option>
+    </select>
+  </div>
 </aside>
 <div class="side-shade" id="sideShade"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1114,7 +1153,7 @@
     $("side").hidden = !state.signedIn || state.mode === "carry" || AUTH_SCREENS.indexOf(id) !== -1;
     // Menu button always visible for hamburger menu
     $("menuBtn").hidden = false;
-    document.body.classList.remove("menu-open");
+    if (!state.signedIn) { document.body.classList.remove("menu-open"); } else { document.body.classList.add("menu-open"); }
     document.body.classList.toggle("with-side", !$("side").hidden);
     document.querySelectorAll(".side button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-go") === id); });
     $("demoBar").hidden = state.mode !== "demo";
@@ -1157,8 +1196,53 @@
     if (e.target.closest("[data-cancel]")) { state.draft = null; state.editDraft = null; state.editingServices = false; }
   });
 
-  $("menuBtn").addEventListener("click", function () { document.body.classList.toggle("menu-open"); });
-  $("sideShade").addEventListener("click", function () { document.body.classList.remove("menu-open"); });
+  // Handle header menu button (open)
+  var headerMenuBtn = document.getElementById("headerMenuBtn");
+  if (headerMenuBtn) {
+    headerMenuBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      document.body.classList.toggle("menu-open");
+    });
+  }
+
+  // Handle side menu close button
+  var sideMenuBtn = document.getElementById("menuBtn");
+  if (sideMenuBtn) {
+    sideMenuBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      document.body.classList.toggle("menu-open");
+    });
+  }
+
+  $("sideShade").addEventListener("click", function () {
+    document.body.classList.remove("menu-open");
+  });
+
+  // Close menu when a menu item is clicked (on mobile)
+  document.querySelectorAll(".side button[data-go]").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      if (window.innerWidth < 768) {
+        document.body.classList.remove("menu-open");
+      }
+    });
+  });
+
+  // Close menu when clicking outside on mobile
+  document.addEventListener("click", function(e) {
+    var side = $("side");
+    var headerMenuBtn = document.getElementById("headerMenuBtn");
+    var menuBtn = document.getElementById("menuBtn");
+    var sideShade = $("sideShade");
+
+    var isClickOnMenu = side && side.contains(e.target);
+    var isClickOnMenuBtn = (headerMenuBtn && headerMenuBtn.contains(e.target)) ||
+                          (menuBtn && menuBtn.contains(e.target)) ||
+                          (sideShade && sideShade.contains(e.target));
+
+    if (!isClickOnMenu && !isClickOnMenuBtn && document.body.classList.contains("menu-open") && window.innerWidth < 768) {
+      document.body.classList.remove("menu-open");
+    }
+  }, true);
 
   // Asset menu collapse toggle
   var assetToggle = document.getElementById("assetToggle");
