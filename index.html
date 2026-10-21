@@ -683,11 +683,38 @@
   }
 
   function enterDemo() {
+    // Hide landing page elements
+    document.querySelector('main').style.display = 'none';
+    document.querySelector('header.top').style.display = 'none';
+    document.querySelector('footer').style.display = 'none';
+
+    // Show and style demo container
+    const demoContainer = document.querySelector('.demo-container');
+    demoContainer.style.display = 'flex';
+    demoContainer.style.position = 'fixed';
+    demoContainer.style.top = '0';
+    demoContainer.style.left = '0';
+    demoContainer.style.width = '100%';
+    demoContainer.style.height = '100vh';
+    demoContainer.style.zIndex = '9999';
+
+    // Apply dark theme
     document.body.classList.add('demo-mode');
+
+    // Render cards
     renderCards('truck');
   }
 
   function exitDemo() {
+    // Show landing page elements
+    document.querySelector('main').style.display = '';
+    document.querySelector('header.top').style.display = '';
+    document.querySelector('footer').style.display = '';
+
+    // Hide demo container
+    document.querySelector('.demo-container').style.display = 'none';
+
+    // Remove dark theme
     document.body.classList.remove('demo-mode');
   }
 
