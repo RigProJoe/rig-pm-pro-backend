@@ -269,6 +269,7 @@
 <div class="sample-bar">SAMPLE DATA. Not real records. Prototype only, not published.</div>
 <header class="top">
   <button class="menu-btn" id="headerMenuBtn" type="button" aria-label="Open the menu" title="Open menu" style="margin-right: 10px;">☰</button>
+  <button class="menu-btn" id="headerBackBtn" type="button" aria-label="Go back" title="Go back" style="margin-right: 10px; display: none;" data-back="1">←</button>
   <div class="brand">Rig<span>PM</span>Pro</div>
   <div class="who" id="whoLine">Not signed in</div>
 </header>
@@ -380,7 +381,7 @@
   <div class="card" id="duePanel"></div>
   <div id="pmList"></div>
   <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
-  <div class="stack"><button class="btn" data-go="s16">Log repair</button></div>
+  <div class="stack"><button class="btn" data-go="s16">Log repair</button><button class="btn ghost" type="button" data-back="1">Cancel</button></div>
 </section>
 
 <!-- S31 Current readings (after sign-in) -->
@@ -436,7 +437,7 @@
     </div>
     </div>
     <div class="err" id="lgErr" role="alert"></div>
-    <div class="stack" style="margin-top:16px"><button class="btn" type="submit">Save this visit</button></div>
+    <div class="stack" style="margin-top:16px"><button class="btn" type="submit">Save this visit</button><button class="btn ghost" type="button" data-back="1">Cancel</button></div>
   </form>
 <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
 </section>
@@ -488,7 +489,7 @@
   <div class="card" id="s9Limit" hidden style="border-color:var(--warn)"><strong id="s9LimitTitle"></strong><p class="small" id="s9LimitText" style="margin:6px 0 10px"></p><button class="btn" id="s9LimitBtn"></button></div>
   <div class="card" id="cardBody"></div>
   <div class="err" id="s9Err" role="alert"></div>
-  <div class="stack"><button class="btn" id="s9Save">Save asset</button><button class="btn ghost" id="s9Back">Back</button><button class="btn ghost" data-go="s8" data-cancel="1">Cancel</button></div>
+  <div class="stack"><button class="btn" id="s9Save">Save asset</button><button class="btn ghost" type="button" data-back="1" data-cancel="1">Cancel</button></div>
   <div class="card" id="totalCardAdd" style="margin-top:12px"></div>
 </section>
 
@@ -537,8 +538,7 @@
   <div class="err" id="s18Err" role="alert"></div>
   <div class="stack" style="margin-top:12px">
     <button class="btn" id="s18Save">Save changes</button>
-    <button class="btn ghost" id="s18Back">Back</button>
-    <button class="btn ghost" data-go="s15" data-cancel="1">Cancel</button>
+    <button class="btn ghost" type="button" data-back="1" data-cancel="1">Cancel</button>
   </div>
 </section>
 
@@ -554,7 +554,7 @@
     <div class="small" id="periodLabel"></div>
   </div>
   <div id="totalsTable"></div>
-  <div class="stack" style="margin-top:12px"><button class="btn blue" data-go="s22">Export for taxes</button></div>
+  <div class="stack" style="margin-top:12px"><button class="btn blue" data-go="s22">Export for taxes</button><button class="btn ghost" type="button" data-back="1">Cancel</button></div>
   <div class="footer-note">Only maintenance costs are totaled. Fuel, DEF, tolls, insurance, and other operating costs are not included.</div>
 <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
 </section>
@@ -564,6 +564,7 @@
   <h1>Repair history</h1>
   <div id="selHist"></div>
   <div id="historyList"></div>
+  <div class="stack" style="margin-top:12px"><button class="btn ghost" type="button" data-back="1">Cancel</button></div>
 <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
 </section>
 
@@ -639,7 +640,7 @@
   <label for="rmDays">How far ahead</label>
   <select id="rmDays"><option value="7">7 days before</option><option value="14">14 days before</option><option value="30">30 days before</option></select>
   <p class="small" id="rmNote">In the demo, no email is sent. Your choice is kept for this session only.</p>
-  <div class="stack"><button class="btn" id="rmSave">Save reminder choices</button></div>
+  <div class="stack"><button class="btn" id="rmSave">Save reminder choices</button><button class="btn ghost" type="button" data-back="1">Cancel</button></div>
 </section>
 
 <!-- S25 Devices -->
@@ -658,7 +659,7 @@
     <div class="small" id="planAssets"></div>
   </div>
   <p class="small">Billing is not connected yet. Payment coming soon.</p>
-  <div class="stack"><button class="btn ghost" data-go="s28">See plans and billing terms</button></div>
+  <div class="stack"><button class="btn ghost" data-go="s28">See plans and billing terms</button><button class="btn ghost" type="button" data-back="1">Cancel</button></div>
 </section>
 
 <!-- S27 Account -->
@@ -731,6 +732,7 @@
   <div class="stack" style="margin-top:14px">
     <button class="btn" id="payBtn" disabled>Payment coming soon</button>
     <button class="btn ghost" data-go="s8">Go to my assets</button>
+    <button class="btn ghost" type="button" data-back="1">Cancel</button>
   </div>
   <div class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</div>
 </section>
@@ -1060,7 +1062,7 @@
     <div class="err" id="pfErr" role="alert"></div>
     <div class="stack" style="margin-top:16px">
       <button class="btn" type="submit">Save profile</button>
-      <button class="btn ghost" type="button" data-go="s37">Cancel</button>
+      <button class="btn ghost" type="button" data-back="1">Cancel</button>
     </div>
   </form>
 </section>
@@ -1130,7 +1132,8 @@
   var state = {
     mode: "guest", signedIn: false, account: null, pending: null, pinAttempts: 0, deviceVerified: false,
     assets: [], entries: [], nextId: 1, currentAssetId: null, editingServices: false,
-    receiptName: null, devices: [], customMakes: { truck: [], trailer: [], apu: [], reefer: [] }
+    receiptName: null, devices: [], customMakes: { truck: [], trailer: [], apu: [], reefer: [] },
+    currentScreenId: null, historyPopInProgress: false
   };
   var PLAN_LIMIT = 6;
   state.reminders = { email: false, days: 14 };
@@ -1271,6 +1274,8 @@
     $("side").hidden = !state.signedIn || state.mode === "carry" || AUTH_SCREENS.indexOf(id) !== -1;
     // Menu button always visible for hamburger menu
     $("menuBtn").hidden = false;
+    // Show back button on data entry screens (signed in, not home/auth screens)
+    $("headerBackBtn").style.display = (state.signedIn && AUTH_SCREENS.indexOf(id) === -1 && window.history.length > 1) ? "flex" : "none";
     if (!state.signedIn) { document.body.classList.remove("menu-open"); } else { document.body.classList.add("menu-open"); }
     document.body.classList.toggle("with-side", !$("side").hidden);
     document.querySelectorAll(".side button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-go") === id); });
@@ -1279,6 +1284,14 @@
     window.scrollTo(0, 0);
     // Save current screen in demo mode so refresh restores the page
     if (state.mode === "demo" && state.signedIn) { try { localStorage.setItem("rigpm_demo_screen", id); } catch (e) {} }
+    // Push screen to browser history for back button support
+    if (id !== state.currentScreenId && !state.historyPopInProgress) {
+      window.history.pushState({ screenId: id }, "", "");
+      state.currentScreenId = id;
+    } else if (state.historyPopInProgress) {
+      state.currentScreenId = id;
+      state.historyPopInProgress = false;
+    }
     render(id);
   }
   function render(id) {
@@ -1314,8 +1327,21 @@
     if (e.target.closest("[data-cancel]")) { state.draft = null; state.editDraft = null; state.editingServices = false; }
   });
 
+  // Handle browser back button (popstate)
+  window.onpopstate = function(event) {
+    if (event.state && event.state.screenId) {
+      state.historyPopInProgress = true;
+      show(event.state.screenId);
+    }
+  };
 
-
+  // Handle app back button (data-back attribute)
+  document.addEventListener("click", function (e) {
+    var backBtn = e.target.closest("[data-back]");
+    if (backBtn && window.history.length > 1) {
+      window.history.back();
+    }
+  });
 
 
 
