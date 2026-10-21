@@ -151,7 +151,7 @@
   .demo-placards {
     display: grid;
     gap: 12px;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .demo-placard {
@@ -254,9 +254,8 @@
 
   .demo-cancel-btn:hover { background: rgba(232, 116, 28, 0.1); }
 
-  @media (max-width: 768px) {
-    .demo-sidebar { width: 150px; }
-    .demo-placards { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 900px) {
+    .demo-placards { grid-template-columns: repeat(3, 1fr); }
   }
 
   @media (max-width: 480px) {
