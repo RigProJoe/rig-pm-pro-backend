@@ -287,38 +287,6 @@
     margin-top: 12px;
   }
 
-  @media (max-width: 1024px) {
-    .demo-body {
-      grid-template-columns: 1fr;
-      padding: 16px;
-      gap: 16px;
-    }
-
-    .demo-menu {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      height: auto;
-      order: -1;
-    }
-
-    .demo-menu-item {
-      text-align: center;
-      border-left: none;
-      border-bottom: 3px solid var(--line);
-      padding: 12px 8px;
-    }
-
-    .demo-menu-item.active {
-      border-left: none;
-      border-bottom-color: var(--orange);
-      border-bottom-width: 3px;
-    }
-
-    .demo-cards {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-  }
-
   @media (max-width: 768px) {
     .demo-body {
       grid-template-columns: 1fr;
