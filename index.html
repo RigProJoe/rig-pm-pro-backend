@@ -83,8 +83,8 @@
     gap: 0;
   }
 
-  /* Sidebar menu */
-  .demo-sidebar {
+  /* Left category menu */
+  .demo-categories {
     width: 200px;
     background: var(--soft);
     border-right: 1px solid var(--line);
@@ -92,7 +92,7 @@
     padding: 12px 0;
   }
 
-  .demo-menu-item {
+  .demo-category-item {
     padding: 12px 16px;
     border: 0;
     background: none;
@@ -104,18 +104,18 @@
     transition: background 0.2s;
   }
 
-  .demo-menu-item:hover {
+  .demo-category-item:hover {
     background: var(--line);
   }
 
-  .demo-menu-item.active {
+  .demo-category-item.active {
     background: var(--line);
     border-left-color: var(--orange);
     font-weight: 600;
   }
 
-  /* Main panel */
-  .demo-main {
+  /* Right content panel */
+  .demo-panel {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -139,10 +139,13 @@
     color: var(--muted);
   }
 
-  .demo-cards {
+  .demo-content-area {
     flex: 1;
     overflow-y: auto;
     padding: 16px;
+  }
+
+  .demo-cards {
     display: grid;
     gap: 12px;
     grid-template-columns: 1fr;
@@ -199,37 +202,64 @@
     opacity: 0.9;
   }
 
-  /* Export card */
-  .export-card {
+  /* Empty state */
+  .demo-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* Account settings form */
+  .demo-form-group {
+    margin-bottom: 16px;
+  }
+
+  .demo-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .demo-form-group input,
+  .demo-form-group select {
+    width: 100%;
+    padding: 8px 12px;
     background: var(--soft);
     border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 16px;
-    margin: 16px;
+    color: var(--ink);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
   }
 
-  .export-card h3 {
-    margin: 0 0 12px;
-    font-size: 1.1rem;
+  .demo-form-group input:focus,
+  .demo-form-group select:focus {
+    outline: none;
+    border-color: var(--orange);
   }
 
-  .export-btn {
-    background: var(--orange);
+  .demo-save-btn {
+    background: var(--blue);
     color: #fff;
     border: 0;
     padding: 10px 16px;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
+    margin-top: 12px;
   }
 
-  .export-btn:hover {
+  .demo-save-btn:hover {
     opacity: 0.9;
   }
 
   /* Responsive */
   @media (max-width: 768px) {
-    .demo-sidebar {
+    .demo-categories {
       width: 150px;
     }
 
@@ -245,17 +275,17 @@
       padding: 12px;
     }
 
-    .demo-cards {
+    .demo-content-area {
       padding: 12px;
     }
   }
 
   @media (max-width: 480px) {
-    .demo-sidebar {
+    .demo-categories {
       width: 120px;
     }
 
-    .demo-menu-item {
+    .demo-category-item {
       padding: 10px 12px;
       font-size: 0.9rem;
     }
@@ -277,50 +307,6 @@
       font-size: 1.1rem;
     }
   }
-
-  /* Hidden start menu */
-  #demo-start-screen {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-  }
-
-  #demo-start-screen h2 {
-    font-size: 1.5rem;
-    margin-bottom: 12px;
-  }
-
-  #demo-start-screen p {
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-
-  .demo-menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    max-width: 300px;
-  }
-
-  .demo-menu-btn {
-    background: var(--blue);
-    color: #fff;
-    border: 0;
-    padding: 12px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1rem;
-  }
-
-  .demo-menu-btn:hover {
-    opacity: 0.9;
-  }
 </style>
 </head>
 <body>
@@ -334,140 +320,200 @@
 
   <!-- Main Content -->
   <div class="demo-content">
-    <!-- Sidebar -->
-    <div class="demo-sidebar">
-      <button class="demo-menu-item active" onclick="selectAsset('truck')">Truck</button>
-      <button class="demo-menu-item" onclick="selectAsset('trailer')">Trailer</button>
-      <button class="demo-menu-item" onclick="selectAsset('apu')">APU</button>
-      <button class="demo-menu-item" onclick="selectAsset('reefer')">Reefer</button>
+    <!-- Left Category Menu -->
+    <div class="demo-categories">
+      <button class="demo-category-item active" onclick="selectCategory('assets')">Assets</button>
+      <button class="demo-category-item" onclick="selectCategory('maintenance')">Maintenance</button>
+      <button class="demo-category-item" onclick="selectCategory('account')">Account Settings</button>
     </div>
 
-    <!-- Main Panel -->
-    <div class="demo-main">
-      <!-- Asset View -->
-      <div id="demo-asset-view" style="display: flex; flex: 1; flex-direction: column; overflow: hidden;">
-        <div class="demo-panel-header">
-          <h2 id="asset-title">Truck</h2>
-          <p id="asset-desc">Truck maintenance items and history</p>
-        </div>
-        <div class="demo-cards" id="cards-container"></div>
-      </div>
+    <!-- Right Content Panel -->
+    <div class="demo-panel">
+      <div id="panel-content"></div>
     </div>
-  </div>
-
-  <!-- Export Card -->
-  <div class="export-card">
-    <h3>Export Maintenance Records</h3>
-    <button class="export-btn" onclick="exportData()">Download CSV</button>
   </div>
 </div>
 
 <script>
-  const demoData = {
-    truck: {
-      title: 'Truck - 2020 Peterbilt 579',
-      desc: 'Main truck maintenance tracking',
-      items: [
-        { task: 'Oil Change', interval: 'Every 15,000 miles', status: 'Due', days: 5 },
-        { task: 'Filter Change', interval: 'Every 15,000 miles', status: 'OK', days: 120 },
-        { task: 'Tire Rotation', interval: 'Every 20,000 miles', status: 'Due Soon', days: 12 },
-        { task: 'Transmission Fluid', interval: 'Every 50,000 miles', status: 'OK', days: 250 }
-      ]
+  const demoContent = {
+    assets: {
+      title: 'Assets',
+      desc: 'Your trucks, trailers, APU, and reefer units',
+      content: `
+        <div class="demo-panel-header">
+          <h2>Assets</h2>
+          <p>Your trucks, trailers, APU, and reefer units</p>
+        </div>
+        <div class="demo-content-area">
+          <div class="demo-cards">
+            <div class="demo-card">
+              <div class="demo-card-header">
+                <div class="demo-card-title">Truck - 2020 Peterbilt 579</div>
+                <div class="demo-card-status">Active</div>
+              </div>
+              <div class="demo-card-meta">
+                <strong>VIN:</strong> 1XPBD49X0LD...<br>
+                <strong>Unit #:</strong> 1<br>
+                <strong>Engine:</strong> Cummins X15
+              </div>
+            </div>
+            <div class="demo-card">
+              <div class="demo-card-header">
+                <div class="demo-card-title">Trailer - 2019 Wabash 53ft</div>
+                <div class="demo-card-status">Active</div>
+              </div>
+              <div class="demo-card-meta">
+                <strong>VIN:</strong> 1JJV532A7KL...<br>
+                <strong>Unit #:</strong> 2
+              </div>
+            </div>
+            <div class="demo-card">
+              <div class="demo-card-header">
+                <div class="demo-card-title">APU - Thermo King SB3000</div>
+                <div class="demo-card-status">Active</div>
+              </div>
+              <div class="demo-card-meta">
+                <strong>Model:</strong> SB3000<br>
+                <strong>Unit #:</strong> 3
+              </div>
+            </div>
+            <div class="demo-card">
+              <div class="demo-card-header">
+                <div class="demo-card-title">Reefer Unit - Carrier</div>
+                <div class="demo-card-status">Active</div>
+              </div>
+              <div class="demo-card-meta">
+                <strong>Model:</strong> Refrigerated<br>
+                <strong>Unit #:</strong> 4
+              </div>
+            </div>
+          </div>
+        </div>
+      `
     },
-    trailer: {
-      title: 'Trailer - 2019 Wabash 53ft',
-      desc: 'Trailer maintenance and inspection',
-      items: [
-        { task: 'Brake Inspection', interval: 'Every 6 months', status: 'OK', days: 90 },
-        { task: 'Light Check', interval: 'Every month', status: 'Due', days: 2 },
-        { task: 'Tire Pressure Check', interval: 'Weekly', status: 'OK', days: 6 },
-        { task: 'Coupling Grease', interval: 'Every 6 months', status: 'Due Soon', days: 14 }
-      ]
+    maintenance: {
+      title: 'Maintenance',
+      desc: 'Track preventive maintenance across all assets',
+      content: `
+        <div class="demo-panel-header">
+          <h2>Maintenance</h2>
+          <p>Track preventive maintenance across all assets</p>
+        </div>
+        <div class="demo-content-area">
+          <div class="demo-cards">
+            <div class="demo-card">
+              <div class="demo-card-header">
+                <div class="demo-card-title">Oil Change - Truck</div>
+                <div class="demo-card-status">Due</div>
+              </div>
+              <div class="demo-card-meta">
+                <strong>Interval:</strong> Every 15,000 miles<br>
+                <strong>Days remaining:</strong> 5 days
+              </div>
+              <button class="demo-btn" onclick="alert('Maintenance logged')">Log Completed</button>
+            </div>
+            <div class="demo-card">
+              <div class="demo-card-header">
+                <div class="demo-card-title">Brake Inspection - Trailer</div>
+                <div class="demo-card-status">Due Soon</div>
+              </div>
+              <div class="demo-card-meta">
+                <strong>Interval:</strong> Every 6 months<br>
+                <strong>Days remaining:</strong> 12 days
+              </div>
+              <button class="demo-btn" onclick="alert('Maintenance logged')">Log Completed</button>
+            </div>
+            <div class="demo-card">
+              <div class="demo-card-header">
+                <div class="demo-card-title">Belt Check - APU</div>
+                <div class="demo-card-status">Due</div>
+              </div>
+              <div class="demo-card-meta">
+                <strong>Interval:</strong> Every 3 months<br>
+                <strong>Days remaining:</strong> 1 day
+              </div>
+              <button class="demo-btn" onclick="alert('Maintenance logged')">Log Completed</button>
+            </div>
+            <div class="demo-card">
+              <div class="demo-card-header">
+                <div class="demo-card-title">Condenser Clean - Reefer</div>
+                <div class="demo-card-status">OK</div>
+              </div>
+              <div class="demo-card-meta">
+                <strong>Interval:</strong> Every 6 months<br>
+                <strong>Days remaining:</strong> 120 days
+              </div>
+              <button class="demo-btn" onclick="alert('Maintenance logged')">Log Completed</button>
+            </div>
+          </div>
+        </div>
+      `
     },
-    apu: {
-      title: 'APU - Thermo King SB3000',
-      desc: 'Auxiliary Power Unit maintenance',
-      items: [
-        { task: 'Oil Change', interval: 'Every 500 hours', status: 'OK', days: 180 },
-        { task: 'Filter Change', interval: 'Every 500 hours', status: 'OK', days: 180 },
-        { task: 'Belt Inspection', interval: 'Every 250 hours', status: 'Due', days: 3 },
-        { task: 'Coolant Top-up', interval: 'Every year', status: 'Due Soon', days: 20 }
-      ]
-    },
-    reefer: {
-      title: 'Reefer Unit - Carrier Refrigerated',
-      desc: 'Refrigerated unit maintenance',
-      items: [
-        { task: 'Condenser Clean', interval: 'Every 6 months', status: 'OK', days: 120 },
-        { task: 'Compressor Oil', interval: 'Every year', status: 'Due Soon', days: 25 },
-        { task: 'Belt Check', interval: 'Every 3 months', status: 'Due', days: 1 },
-        { task: 'Thermostat Check', interval: 'Every month', status: 'OK', days: 15 }
-      ]
+    account: {
+      title: 'Account Settings',
+      desc: 'Manage your account and preferences',
+      content: `
+        <div class="demo-panel-header">
+          <h2>Account Settings</h2>
+          <p>Manage your account and preferences</p>
+        </div>
+        <div class="demo-content-area">
+          <form onsubmit="event.preventDefault(); alert('Settings saved')">
+            <div class="demo-form-group">
+              <label>Full Name</label>
+              <input type="text" value="John Doe" readonly>
+            </div>
+            <div class="demo-form-group">
+              <label>Email</label>
+              <input type="email" value="john@example.com" readonly>
+            </div>
+            <div class="demo-form-group">
+              <label>MC Number</label>
+              <input type="text" value="155269" readonly>
+            </div>
+            <div class="demo-form-group">
+              <label>Subscription Plan</label>
+              <select disabled>
+                <option>Truck Only - $5/month</option>
+                <option>Truck + Trailer - $9/month</option>
+                <option>Fleet (4+ units) - Custom pricing</option>
+              </select>
+            </div>
+            <div class="demo-form-group">
+              <label>Billing Cycle</label>
+              <select disabled>
+                <option>Monthly</option>
+                <option>Annual (Save 10%)</option>
+              </select>
+            </div>
+            <button type="submit" class="demo-save-btn">Save Changes</button>
+          </form>
+        </div>
+      `
     }
   };
 
-  function selectAsset(assetType) {
-    // Update active menu item
-    document.querySelectorAll('.demo-menu-item').forEach(btn => {
+  function selectCategory(category) {
+    // Update active button
+    document.querySelectorAll('.demo-category-item').forEach(btn => {
       btn.classList.remove('active');
-      if (btn.textContent.toLowerCase() === assetType.toLowerCase()) {
+      if (btn.textContent.toLowerCase() === category.toLowerCase()) {
         btn.classList.add('active');
       }
     });
 
-    // Update asset info
-    const data = demoData[assetType];
-    document.getElementById('asset-title').textContent = data.title;
-    document.getElementById('asset-desc').textContent = data.desc;
-
-    // Render cards
-    const container = document.getElementById('cards-container');
-    container.innerHTML = '';
-    data.items.forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'demo-card';
-      card.innerHTML = `
-        <div class="demo-card-header">
-          <div class="demo-card-title">${item.task}</div>
-          <div class="demo-card-status">${item.status}</div>
-        </div>
-        <div class="demo-card-meta">
-          <strong>Interval:</strong> ${item.interval}<br>
-          <strong>Days remaining:</strong> ${item.days}
-        </div>
-        <button class="demo-btn" onclick="alert('Logged: ' + this.parentElement.querySelector('.demo-card-title').textContent)">Log Completed</button>
-      `;
-      container.appendChild(card);
-    });
-  }
-
-  function exportData() {
-    const csvContent = [
-      ['Asset', 'Task', 'Interval', 'Status', 'Days Remaining'],
-      ['Truck - 2020 Peterbilt 579', 'Oil Change', 'Every 15,000 miles', 'Due', '5'],
-      ['Truck - 2020 Peterbilt 579', 'Filter Change', 'Every 15,000 miles', 'OK', '120'],
-      ['Trailer - 2019 Wabash 53ft', 'Brake Inspection', 'Every 6 months', 'OK', '90'],
-      ['APU - Thermo King SB3000', 'Oil Change', 'Every 500 hours', 'OK', '180'],
-      ['Reefer Unit - Carrier', 'Condenser Clean', 'Every 6 months', 'OK', '120']
-    ];
-
-    const csv = csvContent.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'rig-pm-maintenance-' + new Date().toISOString().split('T')[0] + '.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
+    // Render content
+    const panelContent = document.getElementById('panel-content');
+    panelContent.innerHTML = demoContent[category].content;
   }
 
   function exitDemo() {
     window.location.href = '/';
   }
 
-  // Auto-load Truck view on page load
+  // Initialize with Assets category on load
   window.addEventListener('load', () => {
-    selectAsset('truck');
+    selectCategory('assets');
   });
 </script>
 
