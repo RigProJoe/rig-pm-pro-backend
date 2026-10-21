@@ -3,141 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rig PM Pro | Preventive Maintenance Tracker for Owner-Operators</title>
-<meta name="description" content="Rig PM Pro is a web tool that helps owner-operator truck drivers track preventive maintenance, costs, and receipts in one place.">
+<title>Rig PM Pro Demo | Asset & Maintenance Tracker</title>
+<meta name="description" content="Demo of Rig PM Pro - track preventive maintenance for your truck, APU, trailer, and reefer.">
 <style>
   :root {
+    --ink: #eef2f7;
+    --muted: #b6c0cc;
+    --paper: #11161c;
+    --soft: #1a212a;
+    --line: #2d3742;
     --blue: #1d4f91;
-    --blue-dark: #153a6b;
     --orange: #e8741c;
-    --orange-dark: #c55f10;
-    --ink: #1b1f24;
-    --muted: #4a5561;
-    --paper: #ffffff;
-    --soft: #f3f6fa;
-    --line: #d7dee8;  }
-
-  body.demo-mode {
-    --ink: #eef2f7;
-    --muted: #b6c0cc;
-    --paper: #11161c;
-    --soft: #1a212a;
-    --line: #2d3742;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ink: #eef2f7;
-      --muted: #b6c0cc;
-      --paper: #11161c;
-      --soft: #1a212a;
-      --line: #2d3742;
-    }
-  }
-  :root[data-theme="dark"] {
-    --ink: #eef2f7;
-    --muted: #b6c0cc;
-    --paper: #11161c;
-    --soft: #1a212a;
-    --line: #2d3742;
-  }
   * { box-sizing: border-box; }
+
   body {
     margin: 0;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    font-size: 1.0625rem;
-    line-height: 1.55;
+    font-size: 1rem;
+    line-height: 1.5;
     color: var(--ink);
     background: var(--paper);
   }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
-  a { color: var(--blue); }
-  h1, h2, h3 { line-height: 1.2; margin: 0 0 12px; }
-  h1 { font-size: clamp(2rem, 5vw, 3.1rem); }
-  h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); }
-  h3 { font-size: 1.15rem; }
-  p { margin: 0 0 14px; }
 
-  header.top {
-    background: var(--blue);
-    color: #fff;
-  }
-  header.top .wrap {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-top: 14px; padding-bottom: 14px; gap: 12px; flex-wrap: wrap;
-  }
-  .brand { font-weight: 900; font-size: clamp(2.4rem, 6vw, 3.4rem); letter-spacing: .5px; line-height: 1; }
-  .brand span { color: var(--orange); }
-  nav a { color: #fff; text-decoration: none; margin-left: 16px; font-weight: 600; }
-  nav a:hover { text-decoration: underline; }
+  main { display: block; }
 
-  .hero { background: linear-gradient(180deg, var(--blue) 0%, var(--blue-dark) 100%); color: #fff; padding: 56px 0 64px; }
-  .hero p.lead { font-size: 1.2rem; max-width: 640px; color: #e6edf6; }
-  .kicker { color: #ffd23f; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 1.5rem; margin: 0 0 12px; }
-  .btn {
-    display: inline-block; background: var(--orange); color: #fff; font-weight: 700;
-    padding: 14px 22px; border-radius: 8px; text-decoration: none; min-height: 48px;
-    border: 0; font-size: 1rem; cursor: pointer;
-  }
-  .btn:hover { background: var(--orange-dark); }
-  .btn.secondary { background: transparent; border: 2px solid #fff; }
-  .btn.secondary:hover { background: rgba(255,255,255,.12); }
-  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
-  .hero small { display: block; margin-top: 14px; color: #cfdcec; }
-  .hero-art { margin-top: 32px; }
-  .hero-art svg { display: block; width: 100%; max-width: 720px; height: auto; border-radius: 12px; }
-
-  section { padding: 56px 0; }
-  section.alt { background: var(--soft); }
-  .grid { display: grid; gap: 18px; grid-template-columns: 1fr; }
-  @media (min-width: 720px) { .grid.three { grid-template-columns: repeat(3, 1fr); } .grid.two { grid-template-columns: repeat(2, 1fr); } }
-  .card {
-    background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 22px;
-  }
-  .card .num {
-    display: inline-block; width: 36px; height: 36px; line-height: 36px; text-align: center;
-    border-radius: 50%; background: var(--orange); color: #fff; font-weight: 800; margin-bottom: 10px;
-  }
-
-  .prices { display: grid; gap: 18px; grid-template-columns: 1fr; max-width: 1040px; }
-  @media (min-width: 900px) { .prices { grid-template-columns: repeat(3, 1fr); } }
-  .price { border: 2px solid var(--line); border-radius: 12px; padding: 24px; background: var(--paper); display: flex; flex-direction: column; }
-  .price.featured { border-color: var(--orange); }
-  .price .amt { display: inline-block; font-size: 2.2rem; font-weight: 800; color: #ffd23f; background: var(--blue); padding: 4px 14px; border-radius: 8px; margin: 6px 0; }
-  .price .amt small { font-size: 1rem; color: #e6edf6; font-weight: 500; }
-  .price ul { padding-left: 18px; margin: 10px 0 18px; flex: 1; }
-  .price .annual { color: var(--muted); font-size: .95rem; margin-bottom: 14px; }
-  .price .btn { text-align: center; }
-
-  .steps li { margin-bottom: 8px; }
-  ul.check { list-style: none; padding: 0; margin: 0; }
-  ul.check li { padding-left: 28px; position: relative; margin-bottom: 10px; }
-  ul.check li::before {
-    content: "\2713"; position: absolute; left: 0; top: 0; color: var(--orange); font-weight: 800;
-  }
-
-  .disclaimer {
-    border-left: 4px solid var(--orange); background: var(--soft); padding: 16px 18px;
-    border-radius: 8px; font-size: .95rem; color: var(--muted);
-  }
-
-  .fleet-card {
-    display: block; text-decoration: none; color: var(--ink); background: var(--paper);
-    border: 2px dashed var(--orange); border-radius: 12px; padding: 28px; text-align: center;
-  }
-  .fleet-card:hover, .fleet-card:focus-visible { border-style: solid; background: var(--soft); }
-  .fleet-card h2 { font-size: clamp(1.4rem, 3vw, 1.8rem); }
-  .fleet-card p { color: var(--muted); }
-  .final { background: var(--blue); color: #fff; text-align: center; padding: 56px 0; }
-  .final p { color: #e6edf6; }
-  .final .btn { margin-top: 8px; }
-
-  footer { padding: 28px 0; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); }
-  footer a { color: var(--muted); }
-
-  /* Demo Container */
   .demo-container {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -145,87 +37,71 @@
     height: 100vh;
     background: var(--paper);
     color: var(--ink);
-    flex-direction: column;
     z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
-  body.demo-mode main,
-  body.demo-mode header.top,
-  body.demo-mode footer {
-    display: none;
-  }
-
-  body.demo-mode .demo-container {
-    display: flex !important;
-  }
-
+  /* Header */
   .demo-header {
-    background: var(--blue);
-    color: #fff;
-    padding: 16px 20px;
+    background: var(--soft);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
   }
 
   .demo-header h1 {
     margin: 0;
     font-size: 1.4rem;
-    font-weight: 900;
+    font-weight: 700;
   }
 
-  .demo-header .brand span {
-    color: var(--orange);
-  }
-
-  .demo-exit-btn {
-    background: var(--orange);
+  .demo-back {
+    background: var(--blue);
     color: #fff;
-    border: none;
-    padding: 10px 18px;
+    border: 0;
+    padding: 10px 16px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.95rem;
     font-weight: 600;
+    font-size: 0.95rem;
   }
 
-  .demo-exit-btn:hover {
-    background: var(--orange-dark);
+  .demo-back:hover {
+    opacity: 0.9;
   }
 
-  .demo-body {
+  /* Main content area */
+  .demo-content {
+    display: flex;
     flex: 1;
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 20px;
-    padding: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
+    overflow: hidden;
+    gap: 0;
   }
 
-  .demo-menu {
+  /* Sidebar menu */
+  .demo-sidebar {
+    width: 200px;
     background: var(--soft);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 0;
-    height: fit-content;
-    overflow: hidden;
+    border-right: 1px solid var(--line);
+    overflow-y: auto;
+    padding: 12px 0;
   }
 
   .demo-menu-item {
-    padding: 14px 16px;
-    cursor: pointer;
+    padding: 12px 16px;
+    border: 0;
+    background: none;
     color: var(--ink);
-    border-left: 4px solid transparent;
-    transition: all 0.2s;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .demo-menu-item:last-child {
-    border-bottom: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+    border-left: 3px solid transparent;
+    transition: background 0.2s;
   }
 
   .demo-menu-item:hover {
@@ -233,568 +109,375 @@
   }
 
   .demo-menu-item.active {
-    border-left-color: var(--orange);
     background: var(--line);
+    border-left-color: var(--orange);
     font-weight: 600;
   }
 
+  /* Main panel */
+  .demo-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .demo-panel-header {
+    background: var(--soft);
+    border-bottom: 1px solid var(--line);
+    padding: 16px;
+  }
+
+  .demo-panel-header h2 {
+    margin: 0 0 8px;
+    font-size: 1.3rem;
+  }
+
+  .demo-panel-header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
   .demo-cards {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 18px;
+    gap: 12px;
+    grid-template-columns: 1fr;
   }
 
   .demo-card {
     background: var(--soft);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 20px;
-  }
-
-  .demo-card h3 {
-    margin-top: 0;
-    color: var(--ink);
-  }
-
-  .demo-card p {
-    margin: 8px 0;
+    border-radius: 8px;
+    padding: 14px;
     font-size: 0.95rem;
   }
 
-  .demo-card strong {
+  .demo-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 8px;
+  }
+
+  .demo-card-title {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .demo-card-status {
+    background: var(--blue);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .demo-card-meta {
     color: var(--muted);
     font-size: 0.85rem;
+    margin: 6px 0;
   }
 
-  .demo-export-card {
+  .demo-btn {
+    background: var(--orange);
+    color: #fff;
+    border: 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+
+  .demo-btn:hover {
+    opacity: 0.9;
+  }
+
+  /* Export card */
+  .export-card {
     background: var(--soft);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 20px;
-    margin-top: 18px;
-    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
   }
 
-  .demo-export-card h3 {
-    margin-top: 0;
-    color: var(--ink);
-    font-size: 1rem;
+  .export-card h3 {
+    margin: 0 0 12px;
+    font-size: 1.1rem;
   }
 
-  .demo-export-card p {
-    color: var(--muted);
-    margin: 8px 0;
-    font-size: 0.95rem;
-  }
-
-  .demo-export-card .btn {
+  .export-btn {
     background: var(--orange);
-    margin-top: 12px;
+    color: #fff;
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
   }
 
+  .export-btn:hover {
+    opacity: 0.9;
+  }
+
+  /* Responsive */
   @media (max-width: 768px) {
-    .demo-body {
-      grid-template-columns: 1fr;
-      padding: 14px;
-      gap: 14px;
+    .demo-sidebar {
+      width: 150px;
     }
 
-    .demo-menu {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      height: auto;
-      order: -1;
+    .demo-header {
+      padding: 12px;
     }
 
-    .demo-menu-item {
-      padding: 12px 8px;
-      font-size: 0.95rem;
-      text-align: center;
-      border-left: none;
-      border-bottom: 2px solid var(--line);
+    .demo-header h1 {
+      font-size: 1.2rem;
     }
 
-    .demo-menu-item.active {
-      border-bottom-color: var(--orange);
-      border-bottom-width: 3px;
+    .demo-panel-header {
+      padding: 12px;
     }
 
     .demo-cards {
-      grid-template-columns: 1fr;
-    }
-
-    .demo-card {
-      padding: 16px;
+      padding: 12px;
     }
   }
 
   @media (max-width: 480px) {
-    .demo-header {
-      padding: 12px 12px;
+    .demo-sidebar {
+      width: 120px;
+    }
+
+    .demo-menu-item {
+      padding: 10px 12px;
+      font-size: 0.9rem;
     }
 
     .demo-header h1 {
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
 
-    .demo-header .brand span {
-      color: var(--orange);
-    }
-
-    .demo-exit-btn {
+    .demo-back {
       padding: 8px 12px;
       font-size: 0.85rem;
     }
 
-    .demo-body {
-      grid-template-columns: 1fr;
-      padding: 12px;
-      gap: 12px;
-    }
-
-    .demo-menu {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      height: auto;
-      order: -1;
-    }
-
-    .demo-menu-item {
-      padding: 10px 6px;
-      font-size: 0.85rem;
-      text-align: center;
-      border-left: none;
-      border-bottom: 2px solid var(--line);
-    }
-
-    .demo-menu-item.active {
-      border-bottom-color: var(--orange);
-      border-bottom-width: 3px;
-    }
-
-    .demo-cards {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-
     .demo-card {
-      padding: 14px;
+      padding: 12px;
     }
 
-    .demo-card h3 {
-      font-size: 1rem;
-      margin-bottom: 8px;
+    .demo-panel-header h2 {
+      font-size: 1.1rem;
     }
+  }
 
-    .demo-card p {
-      font-size: 0.85rem;
-      margin: 6px 0;
-    }
+  /* Hidden start menu */
+  #demo-start-screen {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+  }
 
-    .demo-export-card {
-      padding: 16px;
-      margin-top: 8px;
-    }
+  #demo-start-screen h2 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
 
-    .demo-export-card h3 {
-      font-size: 1rem;
-      margin-bottom: 8px;
-    }
+  #demo-start-screen p {
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
 
-    .demo-export-card p {
-      font-size: 0.85rem;
-      margin-bottom: 12px;
-    }
+  .demo-menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+  }
 
-    .demo-export-card .btn {
-      padding: 12px 18px;
-      font-size: 0.9rem;
-    }
+  .demo-menu-btn {
+    background: var(--blue);
+    color: #fff;
+    border: 0;
+    padding: 12px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .demo-menu-btn:hover {
+    opacity: 0.9;
   }
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="wrap">
-    <div class="brand">
-      Rig<span>PM</span>Pro
-    </div>
-    <nav aria-label="Main">
-      <a href="#how">How it works</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#signup">Sign up</a>
-    </nav>
-  </div>
-</header>
-
-<main>
-  <section class="hero">
-    <div class="wrap">
-      <h1 class="kicker">Keep your rig running. Keep your records straight.</h1>
-      <p class="lead">Made for owner-operators who run their own rigs. Rig PM Pro is a web tool built for owner-operator truck drivers. Track preventive maintenance for your truck, APU, trailer, and reefer, log what you spent, and keep every receipt where you can find it.</p>
-      <div class="cta-row">
-        <a class="btn" href="#signup">Start your account</a>
-        <a class="btn secondary" href="#pricing">See pricing</a>
-        <button class="btn" id="try-demo-btn">Try the Live Demo</button>
-      </div>
-      <small>Works in any phone or computer browser. Nothing to install.</small>
-    </div>
-  </section>
-
-  <section id="how">
-    <div class="wrap">
-      <h2>How it works</h2>
-      <div class="grid three">
-        <div class="card">
-          <div class="num">1</div>
-          <h3>Add your equipment</h3>
-          <p>Enter the make, model, and last 6 of the VIN for your truck, APU, trailer, or reefer. Don't see your make? Add it yourself.</p>
-        </div>
-        <div class="card">
-          <div class="num">2</div>
-          <h3>Pick what to track</h3>
-          <p>Choose the PM items you want to watch from a simple drop-down. Shorten any interval to suit your operation. It can't go past the manufacturer's interval.</p>
-        </div>
-        <div class="card">
-          <div class="num">3</div>
-          <h3>Log work and receipts</h3>
-          <p>Record completed PMs and repairs with date and cost. Snap a photo of a receipt from your phone and attach it.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="alt">
-    <div class="wrap">
-      <h2>Everything in one place</h2>
-      <div class="grid two">
-        <ul class="check">
-          <li>Asset pages for truck, trailer, APU, and reefer</li>
-          <li>Main PM screen that shows what's coming up</li>
-          <li>Costs totaled by month, quarter, year, and lifetime</li>
-          <li>Sort completed work by unit or asset type</li>
-        </ul>
-        <ul class="check">
-          <li>Receipt upload from your phone's camera or photo library</li>
-          <li>Expense tracking with categories</li>
-          <li>Export your records for tax purposes</li>
-          <li>Monthly or annual billing</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section id="pricing">
-    <div class="wrap">
-      <h2>Simple pricing</h2>
-      <p>Billed monthly, or prepay for a year to save. Plans are month to month unless you choose annual prepay.</p>
-      <div class="prices">
-        <div class="price">
-          <h3>Truck Only</h3>
-          <div class="amt">$5.00 <small>/ month</small></div>
-          <p class="annual">Includes APU. Annual prepay: $55.00 per year.</p>
-          <ul>
-            <li>Truck and APU tracking</li>
-            <li>PM screen and cost history</li>
-            <li>Receipt upload</li>
-            <li>Export, share or save to your device</li>
-          </ul>
-          <a class="btn" href="#signup">Choose Truck Only</a>
-        </div>
-        <div class="price featured">
-          <h3>Truck plus Trailer</h3>
-          <div class="amt">$9.00 <small>/ month</small></div>
-          <p class="annual">Annual prepay: $100.00 per year.</p>
-          <ul>
-            <li>Everything in Truck</li>
-            <li>Trailer and reefer tracking</li>
-            <li>Combined cost reports</li>
-            <li>Export, share or save to your device</li>
-          </ul>
-          <a class="btn" href="#signup">Choose Truck plus Trailer</a>
-        </div>
-        <div class="price addon">
-          <h3>Additional assets</h3>
-          <div class="amt">$4.00 <small>/ added asset / month</small></div>
-          <p class="annual">Annual prepay: $44.00 per added asset. Save $4 per asset with annual prepay.</p>
-          <ul>
-            <li>Add trucks or trailers to any plan, up to six total assets</li>
-            <li>Example: Truck Only plus five more trucks or trailers for $25.00 a month</li>
-            <li>APU and reefer are included with each truck and trailer</li>
-            <li>More than six total assets is fleet pricing.</li>
-          </ul>
-          <a class="btn" href="#signup">Add assets</a>
-        </div>
-      </div>
-
-      <ul class="check" style="margin-top:24px">
-        <li>All PM intervals are sourced from manufacturer recommendations.</li>
-      </ul>
-
-      <a class="fleet-card" href="#contact">
-        <h3>Running a fleet?</h3>
-        <p>Running more than six total assets? Tell us what you run, and we'll send you fleet pricing.</p>
-        <span class="btn">Request more information</span>
-      </a>
-    </div>
-  </section>
-
-  <section class="alt">
-    <div class="wrap">
-      <h2>Built on maintenance data you can check</h2>
-      <p>Each PM interval comes from the manufacturer's maintenance documents, with its source recorded. Rig PM Pro does not replace your equipment manual. Always follow the manufacturer's schedule and your service provider's advice.</p>
-      <p class="disclaimer">Disclaimer: Rig PM Pro is a record-keeping tool. Maintenance intervals shown are based on manufacturer documents and may not match your equipment, its age, or its conditions. Follow your equipment manufacturer's maintenance manual and qualified service providers. Rig PM Pro does not provide tax, legal, or mechanical advice.</p>
-    </div>
-  </section>
-
-  <section class="final" id="signup">
-    <div class="wrap">
-      <h2>Start tracking your maintenance today</h2>
-      <p>Set up your account in minutes and add your first truck.</p>
-      <a class="btn" href="#">Create your account</a>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <div class="wrap">
-    <p>&copy; 2026 Rig PM Pro. RigPMPro.com</p>
-    <p>
-      <a href="#">Privacy</a> &middot; <a href="#">Terms</a> &middot; <a href="#">Support</a>
-    </p>
-    <p>PM disclaimer applies to all maintenance information shown on this site.</p>
-  </div>
-</footer>
-
-<!-- Demo Container - Single Screen with Menu + Cards -->
 <div class="demo-container">
+  <!-- Header -->
   <div class="demo-header">
-    <h1 class="brand">Rig<span>PM</span>Pro</h1>
-    <button class="demo-exit-btn" id="demo-exit-btn">Exit Demo</button>
+    <h1>Rig PM Pro Demo</h1>
+    <button class="demo-back" onclick="exitDemo()">Exit Demo</button>
   </div>
 
-  <div class="demo-body">
-    <!-- Menu Tree -->
-    <div class="demo-menu">
-      <div class="demo-menu-item active" data-asset="truck">Truck</div>
-      <div class="demo-menu-item" data-asset="trailer">Trailer</div>
-      <div class="demo-menu-item" data-asset="apu">APU</div>
-      <div class="demo-menu-item" data-asset="reefer">Reefer</div>
+  <!-- Main Content -->
+  <div class="demo-content">
+    <!-- Sidebar -->
+    <div class="demo-sidebar">
+      <button class="demo-menu-item active" onclick="selectAsset('truck')">Truck</button>
+      <button class="demo-menu-item" onclick="selectAsset('trailer')">Trailer</button>
+      <button class="demo-menu-item" onclick="selectAsset('apu')">APU</button>
+      <button class="demo-menu-item" onclick="selectAsset('reefer')">Reefer</button>
     </div>
 
-    <!-- Cards Display -->
-    <div>
-      <div class="demo-cards" id="demo-cards">
-        <!-- Cards populated by JavaScript -->
+    <!-- Main Panel -->
+    <div class="demo-main">
+      <!-- Start Screen -->
+      <div id="demo-start-screen" style="display: flex;">
+        <h2>Welcome to Rig PM Pro Demo</h2>
+        <p>Select an asset from the menu to view maintenance items</p>
+        <div class="demo-menu-buttons">
+          <button class="demo-menu-btn" onclick="selectAsset('truck')">View Truck</button>
+          <button class="demo-menu-btn" onclick="selectAsset('trailer')">View Trailer</button>
+          <button class="demo-menu-btn" onclick="selectAsset('apu')">View APU</button>
+          <button class="demo-menu-btn" onclick="selectAsset('reefer')">View Reefer</button>
+        </div>
       </div>
 
-      <!-- Export Card -->
-      <div class="demo-export-card">
-        <h3>Export Your Records</h3>
-        <p>Download your maintenance history and costs for tax purposes</p>
-        <button class="btn" id="demo-export-btn">Export as PDF</button>
+      <!-- Asset View (hidden initially) -->
+      <div id="demo-asset-view" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+        <div class="demo-panel-header">
+          <h2 id="asset-title">Truck</h2>
+          <p id="asset-desc">Truck maintenance items and history</p>
+        </div>
+        <div class="demo-cards" id="cards-container"></div>
       </div>
     </div>
+  </div>
+
+  <!-- Export Card -->
+  <div class="export-card">
+    <h3>Export Maintenance Records</h3>
+    <button class="export-btn" onclick="exportData()">Download CSV</button>
   </div>
 </div>
 
 <script>
-  // Demo data
   const demoData = {
     truck: {
-      name: 'Peterbilt 379',
-      vin: '1XKWDB0X5WJ154423',
+      title: 'Truck - 2020 Peterbilt 579',
+      desc: 'Main truck maintenance tracking',
       items: [
-        { name: 'Oil and Filter Change', interval: '15,000 miles', nextDue: '5,000 miles' },
-        { name: 'Coolant Flush', interval: '50,000 miles', nextDue: '32,000 miles' },
-        { name: 'Brake Inspection', interval: '25,000 miles', nextDue: '8,000 miles' },
-        { name: 'Tire Rotation', interval: '30,000 miles', nextDue: '12,000 miles' }
+        { task: 'Oil Change', interval: 'Every 15,000 miles', status: 'Due', days: 5 },
+        { task: 'Filter Change', interval: 'Every 15,000 miles', status: 'OK', days: 120 },
+        { task: 'Tire Rotation', interval: 'Every 20,000 miles', status: 'Due Soon', days: 12 },
+        { task: 'Transmission Fluid', interval: 'Every 50,000 miles', status: 'OK', days: 250 }
       ]
     },
     trailer: {
-      name: 'Utility Reefer',
-      vin: '7M2NXJ891K002145',
+      title: 'Trailer - 2019 Wabash 53ft',
+      desc: 'Trailer maintenance and inspection',
       items: [
-        { name: 'Compressor Service', interval: '50,000 miles', nextDue: '18,000 miles' },
-        { name: 'Electrical Check', interval: '30,000 miles', nextDue: '6,000 miles' },
-        { name: 'Door Seal Inspection', interval: '20,000 miles', nextDue: '4,000 miles' }
+        { task: 'Brake Inspection', interval: 'Every 6 months', status: 'OK', days: 90 },
+        { task: 'Light Check', interval: 'Every month', status: 'Due', days: 2 },
+        { task: 'Tire Pressure Check', interval: 'Weekly', status: 'OK', days: 6 },
+        { task: 'Coupling Grease', interval: 'Every 6 months', status: 'Due Soon', days: 14 }
       ]
     },
     apu: {
-      name: 'Auxiliary Power Unit',
-      vin: 'APU-5589X',
+      title: 'APU - Thermo King SB3000',
+      desc: 'Auxiliary Power Unit maintenance',
       items: [
-        { name: 'Oil and Filter', interval: '500 hours', nextDue: '120 hours' },
-        { name: 'Coolant Inspection', interval: '1,000 hours', nextDue: '340 hours' },
-        { name: 'Fuel Filter', interval: '750 hours', nextDue: '210 hours' }
+        { task: 'Oil Change', interval: 'Every 500 hours', status: 'OK', days: 180 },
+        { task: 'Filter Change', interval: 'Every 500 hours', status: 'OK', days: 180 },
+        { task: 'Belt Inspection', interval: 'Every 250 hours', status: 'Due', days: 3 },
+        { task: 'Coolant Top-up', interval: 'Every year', status: 'Due Soon', days: 20 }
       ]
     },
     reefer: {
-      name: 'Reefer Unit',
-      vin: 'REEF-449XP',
+      title: 'Reefer Unit - Carrier Refrigerated',
+      desc: 'Refrigerated unit maintenance',
       items: [
-        { name: 'Thermostat Calibration', interval: '6 months', nextDue: '2 months' },
-        { name: 'Condenser Cleaning', interval: '12,000 miles', nextDue: '3,500 miles' },
-        { name: 'Refrigerant Check', interval: '24,000 miles', nextDue: '8,200 miles' }
+        { task: 'Condenser Clean', interval: 'Every 6 months', status: 'OK', days: 120 },
+        { task: 'Compressor Oil', interval: 'Every year', status: 'Due Soon', days: 25 },
+        { task: 'Belt Check', interval: 'Every 3 months', status: 'Due', days: 1 },
+        { task: 'Thermostat Check', interval: 'Every month', status: 'OK', days: 15 }
       ]
     }
   };
 
-  // Demo functionality
-  const tryDemoBtn = document.getElementById('try-demo-btn');
-  const exitDemoBtn = document.getElementById('demo-exit-btn');
-  const demoCardsContainer = document.getElementById('demo-cards');
-  const demoExportBtn = document.getElementById('demo-export-btn');
-  const menuItems = document.querySelectorAll('.demo-menu-item');
+  function selectAsset(assetType) {
+    // Hide start screen, show asset view
+    document.getElementById('demo-start-screen').style.display = 'none';
+    document.getElementById('demo-asset-view').style.display = 'flex';
 
-  let currentAsset = 'truck';
+    // Update active menu item
+    document.querySelectorAll('.demo-menu-item').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
 
-  function renderCards(assetType) {
-    const asset = demoData[assetType];
-    demoCardsContainer.innerHTML = `
-      <div class="demo-card">
-        <h3>${asset.name}</h3>
-        <p><strong>VIN:</strong> ${asset.vin}</p>
-      </div>
-    `;
+    // Update asset info
+    const data = demoData[assetType];
+    document.getElementById('asset-title').textContent = data.title;
+    document.getElementById('asset-desc').textContent = data.desc;
 
-    asset.items.forEach(item => {
+    // Render cards
+    const container = document.getElementById('cards-container');
+    container.innerHTML = '';
+    data.items.forEach(item => {
       const card = document.createElement('div');
       card.className = 'demo-card';
       card.innerHTML = `
-        <h3>${item.name}</h3>
-        <p><strong>Standard Interval:</strong> ${item.interval}</p>
-        <p><strong>Next Due:</strong> ${item.nextDue}</p>
+        <div class="demo-card-header">
+          <div class="demo-card-title">${item.task}</div>
+          <div class="demo-card-status">${item.status}</div>
+        </div>
+        <div class="demo-card-meta">
+          <strong>Interval:</strong> ${item.interval}<br>
+          <strong>Days remaining:</strong> ${item.days}
+        </div>
+        <button class="demo-btn" onclick="alert('Logged: ' + this.parentElement.querySelector('.demo-card-title').textContent)">Log Completed</button>
       `;
-      demoCardsContainer.appendChild(card);
+      container.appendChild(card);
     });
   }
 
-  function switchAsset(assetType) {
-    currentAsset = assetType;
-    menuItems.forEach(item => {
-      item.classList.remove('active');
-      if (item.dataset.asset === assetType) {
-        item.classList.add('active');
-      }
-    });
-    renderCards(assetType);
-  }
+  function exportData() {
+    const csvContent = [
+      ['Asset', 'Task', 'Interval', 'Status', 'Days Remaining'],
+      ['Truck - 2020 Peterbilt 579', 'Oil Change', 'Every 15,000 miles', 'Due', '5'],
+      ['Truck - 2020 Peterbilt 579', 'Filter Change', 'Every 15,000 miles', 'OK', '120'],
+      ['Trailer - 2019 Wabash 53ft', 'Brake Inspection', 'Every 6 months', 'OK', '90'],
+      ['APU - Thermo King SB3000', 'Oil Change', 'Every 500 hours', 'OK', '180'],
+      ['Reefer Unit - Carrier', 'Condenser Clean', 'Every 6 months', 'OK', '120']
+    ];
 
-  function enterDemo() {
-    // Hide landing page elements
-    document.querySelector('main').style.display = 'none';
-    document.querySelector('header.top').style.display = 'none';
-    document.querySelector('footer').style.display = 'none';
-
-    // Show and style demo container
-    const demoContainer = document.querySelector('.demo-container');
-    demoContainer.style.display = 'flex';
-    demoContainer.style.position = 'fixed';
-    demoContainer.style.top = '0';
-    demoContainer.style.left = '0';
-    demoContainer.style.width = '100%';
-    demoContainer.style.height = '100vh';
-    demoContainer.style.zIndex = '9999';
-
-    // Apply dark theme
-    document.body.classList.add('demo-mode');
-
-    // Render cards
-    renderCards('truck');
-  }
-
-  function exitDemo() {
-    // Show landing page elements
-    document.querySelector('main').style.display = '';
-    document.querySelector('header.top').style.display = '';
-    document.querySelector('footer').style.display = '';
-
-    // Hide demo container
-    document.querySelector('.demo-container').style.display = 'none';
-
-    // Remove dark theme
-    document.body.classList.remove('demo-mode');
-  }
-
-  // Event listeners
-  tryDemoBtn.addEventListener('click', enterDemo);
-  exitDemoBtn.addEventListener('click', exitDemo);
-
-  menuItems.forEach(item => {
-    item.addEventListener('click', () => {
-      switchAsset(item.dataset.asset);
-    });
-  });
-
-  demoExportBtn.addEventListener('click', () => {
-    const asset = demoData[currentAsset];
-
-    // Create HTML content that can be printed as PDF
-    const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Rig PM Pro - Export</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { color: #1d4f91; border-bottom: 3px solid #e8741c; padding-bottom: 10px; }
-    h2 { color: #1d4f91; margin-top: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-    th { background-color: #f3f6fa; font-weight: bold; }
-    tr:nth-child(even) { background-color: #f9f9f9; }
-    .metadata { color: #666; font-size: 0.9em; margin-bottom: 20px; }
-  </style>
-</head>
-<body>
-  <h1>Rig PM Pro - Maintenance Records Export</h1>
-  <div class="metadata">
-    <p>Exported: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
-  </div>
-
-  <h2>${asset.name}</h2>
-  <p><strong>VIN:</strong> ${asset.vin}</p>
-
-  <h2>Maintenance Schedule</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Service</th>
-        <th>Standard Interval</th>
-        <th>Next Due</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${asset.items.map(item => `
-        <tr>
-          <td>${item.name}</td>
-          <td>${item.interval}</td>
-          <td>${item.nextDue}</td>
-        </tr>
-      `).join('')}
-    </tbody>
-  </table>
-
-  <script>
-    window.print();
-  </script>
-</body>
-</html>
-    `;
-
-    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const csv = csvContent.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `rig-pm-pro-${currentAsset}-export.html`;
-    document.body.appendChild(a);
+    a.download = 'rig-pm-maintenance-' + new Date().toISOString().split('T')[0] + '.csv';
     a.click();
     window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-  });
+  }
+
+  function exitDemo() {
+    window.location.href = '/';
+  }
 </script>
 
 </body>
