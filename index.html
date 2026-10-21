@@ -145,116 +145,35 @@
     padding: 16px;
   }
 
-  .demo-cards {
+  .demo-placards {
     display: grid;
     gap: 12px;
     grid-template-columns: 1fr;
   }
 
-  .demo-card {
+  .demo-placard {
     background: var(--soft);
     border: 1px solid var(--line);
     border-radius: 8px;
-    padding: 14px;
-    font-size: 0.95rem;
-  }
-
-  .demo-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 8px;
-  }
-
-  .demo-card-title {
-    font-weight: 600;
-    color: var(--ink);
-  }
-
-  .demo-card-status {
-    background: var(--blue);
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-
-  .demo-card-meta {
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin: 6px 0;
-  }
-
-  .demo-btn {
-    background: var(--orange);
-    color: #fff;
-    border: 0;
-    padding: 8px 12px;
-    border-radius: 4px;
+    padding: 16px;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-top: 8px;
+    transition: all 0.2s;
   }
 
-  .demo-btn:hover {
-    opacity: 0.9;
-  }
-
-  /* Empty state */
-  .demo-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--muted);
-    text-align: center;
-  }
-
-  /* Account settings form */
-  .demo-form-group {
-    margin-bottom: 16px;
-  }
-
-  .demo-form-group label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-
-  .demo-form-group input,
-  .demo-form-group select {
-    width: 100%;
-    padding: 8px 12px;
-    background: var(--soft);
-    border: 1px solid var(--line);
-    color: var(--ink);
-    border-radius: 4px;
-    font-family: inherit;
-    font-size: 0.9rem;
-  }
-
-  .demo-form-group input:focus,
-  .demo-form-group select:focus {
-    outline: none;
+  .demo-placard:hover {
     border-color: var(--orange);
+    background: var(--line);
   }
 
-  .demo-save-btn {
-    background: var(--blue);
-    color: #fff;
-    border: 0;
-    padding: 10px 16px;
-    border-radius: 4px;
-    cursor: pointer;
+  .demo-placard-title {
     font-weight: 600;
-    margin-top: 12px;
+    font-size: 1.05rem;
+    margin-bottom: 6px;
   }
 
-  .demo-save-btn:hover {
-    opacity: 0.9;
+  .demo-placard-desc {
+    color: var(--muted);
+    font-size: 0.9rem;
   }
 
   /* Responsive */
@@ -299,12 +218,16 @@
       font-size: 0.85rem;
     }
 
-    .demo-card {
+    .demo-placard {
       padding: 12px;
     }
 
     .demo-panel-header h2 {
       font-size: 1.1rem;
+    }
+
+    .demo-placard-title {
+      font-size: 0.95rem;
     }
   }
 </style>
@@ -338,158 +261,33 @@
   const demoContent = {
     assets: {
       title: 'Assets',
-      desc: 'Your trucks, trailers, APU, and reefer units',
-      content: `
-        <div class="demo-panel-header">
-          <h2>Assets</h2>
-          <p>Your trucks, trailers, APU, and reefer units</p>
-        </div>
-        <div class="demo-content-area">
-          <div class="demo-cards">
-            <div class="demo-card">
-              <div class="demo-card-header">
-                <div class="demo-card-title">Truck - 2020 Peterbilt 579</div>
-                <div class="demo-card-status">Active</div>
-              </div>
-              <div class="demo-card-meta">
-                <strong>VIN:</strong> 1XPBD49X0LD...<br>
-                <strong>Unit #:</strong> 1<br>
-                <strong>Engine:</strong> Cummins X15
-              </div>
-            </div>
-            <div class="demo-card">
-              <div class="demo-card-header">
-                <div class="demo-card-title">Trailer - 2019 Wabash 53ft</div>
-                <div class="demo-card-status">Active</div>
-              </div>
-              <div class="demo-card-meta">
-                <strong>VIN:</strong> 1JJV532A7KL...<br>
-                <strong>Unit #:</strong> 2
-              </div>
-            </div>
-            <div class="demo-card">
-              <div class="demo-card-header">
-                <div class="demo-card-title">APU - Thermo King SB3000</div>
-                <div class="demo-card-status">Active</div>
-              </div>
-              <div class="demo-card-meta">
-                <strong>Model:</strong> SB3000<br>
-                <strong>Unit #:</strong> 3
-              </div>
-            </div>
-            <div class="demo-card">
-              <div class="demo-card-header">
-                <div class="demo-card-title">Reefer Unit - Carrier</div>
-                <div class="demo-card-status">Active</div>
-              </div>
-              <div class="demo-card-meta">
-                <strong>Model:</strong> Refrigerated<br>
-                <strong>Unit #:</strong> 4
-              </div>
-            </div>
-          </div>
-        </div>
-      `
+      desc: 'Manage your trucks, trailers, APU, and reefer units',
+      placards: [
+        { title: 'Add Asset', desc: 'Add a new truck, trailer, APU, or reefer to track' },
+        { title: 'Edit Asset', desc: 'Update details for your existing equipment' },
+        { title: 'View All Assets', desc: 'See all your equipment in one place' },
+        { title: 'Asset History', desc: 'View maintenance history by asset' }
+      ]
     },
     maintenance: {
       title: 'Maintenance',
-      desc: 'Track preventive maintenance across all assets',
-      content: `
-        <div class="demo-panel-header">
-          <h2>Maintenance</h2>
-          <p>Track preventive maintenance across all assets</p>
-        </div>
-        <div class="demo-content-area">
-          <div class="demo-cards">
-            <div class="demo-card">
-              <div class="demo-card-header">
-                <div class="demo-card-title">Oil Change - Truck</div>
-                <div class="demo-card-status">Due</div>
-              </div>
-              <div class="demo-card-meta">
-                <strong>Interval:</strong> Every 15,000 miles<br>
-                <strong>Days remaining:</strong> 5 days
-              </div>
-              <button class="demo-btn" onclick="alert('Maintenance logged')">Log Completed</button>
-            </div>
-            <div class="demo-card">
-              <div class="demo-card-header">
-                <div class="demo-card-title">Brake Inspection - Trailer</div>
-                <div class="demo-card-status">Due Soon</div>
-              </div>
-              <div class="demo-card-meta">
-                <strong>Interval:</strong> Every 6 months<br>
-                <strong>Days remaining:</strong> 12 days
-              </div>
-              <button class="demo-btn" onclick="alert('Maintenance logged')">Log Completed</button>
-            </div>
-            <div class="demo-card">
-              <div class="demo-card-header">
-                <div class="demo-card-title">Belt Check - APU</div>
-                <div class="demo-card-status">Due</div>
-              </div>
-              <div class="demo-card-meta">
-                <strong>Interval:</strong> Every 3 months<br>
-                <strong>Days remaining:</strong> 1 day
-              </div>
-              <button class="demo-btn" onclick="alert('Maintenance logged')">Log Completed</button>
-            </div>
-            <div class="demo-card">
-              <div class="demo-card-header">
-                <div class="demo-card-title">Condenser Clean - Reefer</div>
-                <div class="demo-card-status">OK</div>
-              </div>
-              <div class="demo-card-meta">
-                <strong>Interval:</strong> Every 6 months<br>
-                <strong>Days remaining:</strong> 120 days
-              </div>
-              <button class="demo-btn" onclick="alert('Maintenance logged')">Log Completed</button>
-            </div>
-          </div>
-        </div>
-      `
+      desc: 'Log and track preventive maintenance across all assets',
+      placards: [
+        { title: 'Log PM', desc: 'Record a completed preventive maintenance task' },
+        { title: 'Log Repair', desc: 'Log an unplanned repair or service' },
+        { title: 'Repair History', desc: 'View all repairs by asset or date' },
+        { title: 'Total Costs', desc: 'See maintenance spending by month, quarter, or year' }
+      ]
     },
     account: {
       title: 'Account Settings',
-      desc: 'Manage your account and preferences',
-      content: `
-        <div class="demo-panel-header">
-          <h2>Account Settings</h2>
-          <p>Manage your account and preferences</p>
-        </div>
-        <div class="demo-content-area">
-          <form onsubmit="event.preventDefault(); alert('Settings saved')">
-            <div class="demo-form-group">
-              <label>Full Name</label>
-              <input type="text" value="John Doe" readonly>
-            </div>
-            <div class="demo-form-group">
-              <label>Email</label>
-              <input type="email" value="john@example.com" readonly>
-            </div>
-            <div class="demo-form-group">
-              <label>MC Number</label>
-              <input type="text" value="155269" readonly>
-            </div>
-            <div class="demo-form-group">
-              <label>Subscription Plan</label>
-              <select disabled>
-                <option>Truck Only - $5/month</option>
-                <option>Truck + Trailer - $9/month</option>
-                <option>Fleet (4+ units) - Custom pricing</option>
-              </select>
-            </div>
-            <div class="demo-form-group">
-              <label>Billing Cycle</label>
-              <select disabled>
-                <option>Monthly</option>
-                <option>Annual (Save 10%)</option>
-              </select>
-            </div>
-            <button type="submit" class="demo-save-btn">Save Changes</button>
-          </form>
-        </div>
-      `
+      desc: 'Manage your account, billing, and preferences',
+      placards: [
+        { title: 'Profile', desc: 'Update your name, email, and contact information' },
+        { title: 'Billing & Subscription', desc: 'Manage your plan, payment method, and receipts' },
+        { title: 'Preferences', desc: 'Set notifications, export options, and display preferences' },
+        { title: 'Support', desc: 'Contact support or view documentation' }
+      ]
     }
   };
 
@@ -503,8 +301,33 @@
     });
 
     // Render content
+    const content = demoContent[category];
     const panelContent = document.getElementById('panel-content');
-    panelContent.innerHTML = demoContent[category].content;
+
+    let html = `
+      <div class="demo-panel-header">
+        <h2>${content.title}</h2>
+        <p>${content.desc}</p>
+      </div>
+      <div class="demo-content-area">
+        <div class="demo-placards">
+    `;
+
+    content.placards.forEach(placard => {
+      html += `
+        <div class="demo-placard" onclick="alert('${placard.title}: ${placard.desc}')">
+          <div class="demo-placard-title">${placard.title}</div>
+          <div class="demo-placard-desc">${placard.desc}</div>
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+
+    panelContent.innerHTML = html;
   }
 
   function exitDemo() {
