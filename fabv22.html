@@ -1139,7 +1139,7 @@
   state.skipCount = 0; state.readingLocked = false; state.readingChecks = [];
   state.pageSize = 5; state.pages = {}; state.recId = null; state.recReturn = null; state.recEditing = false;
   var AUTH_SCREENS = ["d0", "s0", "s1", "s2", "s5"];
-  var DEMO_SCREENS = ["s4", "s8", "s8a", "s9", "s10", "s11", "s12", "s13", "s14", "s15", "s16", "s17", "s18", "s19", "s20", "s21", "s22", "s23", "s24", "s25", "s26", "s27", "s28", "s29", "s30", "s31", "s32", "s33", "s34", "s35", "s36", "s37", "s38"];
+  var DEMO_SCREENS = ["s4", "s8", "s8a", "s9", "s10", "s11", "s12", "s13", "s14", "s15", "s16", "s17", "s18", "s19", "s20", "s21", "s22", "s23", "s24", "s25", "s26", "s27", "s28", "s29", "s30", "s31", "s32", "s33", "s34", "s35", "s36", "s37", "s38", "s39", "s40"];
   function allowed(id) {
     if (AUTH_SCREENS.indexOf(id) !== -1) return true;
     if (!state.signedIn) return false;
