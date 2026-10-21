@@ -344,20 +344,8 @@
 
     <!-- Main Panel -->
     <div class="demo-main">
-      <!-- Start Screen -->
-      <div id="demo-start-screen" style="display: flex;">
-        <h2>Welcome to Rig PM Pro Demo</h2>
-        <p>Select an asset from the menu to view maintenance items</p>
-        <div class="demo-menu-buttons">
-          <button class="demo-menu-btn" onclick="selectAsset('truck')">View Truck</button>
-          <button class="demo-menu-btn" onclick="selectAsset('trailer')">View Trailer</button>
-          <button class="demo-menu-btn" onclick="selectAsset('apu')">View APU</button>
-          <button class="demo-menu-btn" onclick="selectAsset('reefer')">View Reefer</button>
-        </div>
-      </div>
-
-      <!-- Asset View (hidden initially) -->
-      <div id="demo-asset-view" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+      <!-- Asset View -->
+      <div id="demo-asset-view" style="display: flex; flex: 1; flex-direction: column; overflow: hidden;">
         <div class="demo-panel-header">
           <h2 id="asset-title">Truck</h2>
           <p id="asset-desc">Truck maintenance items and history</p>
@@ -419,18 +407,9 @@
   };
 
   function selectAsset(assetType) {
-    // Hide start screen, show asset view
-    document.getElementById('demo-start-screen').style.display = 'none';
-    document.getElementById('demo-asset-view').style.display = 'flex';
-
     // Update active menu item
     document.querySelectorAll('.demo-menu-item').forEach(btn => {
       btn.classList.remove('active');
-    });
-
-    // Mark the clicked asset as active
-    const buttons = document.querySelectorAll('.demo-menu-item');
-    buttons.forEach(btn => {
       if (btn.textContent.toLowerCase() === assetType.toLowerCase()) {
         btn.classList.add('active');
       }
