@@ -332,8 +332,10 @@
 
     document.querySelectorAll('.demo-nav-btn').forEach(btn => {
       btn.classList.remove('active');
+      if (btn.textContent.toLowerCase() === cat.toLowerCase()) {
+        btn.classList.add('active');
+      }
     });
-    event.target.classList.add('active');
 
     showPlacards(cat);
   }
