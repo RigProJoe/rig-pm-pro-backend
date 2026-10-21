@@ -207,12 +207,6 @@
   }
   .menu-btn { min-height: 44px; min-width: 44px; padding: 6px 8px; border: 1px solid var(--divider); border-radius: 6px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; font-size: 1.2rem; cursor: pointer; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; position: relative; z-index: 13; }
   header.top .menu-btn { color: #fff; border-color: #fff; }
-  #headerMenuBtn { display: none; }
-  #menuBtn { display: none; margin-left: auto; }
-  @media (min-width: 768px) {
-    #headerMenuBtn { display: none; }
-    #menuBtn { display: none; }
-  }
   .menu-btn[hidden] { display: none !important; }
   .side { position: fixed; left: 0; top: 60px; bottom: 0; width: 280px; overflow-y: auto; background: var(--paper); border-right: 1px solid var(--line); padding: 16px 12px; z-index: 12; transform: translateX(0); transition: transform .2s ease; }
   .side[hidden] { display: none !important; }
@@ -228,11 +222,13 @@
   .side button:hover, .side-menu-item:hover { background: var(--soft); }
   .side button.on { background: var(--red); color: var(--white); font-weight: 700; }
   @media (max-width: 639px) {
-    .app-content { flex-direction: column; }
-    .side { position: fixed; left: 0; top: 54px; bottom: 0; width: 80vw; max-width: 280px; transform: translateX(0); }
+    .app { max-width: none; }
+    .app-content { flex-direction: row; }
+    .side { position: relative; width: 140px; padding: 12px 8px; top: auto; bottom: auto; left: auto; border-right: 1px solid var(--line); flex-shrink: 0; overflow-y: auto; z-index: 5; order: -1; transform: translateX(0) !important; }
+    .screens { flex: 1; overflow: hidden; }
     body.menu-open .side { transform: translateX(0); }
-    .side-shade { display: none; }
-    body.menu-open .side-shade { display: block; }
+    .side-shade { display: none !important; }
+    body.menu-open .side-shade { display: none !important; }
   }
   @media (min-width: 640px) {
     .app { max-width: none; }
@@ -240,8 +236,6 @@
     .side { position: static !important; width: 280px; padding: 16px 12px !important; top: auto !important; bottom: auto !important; transform: translateX(0) !important; border-right: 1px solid var(--line); flex-shrink: 0; overflow-y: auto; z-index: 5; order: -1; }
     body.menu-open .side, body:not(.menu-open) .side { transform: translateX(0) !important; }
     .side-shade { display: none !important; }
-    .menu-header { display: none; }
-    #headerMenuBtn { display: none; }
   }
   .side-categories { margin-top: 12px; }
   .side-cat-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 12px 8px 6px; font-weight: 800; }
@@ -252,8 +246,6 @@
   @media (min-width: 768px) {
     .side { display: flex !important; position: static !important; width: 280px !important; padding: 16px 12px !important; top: auto !important; bottom: auto !important; left: auto !important; right: auto !important; transform: translateX(0) !important; border-right: 1px solid var(--line); overflow-y: auto; flex-direction: column; z-index: 5; }
     .side-shade { display: none !important; }
-    .menu-btn { display: none !important; }
-    #headerMenuBtn { display: none !important; }
     header.top { margin-left: 0; }
     .app-content { margin-left: 0; }
   }
@@ -268,7 +260,6 @@
 <div class="app">
 <div class="sample-bar">SAMPLE DATA. Not real records. Prototype only, not published.</div>
 <header class="top">
-  <button class="menu-btn" id="headerMenuBtn" type="button" aria-label="Open the menu" title="Open menu" style="margin-right: 10px;">☰</button>
   <button class="menu-btn" id="headerBackBtn" type="button" aria-label="Go back" title="Go back" style="margin-right: 10px; display: none;" data-back="1">←</button>
   <div class="brand">Rig<span>PM</span>Pro</div>
   <div class="who" id="whoLine">Not signed in</div>
@@ -1072,7 +1063,6 @@
 <aside class="side" id="side" aria-label="Sections">
   <div class="menu-header">
     <div class="side-title">RigPMPro</div>
-    <button class="menu-btn" id="menuBtn" type="button" aria-label="Close the menu" title="Close menu">✕</button>
   </div>
   <button data-go="s39">Assets</button>
   <button data-go="s38">Maintenance</button>
