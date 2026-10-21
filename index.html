@@ -536,6 +536,53 @@
 <!-- S20 Totals -->
 <section class="screen" id="s20" data-title="Totals">
   <h1>Totals</h1>
+
+  <!-- Filter Bar -->
+  <div class="card" id="s20FilterBar" style="margin-bottom: 12px;">
+    <div class="small" style="margin-bottom: 10px; font-weight: 700;">Filter Results</div>
+    <div style="display: grid; grid-template-columns: 130px 130px 140px 120px 150px 150px 90px 80px; gap: 8px; align-items: flex-end; margin-bottom: 10px;">
+      <div>
+        <label for="s20FilterCat" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Category</label>
+        <select id="s20FilterCat" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      <div>
+        <label for="s20FilterAssets" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Assets</label>
+        <select id="s20FilterAssets" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+          <option value="">All Assets</option>
+        </select>
+      </div>
+      <div>
+        <label for="s20FilterViewBy" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">View by</label>
+        <select id="s20FilterViewBy" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+          <option value="">-- None --</option>
+          <option value="lifetime">Lifetime</option>
+          <option value="current-week">Current Week</option>
+          <option value="current-month">Current Month</option>
+          <option value="current-quarter">Current Quarter</option>
+          <option value="current-year">Current Year</option>
+        </select>
+      </div>
+      <div>
+        <label for="s20FilterChooseYear" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Choose Year</label>
+        <select id="s20FilterChooseYear" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+          <option value="">-- None --</option>
+        </select>
+      </div>
+      <div>
+        <label for="s20FilterFromDate" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">From</label>
+        <input id="s20FilterFromDate" type="date" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+      </div>
+      <div>
+        <label for="s20FilterToDate" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">To</label>
+        <input id="s20FilterToDate" type="date" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+      </div>
+      <button class="btn small-btn" id="s20ApplyFilters" type="button" style="width: 100%; min-height: 44px; font-size: 0.9rem; padding: 6px;">Apply</button>
+      <button class="btn ghost small-btn" id="s20ResetFilters" type="button" style="width: 100%; min-height: 44px; font-size: 0.9rem; padding: 6px;">Reset</button>
+    </div>
+  </div>
+
   <div class="tabs" id="periodTabs"></div>
   <div id="selTotals"></div>
   <div class="tabs two" id="sortTabs"></div>
@@ -553,6 +600,53 @@
 <!-- S21 Repair history -->
 <section class="screen" id="s21" data-title="History">
   <h1>Repair history</h1>
+
+  <!-- Filter Bar -->
+  <div class="card" id="s21FilterBar" style="margin-bottom: 12px;">
+    <div class="small" style="margin-bottom: 10px; font-weight: 700;">Filter Results</div>
+    <div style="display: grid; grid-template-columns: 130px 130px 140px 120px 150px 150px 90px 80px; gap: 8px; align-items: flex-end; margin-bottom: 10px;">
+      <div>
+        <label for="s21FilterCat" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Category</label>
+        <select id="s21FilterCat" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+      <div>
+        <label for="s21FilterAssets" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Assets</label>
+        <select id="s21FilterAssets" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+          <option value="">All Assets</option>
+        </select>
+      </div>
+      <div>
+        <label for="s21FilterViewBy" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">View by</label>
+        <select id="s21FilterViewBy" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+          <option value="">-- None --</option>
+          <option value="lifetime">Lifetime</option>
+          <option value="current-week">Current Week</option>
+          <option value="current-month">Current Month</option>
+          <option value="current-quarter">Current Quarter</option>
+          <option value="current-year">Current Year</option>
+        </select>
+      </div>
+      <div>
+        <label for="s21FilterChooseYear" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Choose Year</label>
+        <select id="s21FilterChooseYear" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+          <option value="">-- None --</option>
+        </select>
+      </div>
+      <div>
+        <label for="s21FilterFromDate" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">From</label>
+        <input id="s21FilterFromDate" type="date" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+      </div>
+      <div>
+        <label for="s21FilterToDate" style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">To</label>
+        <input id="s21FilterToDate" type="date" style="width: 100%; min-height: 44px; padding: 6px; font-size: 0.9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);">
+      </div>
+      <button class="btn small-btn" id="s21ApplyFilters" type="button" style="width: 100%; min-height: 44px; font-size: 0.9rem; padding: 6px;">Apply</button>
+      <button class="btn ghost small-btn" id="s21ResetFilters" type="button" style="width: 100%; min-height: 44px; font-size: 0.9rem; padding: 6px;">Reset</button>
+    </div>
+  </div>
+
   <div id="selHist"></div>
   <div id="historyList"></div>
   <div class="stack" style="margin-top:12px"><button class="btn ghost" type="button" data-back="1">Cancel</button></div>
@@ -1263,7 +1357,7 @@
     document.querySelectorAll(".screen").forEach(function (s) { s.classList.toggle("active", s.id === id); });
     $("side").hidden = !state.signedIn || state.mode === "carry" || AUTH_SCREENS.indexOf(id) !== -1;
     // Menu button always visible for hamburger menu
-    $("menuBtn").hidden = false;
+    if ($("headerBackBtn")) $("headerBackBtn").hidden = false;
     // Show back button on data entry screens (signed in, not home/auth screens)
     $("headerBackBtn").style.display = (state.signedIn && AUTH_SCREENS.indexOf(id) === -1 && window.history.length > 1) ? "flex" : "none";
     if (!state.signedIn) { document.body.classList.remove("menu-open"); } else { document.body.classList.add("menu-open"); }
@@ -1304,6 +1398,9 @@
     if (id === "s24") renderReminders();
     if (id === "s27") renderAccount();
     if (id === "s18") renderEditAsset();
+    if (id === "dashboard") renderDashboard();
+    if (id === "s8new") renderAssetsList("all");
+    if (id === "s8a" && state.currentAssetId) renderAssetDetail(state.assets.find(function(a) { return a.id === state.currentAssetId; }));
   }
   function updatePlanPick() { document.querySelectorAll("label.pick").forEach(function (l) { var r = l.querySelector('input[type="radio"]'); if (r) l.classList.toggle("on", r.checked); }); }
   document.addEventListener("change", updatePlanPick);
@@ -1965,7 +2062,7 @@
     state.draft = { type: b.getAttribute("data-addtype"), hasSub: "", make: "", model: "", year: "", vin6: "", nick: "", onUnit: "", subMk: "", subMd: "", engine: "", engOther: "" };
     renderAddCard();
   });
-  $("s9Back").addEventListener("click", function () { syncAdd(); show("s8"); });
+  // Back functionality handled by data-back="1" attribute on Cancel button
   $("s9Save").addEventListener("click", function () {
     syncAdd();
     var d = state.draft, err = $("s9Err"); err.textContent = "";
@@ -2463,6 +2560,8 @@
     $("selTotals").innerHTML = selectorHtml(false);
     var p = state.period, chosen = state.assets.filter(selected);
     var list = state.entries.filter(function (e) { var a = assetById(e.assetId); return a && selected(a) && inPeriod(e.date, p); });
+    // Apply custom filters
+    list = applyTotalsFilters(list);
     $("grandTotal").textContent = money(list.reduce(function (t, e) { return t + e.cents; }, 0));
     $("periodLabel").textContent = PERIOD_LABEL[p] + " | " + (state.selAll ? "All assets" : chosen.length ? chosen.length + " checked" : "No assets checked");
     var sums = chosen.map(function (a) { return { a: a, cents: list.filter(function (e) { return e.assetId === a.id; }).reduce(function (t, e) { return t + e.cents; }, 0) }; });
@@ -2488,10 +2587,321 @@
   function renderHistory() {
     $("selHist").innerHTML = selectorHtml(false);
     var list = state.entries.filter(function (e) { var a = assetById(e.assetId); return a && selected(a); }).sort(function (x, y) { return x.date < y.date ? 1 : -1; });
+    // Apply history filters
+    list = applyHistoryFilters(list);
     if (!list.length) { $("historyList").innerHTML = '<p class="muted">No work logged for the checked assets.</p>'; return; }
     var hp = pageSlice(list, "hist");
     $("historyList").innerHTML = pagerHtml(hp, "hist") + hp.items.map(entryCard).join("");
   }
+
+  /* ---------- Filter functionality for S20 and S21 ---------- */
+  // Initialize filter state
+  state.filterS20Category = "";
+  state.filterS20DateRange = "";
+  state.filterS20Year = new Date().getFullYear();
+  state.filterS20FromDate = "";
+  state.filterS20ToDate = "";
+  state.filterS21Category = "";
+  state.filterS21DateRange = "";
+  state.filterS21Year = new Date().getFullYear();
+  state.filterS21FromDate = "";
+  state.filterS21ToDate = "";
+
+  // Helper: Get week start date (Monday)
+  function getWeekStart(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    var day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(d.setDate(diff)).toISOString().split("T")[0];
+  }
+
+  // Helper: Check if date is in current week
+  function isInCurrentWeek(dateStr) {
+    var today = new Date(TODAY + "T00:00:00");
+    var weekStart = new Date(getWeekStart(TODAY));
+    var weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    var checkDate = new Date(dateStr + "T00:00:00");
+    return checkDate >= weekStart && checkDate <= weekEnd;
+  }
+
+  // Helper: Check if date is in current month
+  function isInCurrentMonth(dateStr) {
+    var today = new Date(TODAY);
+    var checkDate = new Date(dateStr);
+    return today.getFullYear() === checkDate.getFullYear() && today.getMonth() === checkDate.getMonth();
+  }
+
+  // Helper: Check if date is in current quarter
+  function isInCurrentQuarter(dateStr) {
+    var today = new Date(TODAY);
+    var checkDate = new Date(dateStr);
+    var todayQuarter = Math.floor(today.getMonth() / 3);
+    var checkQuarter = Math.floor(checkDate.getMonth() / 3);
+    return today.getFullYear() === checkDate.getFullYear() && todayQuarter === checkQuarter;
+  }
+
+  // Helper: Check if date is in current year
+  function isInCurrentYear(dateStr) {
+    var today = new Date(TODAY);
+    var checkDate = new Date(dateStr);
+    return today.getFullYear() === checkDate.getFullYear();
+  }
+
+  // Apply filters to totals data
+  function applyTotalsFilters(list) {
+    return list.filter(function (e) {
+      // Apply category filter
+      if (state.filterS20Category && e.cat !== state.filterS20Category) return false;
+      // Apply date filter (mutually exclusive: View by, Choose Year, or Date Range)
+      if (state.filterS20ViewBy) {
+        if (state.filterS20ViewBy === "current-week" && !isInCurrentWeek(e.date)) return false;
+        if (state.filterS20ViewBy === "current-month" && !isInCurrentMonth(e.date)) return false;
+        if (state.filterS20ViewBy === "current-quarter" && !isInCurrentQuarter(e.date)) return false;
+        if (state.filterS20ViewBy === "current-year" && !isInCurrentYear(e.date)) return false;
+        // "lifetime" has no additional date filtering
+      }
+      if (state.filterS20ChooseYear) {
+        if (!e.date.startsWith(String(state.filterS20ChooseYear))) return false;
+      }
+      if (state.filterS20FromDate || state.filterS20ToDate) {
+        var fromOk = !state.filterS20FromDate || e.date >= state.filterS20FromDate;
+        var toOk = !state.filterS20ToDate || e.date <= state.filterS20ToDate;
+        if (!fromOk || !toOk) return false;
+      }
+      return true;
+    });
+  }
+
+  // Apply filters to history data
+  function applyHistoryFilters(list) {
+    return list.filter(function (e) {
+      // Apply category filter
+      if (state.filterS21Category && e.cat !== state.filterS21Category) return false;
+      // Apply date filter (mutually exclusive: View by, Choose Year, or Date Range)
+      if (state.filterS21ViewBy) {
+        if (state.filterS21ViewBy === "current-week" && !isInCurrentWeek(e.date)) return false;
+        if (state.filterS21ViewBy === "current-month" && !isInCurrentMonth(e.date)) return false;
+        if (state.filterS21ViewBy === "current-quarter" && !isInCurrentQuarter(e.date)) return false;
+        if (state.filterS21ViewBy === "current-year" && !isInCurrentYear(e.date)) return false;
+        // "lifetime" has no additional date filtering
+      }
+      if (state.filterS21ChooseYear) {
+        if (!e.date.startsWith(String(state.filterS21ChooseYear))) return false;
+      }
+      if (state.filterS21FromDate || state.filterS21ToDate) {
+        var fromOk = !state.filterS21FromDate || e.date >= state.filterS21FromDate;
+        var toOk = !state.filterS21ToDate || e.date <= state.filterS21ToDate;
+        if (!fromOk || !toOk) return false;
+      }
+      return true;
+    });
+  }
+
+  // Initialize filter UI and handlers for S20
+  function initS20Filters() {
+    // Populate category dropdown
+    var catSel = $("s20FilterCat");
+    if (catSel) {
+      catSel.innerHTML = '<option value="">All Categories</option>' + MAINT_CATS.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join("");
+      catSel.addEventListener("change", function () { state.filterS20Category = this.value; renderTotals(); });
+    }
+
+    // Populate year dropdown (2020 to current year)
+    var yearDropdown = $("s20FilterChooseYear");
+    if (yearDropdown) {
+      var currentYear = new Date().getFullYear();
+      var yearOptions = '<option value="">-- None --</option>';
+      for (var y = currentYear; y >= 2020; y--) {
+        yearOptions += '<option value="' + y + '">' + y + '</option>';
+      }
+      yearDropdown.innerHTML = yearOptions;
+      yearDropdown.value = state.filterS20ChooseYear || "";
+      yearDropdown.addEventListener("change", function () {
+        state.filterS20ChooseYear = this.value;
+        state.filterS20ViewBy = "";
+        state.filterS20FromDate = "";
+        state.filterS20ToDate = "";
+        if (viewByDropdown) viewByDropdown.value = "";
+        if (fromDateInput) fromDateInput.value = "";
+        if (toDateInput) toDateInput.value = "";
+        renderTotals();
+      });
+    }
+
+    // View by dropdown
+    var viewByDropdown = $("s20FilterViewBy");
+    if (viewByDropdown) {
+      viewByDropdown.value = state.filterS20ViewBy || "";
+      viewByDropdown.addEventListener("change", function () {
+        state.filterS20ViewBy = this.value;
+        state.filterS20ChooseYear = "";
+        state.filterS20FromDate = "";
+        state.filterS20ToDate = "";
+        if (yearDropdown) yearDropdown.value = "";
+        if (fromDateInput) fromDateInput.value = "";
+        if (toDateInput) toDateInput.value = "";
+        renderTotals();
+      });
+    }
+
+    // Date range pickers
+    var fromDateInput = $("s20FilterFromDate");
+    var toDateInput = $("s20FilterToDate");
+    if (fromDateInput) {
+      fromDateInput.value = state.filterS20FromDate;
+      fromDateInput.addEventListener("change", function () {
+        state.filterS20FromDate = this.value;
+        state.filterS20ViewBy = "";
+        state.filterS20ChooseYear = "";
+        if (viewByDropdown) viewByDropdown.value = "";
+        if (yearDropdown) yearDropdown.value = "";
+        renderTotals();
+      });
+    }
+    if (toDateInput) {
+      toDateInput.value = state.filterS20ToDate;
+      toDateInput.addEventListener("change", function () {
+        state.filterS20ToDate = this.value;
+        state.filterS20ViewBy = "";
+        state.filterS20ChooseYear = "";
+        if (viewByDropdown) viewByDropdown.value = "";
+        if (yearDropdown) yearDropdown.value = "";
+        renderTotals();
+      });
+    }
+
+    // Apply Filters button
+    var applyBtn = $("s20ApplyFilters");
+    if (applyBtn) {
+      applyBtn.addEventListener("click", function () { renderTotals(); toast("Filters applied"); });
+    }
+
+    // Reset Filters button
+    var resetBtn = $("s20ResetFilters");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        state.filterS20Category = "";
+        state.filterS20ViewBy = "";
+        state.filterS20ChooseYear = "";
+        state.filterS20FromDate = "";
+        state.filterS20ToDate = "";
+        if (catSel) catSel.value = "";
+        if (viewByDropdown) viewByDropdown.value = "";
+        if (yearDropdown) yearDropdown.value = "";
+        if (fromDateInput) fromDateInput.value = "";
+        if (toDateInput) toDateInput.value = "";
+        renderTotals();
+        toast("Filters reset");
+      });
+    }
+  }
+
+  // Initialize filter UI and handlers for S21
+  function initS21Filters() {
+    // Populate category dropdown
+    var catSel = $("s21FilterCat");
+    if (catSel) {
+      catSel.innerHTML = '<option value="">All Categories</option>' + MAINT_CATS.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join("");
+      catSel.addEventListener("change", function () { state.filterS21Category = this.value; renderHistory(); });
+    }
+
+    // Populate year dropdown (2020 to current year)
+    var yearDropdown = $("s21FilterChooseYear");
+    if (yearDropdown) {
+      var currentYear = new Date().getFullYear();
+      var yearOptions = '<option value="">-- None --</option>';
+      for (var y = currentYear; y >= 2020; y--) {
+        yearOptions += '<option value="' + y + '">' + y + '</option>';
+      }
+      yearDropdown.innerHTML = yearOptions;
+      yearDropdown.value = state.filterS21ChooseYear || "";
+      yearDropdown.addEventListener("change", function () {
+        state.filterS21ChooseYear = this.value;
+        state.filterS21ViewBy = "";
+        state.filterS21FromDate = "";
+        state.filterS21ToDate = "";
+        if (viewByDropdown) viewByDropdown.value = "";
+        if (fromDateInput) fromDateInput.value = "";
+        if (toDateInput) toDateInput.value = "";
+        renderHistory();
+      });
+    }
+
+    // View by dropdown
+    var viewByDropdown = $("s21FilterViewBy");
+    if (viewByDropdown) {
+      viewByDropdown.value = state.filterS21ViewBy || "";
+      viewByDropdown.addEventListener("change", function () {
+        state.filterS21ViewBy = this.value;
+        state.filterS21ChooseYear = "";
+        state.filterS21FromDate = "";
+        state.filterS21ToDate = "";
+        if (yearDropdown) yearDropdown.value = "";
+        if (fromDateInput) fromDateInput.value = "";
+        if (toDateInput) toDateInput.value = "";
+        renderHistory();
+      });
+    }
+
+    // Date range pickers
+    var fromDateInput = $("s21FilterFromDate");
+    var toDateInput = $("s21FilterToDate");
+    if (fromDateInput) {
+      fromDateInput.value = state.filterS21FromDate;
+      fromDateInput.addEventListener("change", function () {
+        state.filterS21FromDate = this.value;
+        state.filterS21ViewBy = "";
+        state.filterS21ChooseYear = "";
+        if (viewByDropdown) viewByDropdown.value = "";
+        if (yearDropdown) yearDropdown.value = "";
+        renderHistory();
+      });
+    }
+    if (toDateInput) {
+      toDateInput.value = state.filterS21ToDate;
+      toDateInput.addEventListener("change", function () {
+        state.filterS21ToDate = this.value;
+        state.filterS21ViewBy = "";
+        state.filterS21ChooseYear = "";
+        if (viewByDropdown) viewByDropdown.value = "";
+        if (yearDropdown) yearDropdown.value = "";
+        renderHistory();
+      });
+    }
+
+    // Apply Filters button
+    var applyBtn = $("s21ApplyFilters");
+    if (applyBtn) {
+      applyBtn.addEventListener("click", function () { renderHistory(); toast("Filters applied"); });
+    }
+
+    // Reset Filters button
+    var resetBtn = $("s21ResetFilters");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        state.filterS21Category = "";
+        state.filterS21ViewBy = "";
+        state.filterS21ChooseYear = "";
+        state.filterS21FromDate = "";
+        state.filterS21ToDate = "";
+        if (catSel) catSel.value = "";
+        if (viewByDropdown) viewByDropdown.value = "";
+        if (yearDropdown) yearDropdown.value = "";
+        if (fromDateInput) fromDateInput.value = "";
+        if (toDateInput) toDateInput.value = "";
+        renderHistory();
+        toast("Filters reset");
+      });
+    }
+  }
+
+  // Initialize filters when screens are rendered
+  var originalRender = render;
+  render = function(id) {
+    originalRender(id);
+    if (id === "s20") initS20Filters();
+    if (id === "s21") initS21Filters();
+  };
 
   /* ---------- Work record: view, edit, delete ---------- */
   function recFind(id) { return state.entries.filter(function (x) { return x.id === id; })[0] || null; }
@@ -2834,17 +3244,6 @@
     show("s0");
   }
 })();
-</script>
-
-<!-- NEW SCREENS: Dashboard, Assets, Settings, Maintenance -->
-<script>
-// Initialize dashboard on load
-document.addEventListener("DOMContentLoaded", function() {
-  if (document.getElementById("dashboard")) {
-    renderDashboard();
-    renderAssetsList("all");
-  }
-});
 </script>
 
 </body>
