@@ -8,7 +8,7 @@ const app = express();
 
 // Routes for HTML pages
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/lpv8.html');
 });
 
 app.get('/app.html', (req, res) => {
