@@ -427,7 +427,14 @@
     document.querySelectorAll('.demo-menu-item').forEach(btn => {
       btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+
+    // Mark the clicked asset as active
+    const buttons = document.querySelectorAll('.demo-menu-item');
+    buttons.forEach(btn => {
+      if (btn.textContent.toLowerCase() === assetType.toLowerCase()) {
+        btn.classList.add('active');
+      }
+    });
 
     // Update asset info
     const data = demoData[assetType];
@@ -478,6 +485,11 @@
   function exitDemo() {
     window.location.href = '/';
   }
+
+  // Auto-load Truck view on page load
+  window.addEventListener('load', () => {
+    selectAsset('truck');
+  });
 </script>
 
 </body>
