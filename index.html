@@ -994,11 +994,35 @@ let logRepairShowForm = true;
     
     if (logRepairShowForm) {
       // Show form to log repair - wider index card layout
-      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 20px; width: 100%; max-width: 750px;'>
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 16px; width: 100%; max-width: 100%;'>
+        <style>
+          @media (min-width: 900px) {
+            .log-card { max-width: 750px; }
+          }
+          @media (min-width: 768px) and (max-width: 899px) {
+            .log-card { max-width: 600px; }
+          }
+          @media (max-width: 767px) {
+            .log-card { max-width: 100%; }
+          }
+          
+          .log-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+          }
+          
+          @media (max-width: 767px) {
+            .log-row-2col {
+              grid-template-columns: 1fr;
+            }
+          }
+        </style>
+        <div class='log-card'>
         <h3 style='margin: 0 0 20px 0; color: #FFFF00; font-size: 1.5rem; font-weight: 700;'>Log Repair/PM</h3>
         
         <form onsubmit="event.preventDefault(); saveMaintenanceLog()" style='display: flex; flex-direction: column; gap: 14px;'>
-          <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 12px;'>
+          <div class='log-row-2col'>
             <div>
               <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Asset Type</label>
               <select id="logAssetType" onchange="updateAssetDropdown()" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
@@ -1018,7 +1042,7 @@ let logRepairShowForm = true;
             </div>
           </div>
 
-          <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 12px;'>
+          <div class='log-row-2col'>
             <div>
               <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type of Work</label>
               <select id="logType" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
@@ -1039,7 +1063,7 @@ let logRepairShowForm = true;
             <input type='text' id="logDesc" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
           </div>
 
-          <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 12px;'>
+          <div class='log-row-2col'>
             <div>
               <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
               <input type='date' id="logDate" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
@@ -1056,16 +1080,19 @@ let logRepairShowForm = true;
             <button type='submit' style='padding: 8px 16px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; flex: 0 0 auto;'>Save</button>
           </div>
         </form>
+        </div>
       </div>`;
     } else {
       // Show success message with option to add another
-      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 24px; text-align: center; width: 100%; max-width: 750px;'>
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 20px; text-align: center; width: 100%; max-width: 100%;'>
+        <div class='log-card'>
         <h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.3rem;'>✓ Repair Logged</h3>
         <p style='color: var(--muted); margin-bottom: 20px;'>Maintenance record saved successfully</p>
         
         <div style='display: flex; gap: 8px; flex-direction: column;'>
           <button onclick='logRepairShowForm = true; showLogRepairPM();' style='padding: 12px 20px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;'>Add Another Repair</button>
           <button onclick='goBack()' style='padding: 12px 20px; background: transparent; color: #FFFF00; border: 2px solid #FFFF00; border-radius: 4px; font-weight: 600; cursor: pointer;'>Done</button>
+        </div>
         </div>
       </div>`;
     }
