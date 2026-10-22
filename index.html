@@ -1120,7 +1120,7 @@
         ${Array.from({length: 16}, (_, i) => 2020 + i).map(y => `<option value='${y}' ${maintenanceFilterState.yearFilter === y ? 'selected' : ''}>${y}</option>`).join('')}
       </select>
       
-      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; flex: 1; min-width: 150px;'>
+      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; width: 200px;'>
       
       <button onclick='applyMaintenanceFilters()' style='padding: 6px 16px; background: #ff9d4f; border: none; border-radius: 4px; color: var(--ink); font-weight: 700; font-size: 0.85rem; cursor: pointer;'>Apply Filters</button>
     </div>`;
@@ -1258,7 +1258,7 @@
         ${Array.from({length: 16}, (_, i) => 2020 + i).map(y => `<option value='${y}' ${maintenanceFilterState.yearFilter === y ? 'selected' : ''}>${y}</option>`).join('')}
       </select>
       
-      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; flex: 1; min-width: 150px;'>
+      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; width: 200px;'>
       
       <button onclick='applyMaintenanceFilters()' style='padding: 6px 16px; background: #ff9d4f; border: none; border-radius: 4px; color: var(--ink); font-weight: 700; font-size: 0.85rem; cursor: pointer;'>Apply Filters</button>
     </div>`;
