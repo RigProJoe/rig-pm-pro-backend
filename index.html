@@ -207,7 +207,10 @@
   }
 
   .demo-form-group label {
-    display: none;
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
   }
 
   .demo-form-group input,
@@ -222,16 +225,34 @@
     font-size: 0.95rem;
   }
 
-  .asset-form-section .demo-form-group {
-    display: inline-block;
-    width: calc(20% - 8px);
-    margin-right: 10px;
-    margin-bottom: 0;
-    vertical-align: top;
+  .asset-form-section {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    align-items: flex-end;
   }
 
-  .asset-form-section .demo-form-group:last-child {
-    margin-right: 0;
+  .asset-form-section h3 {
+    grid-column: 1 / -1;
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    color: var(--orange);
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .asset-form-section .demo-form-group {
+    margin-bottom: 0;
+  }
+
+  .asset-form-section .demo-form-group label {
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+
+  .asset-form-section .demo-form-group input {
+    padding: 8px;
+    font-size: 0.9rem;
   }
 
   .demo-form-group input:focus,
