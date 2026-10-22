@@ -1,0 +1,13 @@
+This file needs the showRepairHistory function updated with:
+1. Filter dropdowns: Asset (All/individual), Period (Lifetime/Current Year/Previous Year/Current Month/Specific Month), Month picker
+2. Table-style display with columns: Date, Asset, Type, Description, Cost
+3. Filter logic to filter logs based on selections
+
+The function should build filter UI with dropdowns and month selector, then apply filters to the logs array, and display results in an HTML table format.
+
+Key features:
+- Asset dropdown: "All Assets" + individual asset labels
+- Period dropdown with conditional month picker
+- Filter logic for each period (lifetime, currentYear, previousYear, currentMonth, specificMonth)
+- Table display with Date, Asset, Type, Description, Cost columns
+- Show "No logs match filters" if no results

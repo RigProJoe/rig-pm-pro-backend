@@ -1056,17 +1056,20 @@
     showLogRepairPM();
   }
 
-  let repairHistoryState = {
+  let maintenanceFilterState = {
     assetFilter: 'all',
-    periodFilter: 'lifetime',
+    periodFilter: 'currentMonth',
     monthFilter: new Date().getMonth(),
-    yearFilter: new Date().getFullYear()
+    yearFilter: new Date().getFullYear(),
+    searchFilter: ''
   };
 
-  function setRepairHistoryFilters() {
-    repairHistoryState.assetFilter = document.getElementById('rhAssetFilter').value;
-    repairHistoryState.periodFilter = document.getElementById('rhPeriodFilter').value;
-    repairHistoryState.monthFilter = parseInt(document.getElementById('rhMonthFilter').value);
+  function applyMaintenanceFilters() {
+    maintenanceFilterState.assetFilter = document.getElementById('mfAssetFilter')?.value || 'all';
+    maintenanceFilterState.periodFilter = document.getElementById('mfPeriodFilter').value;
+    maintenanceFilterState.monthFilter = parseInt(document.getElementById('mfMonthFilter').value);
+    maintenanceFilterState.yearFilter = parseInt(document.getElementById('mfYearFilter').value);
+    maintenanceFilterState.searchFilter = document.getElementById('mfSearchFilter')?.value || '';
     showRepairHistory();
   }
 
@@ -1095,66 +1098,87 @@
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const currentYear = new Date().getFullYear();
     
+    // Filter controls
     let html = `<div style='padding: 16px; background: var(--soft); border-bottom: 2px solid var(--line);'>
       <div style='margin-bottom: 12px;'>
-        <label style='display: block; color: #FFFF00; font-weight: 700; margin-bottom: 4px; font-size: 0.8rem;'>Asset:</label>
-        <select id='rhAssetFilter' onchange='setRepairHistoryFilters()' style='width: 100%; max-width: 300px; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
-          <option value='all' ${repairHistoryState.assetFilter === 'all' ? 'selected' : ''}>All Assets</option>
-    `;
-    
-    assets.forEach((asset, index) => {
-      html += `<option value='${index}' ${repairHistoryState.assetFilter === String(index) ? 'selected' : ''}>${asset.label}</option>`;
-    });
-    
-    html += `
-        </select>
+        <label style='display: block; color: #FFFF00; font-weight: 700; margin-bottom: 6px; font-size: 0.8rem;'>Filters:</label>
+        
+        <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;'>
+          <div>
+            <label style='display: block; color: #e8d5c4; font-size: 0.75rem; margin-bottom: 3px;'>Period</label>
+            <select id='mfPeriodFilter' onchange='applyMaintenanceFilters()' style='width: 100%; padding: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+              <option value='currentWeek' ${maintenanceFilterState.periodFilter === 'currentWeek' ? 'selected' : ''}>Current Week</option>
+              <option value='currentMonth' ${maintenanceFilterState.periodFilter === 'currentMonth' ? 'selected' : ''}>Current Month</option>
+              <option value='currentQuarter' ${maintenanceFilterState.periodFilter === 'currentQuarter' ? 'selected' : ''}>Current Quarter</option>
+              <option value='currentYear' ${maintenanceFilterState.periodFilter === 'currentYear' ? 'selected' : ''}>Current Year</option>
+            </select>
+          </div>
+          
+          <div>
+            <label style='display: block; color: #e8d5c4; font-size: 0.75rem; margin-bottom: 3px;'>Month (Jan-Dec)</label>
+            <select id='mfMonthFilter' onchange='applyMaintenanceFilters()' style='width: 100%; padding: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+              ${months.map((m, i) => `<option value='${i}' ${maintenanceFilterState.monthFilter === i ? 'selected' : ''}>${m}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        
+        <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;'>
+          <div>
+            <label style='display: block; color: #e8d5c4; font-size: 0.75rem; margin-bottom: 3px;'>Year</label>
+            <select id='mfYearFilter' onchange='applyMaintenanceFilters()' style='width: 100%; padding: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+              ${Array.from({length: 16}, (_, i) => 2020 + i).map(y => `<option value='${y}' ${maintenanceFilterState.yearFilter === y ? 'selected' : ''}>${y}</option>`).join('')}
+            </select>
+          </div>
+          
+          <div>
+            <label style='display: block; color: #e8d5c4; font-size: 0.75rem; margin-bottom: 3px;'>Search</label>
+            <input type='text' id='mfSearchFilter' placeholder='Search repairs...' onchange='applyMaintenanceFilters()' style='width: 100%; padding: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+          </div>
+        </div>
       </div>
-      
-      <div style='margin-bottom: 12px;'>
-        <label style='display: block; color: #FFFF00; font-weight: 700; margin-bottom: 4px; font-size: 0.8rem;'>Period:</label>
-        <select id='rhPeriodFilter' onchange='setRepairHistoryFilters()' style='width: 100%; max-width: 300px; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
-          <option value='lifetime' ${repairHistoryState.periodFilter === 'lifetime' ? 'selected' : ''}>Lifetime</option>
-          <option value='currentYear' ${repairHistoryState.periodFilter === 'currentYear' ? 'selected' : ''}>Current Year (${currentYear})</option>
-          <option value='previousYear' ${repairHistoryState.periodFilter === 'previousYear' ? 'selected' : ''}>Previous Year (${currentYear - 1})</option>
-          <option value='currentMonth' ${repairHistoryState.periodFilter === 'currentMonth' ? 'selected' : ''}>Current Month</option>
-          <option value='specificMonth' ${repairHistoryState.periodFilter === 'specificMonth' ? 'selected' : ''}>Specific Month</option>
-        </select>
-      </div>
-      
-      ${repairHistoryState.periodFilter === 'specificMonth' ? `
-      <div style='margin-bottom: 12px;'>
-        <label style='display: block; color: #FFFF00; font-weight: 700; margin-bottom: 4px; font-size: 0.8rem;'>Month:</label>
-        <select id='rhMonthFilter' onchange='setRepairHistoryFilters()' style='width: 100%; max-width: 300px; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
-    ` + months.map((m, i) => `<option value='${i}' ${repairHistoryState.monthFilter === i ? 'selected' : ''}>${m}</option>`).join('') + `
-        </select>
-      </div>
-      ` : `<input type='hidden' id='rhMonthFilter' value='${repairHistoryState.monthFilter}'>`}
     </div>`;
 
-    // Filter logs
+    // Apply filters to logs
     let filteredLogs = logs;
     
-    if (repairHistoryState.assetFilter !== 'all') {
-      filteredLogs = filteredLogs.filter(l => l.assetIndex === parseInt(repairHistoryState.assetFilter));
+    // Asset filter
+    if (maintenanceFilterState.assetFilter !== 'all') {
+      filteredLogs = filteredLogs.filter(l => l.assetIndex === parseInt(maintenanceFilterState.assetFilter));
     }
     
+    // Date range filter
     const today = new Date();
-    if (repairHistoryState.periodFilter === 'currentYear') {
-      filteredLogs = filteredLogs.filter(l => new Date(l.date).getFullYear() === today.getFullYear());
-    } else if (repairHistoryState.periodFilter === 'previousYear') {
-      filteredLogs = filteredLogs.filter(l => new Date(l.date).getFullYear() === today.getFullYear() - 1);
-    } else if (repairHistoryState.periodFilter === 'currentMonth') {
+    const year = maintenanceFilterState.yearFilter;
+    const month = maintenanceFilterState.monthFilter;
+    
+    if (maintenanceFilterState.periodFilter === 'currentWeek') {
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - today.getDay());
+      filteredLogs = filteredLogs.filter(l => new Date(l.date) >= weekStart && new Date(l.date) <= today);
+    } else if (maintenanceFilterState.periodFilter === 'currentMonth') {
       filteredLogs = filteredLogs.filter(l => {
         const d = new Date(l.date);
         return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
       });
-    } else if (repairHistoryState.periodFilter === 'specificMonth') {
+    } else if (maintenanceFilterState.periodFilter === 'currentQuarter') {
+      const quarter = Math.floor(today.getMonth() / 3);
       filteredLogs = filteredLogs.filter(l => {
         const d = new Date(l.date);
-        return d.getMonth() === repairHistoryState.monthFilter;
+        return d.getFullYear() === today.getFullYear() && Math.floor(d.getMonth() / 3) === quarter;
       });
+    } else if (maintenanceFilterState.periodFilter === 'currentYear') {
+      filteredLogs = filteredLogs.filter(l => new Date(l.date).getFullYear() === today.getFullYear());
+    }
+    
+    // Search filter
+    if (maintenanceFilterState.searchFilter) {
+      const search = maintenanceFilterState.searchFilter.toLowerCase();
+      filteredLogs = filteredLogs.filter(l => 
+        l.description.toLowerCase().includes(search) || l.type.toLowerCase().includes(search)
+      );
     }
 
+    // Display table
     html += `<div style='padding: 16px;'>`;
     
     if (filteredLogs.length === 0) {
@@ -1208,7 +1232,7 @@
       <div class="demo-panel-header">
         <div>
           <h2>Total Costs</h2>
-          <p>Maintenance spending by asset</p>
+          <p>Summary of maintenance expenses by asset</p>
         </div>
         <button class="demo-back-btn" onclick="goBack()">← Back</button>
       </div>
@@ -1216,25 +1240,189 @@
 
     const assets = loadAssetsFromLocalStorage();
     const logs = JSON.parse(localStorage.getItem("rigpmproMaintenanceLogs") || '[]');
-
+    
     if (assets.length === 0) {
       panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet.</div>";
       return;
     }
 
-    let html = `<div style='padding: 16px; border-bottom: 2px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap;'>`;
-    assets.forEach((asset, index) => {
-      html += `<button onclick="filterTotalCosts(${index})" style='padding: 8px 16px; background: ${totalCostsFilter === index ? '#FFFF00' : 'transparent'}; color: ${totalCostsFilter === index ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>${asset.label}</button>`;
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const currentYear = new Date().getFullYear();
+    
+    // Filter controls (reuse same filters as Repair History)
+    let html = `<div style='padding: 16px; background: var(--soft); border-bottom: 2px solid var(--line);'>
+      <div style='margin-bottom: 12px;'>
+        <label style='display: block; color: #FFFF00; font-weight: 700; margin-bottom: 6px; font-size: 0.8rem;'>Filters:</label>
+        
+        <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;'>
+          <div>
+            <label style='display: block; color: #e8d5c4; font-size: 0.75rem; margin-bottom: 3px;'>Period</label>
+            <select id='mfPeriodFilter' onchange='applyMaintenanceFilters()' style='width: 100%; padding: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+              <option value='currentWeek' ${maintenanceFilterState.periodFilter === 'currentWeek' ? 'selected' : ''}>Current Week</option>
+              <option value='currentMonth' ${maintenanceFilterState.periodFilter === 'currentMonth' ? 'selected' : ''}>Current Month</option>
+              <option value='currentQuarter' ${maintenanceFilterState.periodFilter === 'currentQuarter' ? 'selected' : ''}>Current Quarter</option>
+              <option value='currentYear' ${maintenanceFilterState.periodFilter === 'currentYear' ? 'selected' : ''}>Current Year</option>
+            </select>
+          </div>
+          
+          <div>
+            <label style='display: block; color: #e8d5c4; font-size: 0.75rem; margin-bottom: 3px;'>Month (Jan-Dec)</label>
+            <select id='mfMonthFilter' onchange='applyMaintenanceFilters()' style='width: 100%; padding: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+              ${months.map((m, i) => `<option value='${i}' ${maintenanceFilterState.monthFilter === i ? 'selected' : ''}>${m}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        
+        <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;'>
+          <div>
+            <label style='display: block; color: #e8d5c4; font-size: 0.75rem; margin-bottom: 3px;'>Year</label>
+            <select id='mfYearFilter' onchange='applyMaintenanceFilters()' style='width: 100%; padding: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+              ${Array.from({length: 16}, (_, i) => 2020 + i).map(y => `<option value='${y}' ${maintenanceFilterState.yearFilter === y ? 'selected' : ''}>${y}</option>`).join('')}
+            </select>
+          </div>
+          
+          <div>
+            <label style='display: block; color: #e8d5c4; font-size: 0.75rem; margin-bottom: 3px;'>Search</label>
+            <input type='text' id='mfSearchFilter' placeholder='Search repairs...' onchange='applyMaintenanceFilters()' style='width: 100%; padding: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+    // Apply same filters to logs
+    let filteredLogs = logs;
+    
+    // Asset filter
+    if (maintenanceFilterState.assetFilter !== 'all') {
+      filteredLogs = filteredLogs.filter(l => l.assetIndex === parseInt(maintenanceFilterState.assetFilter));
+    }
+    
+    // Date range filter
+    const today = new Date();
+    const year = maintenanceFilterState.yearFilter;
+    const month = maintenanceFilterState.monthFilter;
+    
+    if (maintenanceFilterState.periodFilter === 'currentWeek') {
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - today.getDay());
+      filteredLogs = filteredLogs.filter(l => new Date(l.date) >= weekStart && new Date(l.date) <= today);
+    } else if (maintenanceFilterState.periodFilter === 'currentMonth') {
+      filteredLogs = filteredLogs.filter(l => {
+        const d = new Date(l.date);
+        return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
+      });
+    } else if (maintenanceFilterState.periodFilter === 'currentQuarter') {
+      const quarter = Math.floor(today.getMonth() / 3);
+      filteredLogs = filteredLogs.filter(l => {
+        const d = new Date(l.date);
+        return d.getFullYear() === today.getFullYear() && Math.floor(d.getMonth() / 3) === quarter;
+      });
+    } else if (maintenanceFilterState.periodFilter === 'currentYear') {
+      filteredLogs = filteredLogs.filter(l => new Date(l.date).getFullYear() === today.getFullYear());
+    }
+    
+    // Search filter
+    if (maintenanceFilterState.searchFilter) {
+      const search = maintenanceFilterState.searchFilter.toLowerCase();
+      filteredLogs = filteredLogs.filter(l => 
+        l.description.toLowerCase().includes(search) || l.type.toLowerCase().includes(search)
+      );
+    }
+
+    // Calculate totals by asset and type
+    const totals = {};
+    const assetTotals = {};
+    let grandTotal = 0;
+
+    filteredLogs.forEach(log => {
+      const assetLabel = assets[log.assetIndex]?.label || 'Unknown';
+      const cost = parseFloat(log.cost) || 0;
+      
+      if (!assetTotals[assetLabel]) {
+        assetTotals[assetLabel] = 0;
+      }
+      assetTotals[assetLabel] += cost;
+      grandTotal += cost;
+      
+      const key = `${assetLabel}-${log.type}`;
+      if (!totals[key]) {
+        totals[key] = { asset: assetLabel, type: log.type, cost: 0, count: 0 };
+      }
+      totals[key].cost += cost;
+      totals[key].count += 1;
     });
+
+    // Display totals summary
+    html += `<div style='padding: 16px;'>`;
+    
+    if (filteredLogs.length === 0) {
+      html += `<div style='color: var(--muted); text-align: center; padding: 20px;'>No maintenance logs match your filters.</div>`;
+    } else {
+      // Grand total card
+      html += `
+        <div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 16px; margin-bottom: 20px;'>
+          <h3 style='color: #FFFF00; margin: 0 0 8px 0; font-size: 1.1rem;'>Grand Total</h3>
+          <div style='font-size: 2rem; color: #FFFF00; font-weight: 700;'>$${grandTotal.toFixed(2)}</div>
+          <div style='color: var(--muted); font-size: 0.85rem; margin-top: 8px;'>${filteredLogs.length} maintenance records</div>
+        </div>
+      `;
+
+      // By-asset totals
+      html += `
+        <div style='margin-bottom: 20px;'>
+          <h3 style='color: #FFFF00; font-size: 1rem; margin-bottom: 12px;'>By Asset</h3>
+          <table style='width: 100%; border-collapse: collapse; font-size: 0.85rem;'>
+            <thead>
+              <tr style='border-bottom: 2px solid #FFFF00;'>
+                <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Asset</th>
+                <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Total Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      
+      Object.entries(assetTotals).sort((a, b) => b[1] - a[1]).forEach(([asset, total]) => {
+        html += `
+          <tr style='border-bottom: 1px solid rgba(255, 255, 0, 0.2);'>
+            <td style='padding: 8px;'>${asset}</td>
+            <td style='padding: 8px; text-align: right;'>$${total.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+      
+      html += `</tbody></table></div>`;
+
+      // By-type breakdown
+      html += `
+        <div>
+          <h3 style='color: #FFFF00; font-size: 1rem; margin-bottom: 12px;'>By Maintenance Type</h3>
+          <table style='width: 100%; border-collapse: collapse; font-size: 0.85rem;'>
+            <thead>
+              <tr style='border-bottom: 2px solid #FFFF00;'>
+                <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Asset</th>
+                <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Type</th>
+                <th style='padding: 8px; text-align: center; color: #FFFF00; font-weight: 700;'>Count</th>
+                <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      
+      Object.values(totals).sort((a, b) => b.cost - a.cost).forEach(row => {
+        html += `
+          <tr style='border-bottom: 1px solid rgba(255, 255, 0, 0.2);'>
+            <td style='padding: 8px;'>${row.asset}</td>
+            <td style='padding: 8px; color: #FFFF00; font-weight: 700;'>${row.type}</td>
+            <td style='padding: 8px; text-align: center;'>${row.count}</td>
+            <td style='padding: 8px; text-align: right;'>$${row.cost.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+      
+      html += `</tbody></table></div>`;
+    }
+    
     html += `</div>`;
-
-    const selectedAsset = assets[totalCostsFilter];
-    const assetLogs = logs.filter(l => l.assetIndex === totalCostsFilter);
-    const totalCost = assetLogs.reduce((sum, log) => sum + (parseFloat(log.cost) || 0), 0);
-    const pmCost = assetLogs.filter(l => l.type === 'PM').reduce((sum, log) => sum + (parseFloat(log.cost) || 0), 0);
-    const repairCost = assetLogs.filter(l => l.type === 'Repair').reduce((sum, log) => sum + (parseFloat(log.cost) || 0), 0);
-
-    html += `<div style='padding: 16px;'><div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; margin-bottom: 16px;'><h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.3rem;'>${selectedAsset.label}</h3><div style='font-size: 1.1rem;'><div style='margin-bottom: 12px; padding: 12px; background: rgba(255, 255, 0, 0.1); border-left: 4px solid #FFFF00; border-radius: 4px;'><div style='color: #FFFF00; font-weight: 700;'>Total Cost</div><div style='font-size: 1.8rem; color: #FFFF00; font-weight: 700;'>$${totalCost.toFixed(2)}</div></div><div style='margin-bottom: 12px; padding: 8px;'><div><strong>PM Cost:</strong> $${pmCost.toFixed(2)}</div><div><strong>Repair Cost:</strong> $${repairCost.toFixed(2)}</div><div><strong>Log Entries:</strong> ${assetLogs.length}</div></div></div></div></div>`;
     panel.innerHTML = html;
   }
 
