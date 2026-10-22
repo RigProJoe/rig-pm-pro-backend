@@ -969,13 +969,13 @@
     let html = `<div style='padding: 24px; max-width: 500px;'>`;
     
     if (logRepairShowForm) {
-      // Show form to log repair
-      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 16px;'>
-        <h3 style='margin: 0 0 16px; color: #FFFF00; font-size: 1.5rem;'>Log Repair/PM</h3>
+      // Show form to log repair - styled like Add Asset card
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 20px;'>
+        <h3 style='margin: 0 0 20px 0; color: #FFFF00; font-size: 1.5rem; font-weight: 700;'>Log Repair/PM</h3>
         
-        <form onsubmit="event.preventDefault(); saveMaintenanceLog()" style='display: flex; flex-direction: column; gap: 12px;'>
+        <form onsubmit="event.preventDefault(); saveMaintenanceLog()" style='display: flex; flex-direction: column; gap: 14px;'>
           <div>
-            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Asset</label>
+            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Asset</label>
             <select id="logAsset" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
               <option value=''>Select asset...</option>
               ${assets.map((asset, idx) => `<option value='${idx}'>${asset.label}</option>`).join('')}
@@ -983,7 +983,7 @@
           </div>
 
           <div>
-            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type</label>
+            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type</label>
             <select id="logType" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
               <option value=''>Select type...</option>
               <option value='PM'>Preventive Maintenance (PM)</option>
@@ -992,23 +992,23 @@
           </div>
 
           <div>
-            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Description</label>
+            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Description</label>
             <input type='text' id="logDesc" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
           </div>
 
           <div>
-            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
+            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
             <input type='date' id="logDate" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
           </div>
 
           <div>
-            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Cost ($)</label>
+            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Cost ($)</label>
             <input type='number' id="logCost" placeholder='0.00' step='0.01' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
           </div>
 
-          <div style='display: flex; gap: 8px; justify-content: flex-end;'>
-            <button type='button' onclick='showLogRepairPM()' style='padding: 8px 16px; background: transparent; color: #FFFF00; border: 2px solid #FFFF00; border-radius: 4px; font-weight: 600; cursor: pointer;'>Cancel</button>
-            <button type='submit' style='padding: 8px 16px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;'>Save</button>
+          <div style='display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;'>
+            <button type='button' onclick='showLogRepairPM()' style='padding: 8px 16px; background: transparent; color: #FFFF00; border: 2px solid #FFFF00; border-radius: 4px; font-weight: 700; cursor: pointer; flex: 0 0 auto;'>Cancel</button>
+            <button type='submit' style='padding: 8px 16px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; flex: 0 0 auto;'>Save</button>
           </div>
         </form>
       </div>`;
