@@ -325,6 +325,133 @@
     box-shadow: 0 8px 16px rgba(232, 116, 28, 0.3);
   }
 
+  .asset-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 16px;
+  }
+
+  .asset-card {
+    background: var(--soft);
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .asset-card-active {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(232, 116, 28, 0.2);
+  }
+
+  .asset-card-completed {
+    background: rgba(100, 120, 140, 0.3);
+    opacity: 0.6;
+  }
+
+  .asset-card h3 {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+    color: var(--orange);
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .asset-card-content {
+    margin-bottom: 16px;
+  }
+
+  .form-field {
+    margin-bottom: 14px;
+  }
+
+  .form-field label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ink);
+  }
+
+  .form-field input {
+    width: 100%;
+    padding: 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+
+  .form-field input:focus {
+    outline: none;
+    border-color: var(--orange);
+  }
+
+  .form-field input:disabled {
+    background: var(--line);
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .asset-card-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-save, .btn-clear, .btn-cancel {
+    flex: 1;
+    padding: 10px;
+    border: 0;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-save {
+    background: var(--orange);
+    color: #fff;
+  }
+
+  .btn-save:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  .btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-clear {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--muted);
+  }
+
+  .btn-clear:hover:not(:disabled) {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .btn-clear:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-cancel {
+    background: transparent;
+    color: var(--orange);
+    border: 1px solid var(--orange);
+  }
+
+  .btn-cancel:hover {
+    background: rgba(232, 116, 28, 0.1);
+  }
+
   .multi-asset-form {
     display: grid;
     gap: 32px;
@@ -550,6 +677,14 @@
     showChoicePage();
   }
 
+  let assetFormState = {
+    currentAsset: 0,
+    completed: [false, false, false, false],
+    data: [{}, {}, {}, {}],
+    assetTypes: ['truck', 'apu', 'trailer', 'reefer'],
+    assetLabels: ['Truck', 'APU', 'Trailer', 'Reefer']
+  };
+
   function showMultiAssetForm() {
     const header = document.getElementById('panel-header');
     const panel = document.getElementById('panel-content');
@@ -557,110 +692,105 @@
     header.innerHTML = `
       <div class="demo-panel-header">
         <div>
-          <h2>Add Asset</h2>
-          <p>Fill in details for all assets you want to add</p>
+          <h2>Add Assets</h2>
+          <p>Fill in asset details - complete one at a time</p>
         </div>
         <button class="demo-back-btn" onclick="goBack()">← Back</button>
       </div>
     `;
 
-    panel.innerHTML = `
-      <div class="demo-form">
-        <form onsubmit="event.preventDefault(); handleMultiAssetSave()">
-          <div class="multi-asset-form">
-            <div class="asset-form-section">
-              <h3>Truck</h3>
-              <div class="demo-form-group">
-                <label>Make/Model</label>
-                <input type="text" placeholder="e.g., Peterbilt 579">
-              </div>
-              <div class="demo-form-group">
-                <label>Year</label>
-                <input type="number" placeholder="2020">
-              </div>
-              <div class="demo-form-group">
-                <label>VIN</label>
-                <input type="text" placeholder="Last 6 digits">
-              </div>
-              <div class="demo-form-group">
-                <label>Unit #</label>
-                <input type="number" placeholder="Unit number">
-              </div>
-            </div>
+    assetFormState.currentAsset = 0;
+    assetFormState.completed = [false, false, false, false];
+    assetFormState.data = [{}, {}, {}, {}];
 
-            <div class="asset-form-section">
-              <h3>APU</h3>
-              <div class="demo-form-group">
-                <label>Make/Model</label>
-                <input type="text" placeholder="e.g., Thermo King">
-              </div>
-              <div class="demo-form-group">
-                <label>Year</label>
-                <input type="number" placeholder="2020">
-              </div>
-              <div class="demo-form-group">
-                <label>VIN</label>
-                <input type="text" placeholder="Last 6 digits">
-              </div>
-              <div class="demo-form-group">
-                <label>Unit #</label>
-                <input type="number" placeholder="Unit number">
-              </div>
-            </div>
+    let cardsHtml = '<div class="asset-cards-grid">';
 
-            <div class="asset-form-section">
-              <h3>Trailer</h3>
-              <div class="demo-form-group">
-                <label>Make/Model</label>
-                <input type="text" placeholder="e.g., Wabash">
-              </div>
-              <div class="demo-form-group">
-                <label>Year</label>
-                <input type="number" placeholder="2020">
-              </div>
-              <div class="demo-form-group">
-                <label>VIN</label>
-                <input type="text" placeholder="Last 6 digits">
-              </div>
-              <div class="demo-form-group">
-                <label>Unit #</label>
-                <input type="number" placeholder="Unit number">
-              </div>
-            </div>
+    for (let i = 0; i < 4; i++) {
+      const isActive = i === assetFormState.currentAsset;
+      const isCompleted = assetFormState.completed[i];
+      const shadeClass = isCompleted ? 'asset-card-completed' : '';
+      const displayClass = isActive ? 'asset-card-active' : '';
 
-            <div class="asset-form-section">
-              <h3>Reefer</h3>
-              <div class="demo-form-group">
-                <label>Make/Model</label>
-                <input type="text" placeholder="e.g., Carrier">
-              </div>
-              <div class="demo-form-group">
-                <label>Year</label>
-                <input type="number" placeholder="2020">
-              </div>
-              <div class="demo-form-group">
-                <label>VIN</label>
-                <input type="text" placeholder="Last 6 digits">
-              </div>
-              <div class="demo-form-group">
-                <label>Unit #</label>
-                <input type="number" placeholder="Unit number">
-              </div>
+      cardsHtml += `
+        <div class="asset-card ${shadeClass} ${displayClass}" id="asset-card-${i}">
+          <h3>${assetFormState.assetLabels[i]}</h3>
+          <div class="asset-card-content">
+            <div class="form-field">
+              <label>Year</label>
+              <input type="number" class="asset-field" data-asset="${i}" data-field="year" placeholder="2020" ${isCompleted ? 'disabled' : ''}>
+            </div>
+            <div class="form-field">
+              <label>Make</label>
+              <input type="text" class="asset-field" data-asset="${i}" data-field="make" placeholder="Make" maxlength="25" ${isCompleted ? 'disabled' : ''}>
+            </div>
+            <div class="form-field">
+              <label>Model</label>
+              <input type="text" class="asset-field" data-asset="${i}" data-field="model" placeholder="Model" maxlength="25" ${isCompleted ? 'disabled' : ''}>
+            </div>
+            <div class="form-field">
+              <label>Unit #</label>
+              <input type="text" class="asset-field" data-asset="${i}" data-field="unit" placeholder="Unit #" maxlength="10" ${isCompleted ? 'disabled' : ''}>
+            </div>
+            <div class="form-field">
+              <label>VIN #</label>
+              <input type="text" class="asset-field" data-asset="${i}" data-field="vin" placeholder="VIN #" maxlength="10" ${isCompleted ? 'disabled' : ''}>
             </div>
           </div>
-
-          <div class="demo-form-buttons">
-            <button type="submit" class="demo-save-btn">Save All Assets</button>
-            <button type="button" class="demo-cancel-btn" onclick="goBack()">Cancel</button>
+          <div class="asset-card-buttons">
+            <button type="button" class="btn-save" onclick="saveAssetCard(${i})" ${isCompleted ? 'disabled' : ''}>Save</button>
+            <button type="button" class="btn-clear" onclick="clearAssetCard(${i})" ${isCompleted ? 'disabled' : ''}>Clear</button>
+            ${i > 0 ? `<button type="button" class="btn-cancel" onclick="cancelAssetCard(${i})">Cancel</button>` : ''}
           </div>
-        </form>
-      </div>
-    `;
+        </div>
+      `;
+    }
+
+    cardsHtml += '</div>';
+    panel.innerHTML = cardsHtml;
+  }
+
+  function saveAssetCard(assetIndex) {
+    const inputs = document.querySelectorAll(`input[data-asset="${assetIndex}"]`);
+    const data = {};
+    let hasData = false;
+
+    inputs.forEach(input => {
+      data[input.dataset.field] = input.value;
+      if (input.value) hasData = true;
+    });
+
+    if (hasData) {
+      assetFormState.data[assetIndex] = data;
+      assetFormState.completed[assetIndex] = true;
+
+      if (assetIndex === 3) {
+        // All done - go back to view assets
+        alert('All assets saved successfully!');
+        goBack();
+      } else {
+        // Move to next card
+        assetFormState.currentAsset = assetIndex + 1;
+        showMultiAssetForm();
+      }
+    } else {
+      alert('Please fill in at least one field');
+    }
+  }
+
+  function clearAssetCard(assetIndex) {
+    document.querySelectorAll(`input[data-asset="${assetIndex}"]`).forEach(input => {
+      input.value = '';
+    });
+  }
+
+  function cancelAssetCard(assetIndex) {
+    assetFormState.completed[assetIndex] = false;
+    assetFormState.currentAsset = assetIndex - 1;
+    showMultiAssetForm();
   }
 
   function handleMultiAssetSave() {
-    alert('All assets saved successfully!');
-    goBack();
+    // No longer used in new card-based flow
   }
 
   function openForm(action, title) {
