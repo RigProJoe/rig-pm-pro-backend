@@ -878,10 +878,10 @@
     }
 
     let html = "<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>";
-    
+
     assets.forEach((asset, index) => {
       html += `
-        <div style='background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 16px;'>
+        <div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px;'>
           <h3 style='margin: 0 0 12px; color: var(--orange); font-size: 1.1rem; border-bottom: 1px solid var(--line); padding-bottom: 8px;'>${asset.label}</h3>
           <div style='font-size: 0.9rem;'>
             ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
