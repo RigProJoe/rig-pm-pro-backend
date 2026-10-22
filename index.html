@@ -1098,24 +1098,31 @@
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const currentYear = new Date().getFullYear();
     
-    // Single-line filter controls
+    // Single-line filter controls with asset filter and apply button
     let html = `<div style='padding: 12px 16px; background: var(--soft); border-bottom: 2px solid var(--line); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;'>
-      <select id='mfPeriodFilter' onchange='applyMaintenanceFilters()' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+      <select id='mfAssetFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        <option value='all' ${maintenanceFilterState.assetFilter === 'all' ? 'selected' : ''}>All Assets</option>
+        ${assets.map((asset, idx) => `<option value='${idx}' ${maintenanceFilterState.assetFilter === idx.toString() ? 'selected' : ''}>${asset.label}</option>`).join('')}
+      </select>
+      
+      <select id='mfPeriodFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
         <option value='currentWeek' ${maintenanceFilterState.periodFilter === 'currentWeek' ? 'selected' : ''}>Current Week</option>
         <option value='currentMonth' ${maintenanceFilterState.periodFilter === 'currentMonth' ? 'selected' : ''}>Current Month</option>
         <option value='currentQuarter' ${maintenanceFilterState.periodFilter === 'currentQuarter' ? 'selected' : ''}>Current Quarter</option>
         <option value='currentYear' ${maintenanceFilterState.periodFilter === 'currentYear' ? 'selected' : ''}>Current Year</option>
       </select>
       
-      <select id='mfMonthFilter' onchange='applyMaintenanceFilters()' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+      <select id='mfMonthFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
         ${months.map((m, i) => `<option value='${i}' ${maintenanceFilterState.monthFilter === i ? 'selected' : ''}>${m}</option>`).join('')}
       </select>
       
-      <select id='mfYearFilter' onchange='applyMaintenanceFilters()' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+      <select id='mfYearFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
         ${Array.from({length: 16}, (_, i) => 2020 + i).map(y => `<option value='${y}' ${maintenanceFilterState.yearFilter === y ? 'selected' : ''}>${y}</option>`).join('')}
       </select>
       
-      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' onchange='applyMaintenanceFilters()' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; flex: 1; min-width: 150px;'>
+      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; flex: 1; min-width: 150px;'>
+      
+      <button onclick='applyMaintenanceFilters()' style='padding: 6px 16px; background: #ff9d4f; border: none; border-radius: 4px; color: var(--ink); font-weight: 700; font-size: 0.85rem; cursor: pointer;'>Apply Filters</button>
     </div>`;
 
     // Apply filters to logs
@@ -1229,24 +1236,31 @@
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const currentYear = new Date().getFullYear();
     
-    // Single-line filter controls (reuse same filters as Repair History)
+    // Single-line filter controls with asset filter and apply button
     let html = `<div style='padding: 12px 16px; background: var(--soft); border-bottom: 2px solid var(--line); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;'>
-      <select id='mfPeriodFilter' onchange='applyMaintenanceFilters()' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+      <select id='mfAssetFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        <option value='all' ${maintenanceFilterState.assetFilter === 'all' ? 'selected' : ''}>All Assets</option>
+        ${assets.map((asset, idx) => `<option value='${idx}' ${maintenanceFilterState.assetFilter === idx.toString() ? 'selected' : ''}>${asset.label}</option>`).join('')}
+      </select>
+      
+      <select id='mfPeriodFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
         <option value='currentWeek' ${maintenanceFilterState.periodFilter === 'currentWeek' ? 'selected' : ''}>Current Week</option>
         <option value='currentMonth' ${maintenanceFilterState.periodFilter === 'currentMonth' ? 'selected' : ''}>Current Month</option>
         <option value='currentQuarter' ${maintenanceFilterState.periodFilter === 'currentQuarter' ? 'selected' : ''}>Current Quarter</option>
         <option value='currentYear' ${maintenanceFilterState.periodFilter === 'currentYear' ? 'selected' : ''}>Current Year</option>
       </select>
       
-      <select id='mfMonthFilter' onchange='applyMaintenanceFilters()' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+      <select id='mfMonthFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
         ${months.map((m, i) => `<option value='${i}' ${maintenanceFilterState.monthFilter === i ? 'selected' : ''}>${m}</option>`).join('')}
       </select>
       
-      <select id='mfYearFilter' onchange='applyMaintenanceFilters()' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+      <select id='mfYearFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
         ${Array.from({length: 16}, (_, i) => 2020 + i).map(y => `<option value='${y}' ${maintenanceFilterState.yearFilter === y ? 'selected' : ''}>${y}</option>`).join('')}
       </select>
       
-      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' onchange='applyMaintenanceFilters()' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; flex: 1; min-width: 150px;'>
+      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; flex: 1; min-width: 150px;'>
+      
+      <button onclick='applyMaintenanceFilters()' style='padding: 6px 16px; background: #ff9d4f; border: none; border-radius: 4px; color: var(--ink); font-weight: 700; font-size: 0.85rem; cursor: pointer;'>Apply Filters</button>
     </div>`;
 
     // Apply same filters to logs
