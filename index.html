@@ -943,7 +943,31 @@
     showViewAssets();
   }
 
-  let logRepairShowForm = true;
+let logRepairShowForm = true;
+
+  function updateAssetDropdown() {
+    const assetTypeSelect = document.getElementById("logAssetType");
+    const assetSelect = document.getElementById("logAsset");
+    const assetType = assetTypeSelect.value;
+    
+    if (!assetType) {
+      assetSelect.innerHTML = '<option value="">Select specific asset...</option>';
+      assetSelect.disabled = true;
+      return;
+    }
+    
+    const assets = loadAssetsFromLocalStorage();
+    const matchingAssets = assets.filter(a => a.data.type === assetType);
+    
+    let html = '<option value="">Select specific asset...</option>';
+    matchingAssets.forEach((asset, idx) => {
+      const actualIndex = assets.indexOf(asset);
+      html += `<option value='${actualIndex}'>${asset.label}</option>`;
+    });
+    
+    assetSelect.innerHTML = html;
+    assetSelect.disabled = false;
+  }
 
   function showLogRepairPM() {
     const header = document.getElementById("panel-header");
@@ -966,24 +990,36 @@
       return;
     }
 
-    let html = `<div style='padding: 24px; max-width: 500px;'>`;
+    let html = `<div style='padding: 24px; display: flex; justify-content: center;'>`;
     
     if (logRepairShowForm) {
-      // Show form to log repair - styled like Add Asset card
-      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 20px;'>
+      // Show form to log repair - wider index card layout
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 20px; width: 100%; max-width: 750px;'>
         <h3 style='margin: 0 0 20px 0; color: #FFFF00; font-size: 1.5rem; font-weight: 700;'>Log Repair/PM</h3>
         
         <form onsubmit="event.preventDefault(); saveMaintenanceLog()" style='display: flex; flex-direction: column; gap: 14px;'>
-          <div>
-            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Asset</label>
-            <select id="logAsset" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-              <option value=''>Select asset...</option>
-              ${assets.map((asset, idx) => `<option value='${idx}'>${asset.label}</option>`).join('')}
-            </select>
+          <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 12px;'>
+            <div>
+              <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Asset Type</label>
+              <select id="logAssetType" onchange="updateAssetDropdown()" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+                <option value=''>Select type...</option>
+                <option value='Truck'>Truck</option>
+                <option value='APU'>APU</option>
+                <option value='Trailer'>Trailer</option>
+                <option value='Reefer'>Reefer</option>
+              </select>
+            </div>
+
+            <div>
+              <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Specific Asset</label>
+              <select id="logAsset" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' disabled required>
+                <option value=''>Select specific asset...</option>
+              </select>
+            </div>
           </div>
 
           <div>
-            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type</label>
+            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type of Work</label>
             <select id="logType" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
               <option value=''>Select type...</option>
               <option value='PM'>Preventive Maintenance (PM)</option>
@@ -996,14 +1032,16 @@
             <input type='text' id="logDesc" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
           </div>
 
-          <div>
-            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
-            <input type='date' id="logDate" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-          </div>
+          <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 12px;'>
+            <div>
+              <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
+              <input type='date' id="logDate" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+            </div>
 
-          <div>
-            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Cost ($)</label>
-            <input type='number' id="logCost" placeholder='0.00' step='0.01' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
+            <div>
+              <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Cost ($)</label>
+              <input type='number' id="logCost" placeholder='0.00' step='0.01' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
+            </div>
           </div>
 
           <div style='display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;'>
@@ -1014,7 +1052,7 @@
       </div>`;
     } else {
       // Show success message with option to add another
-      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 24px; text-align: center;'>
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 24px; text-align: center; width: 100%; max-width: 750px;'>
         <h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.3rem;'>✓ Repair Logged</h3>
         <p style='color: var(--muted); margin-bottom: 20px;'>Maintenance record saved successfully</p>
         
