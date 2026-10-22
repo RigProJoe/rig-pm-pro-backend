@@ -262,8 +262,68 @@
 
   .demo-cancel-btn:hover { background: rgba(232, 116, 28, 0.1); }
 
+  .asset-choice-container {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .asset-choice-btn {
+    background: linear-gradient(135deg, var(--soft) 0%, rgba(26, 33, 42, 0.8) 100%);
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 120px;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .asset-choice-btn:hover {
+    border-color: var(--orange);
+    background: linear-gradient(135deg, var(--line) 0%, var(--soft) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(232, 116, 28, 0.3);
+  }
+
+  .multi-asset-form {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .asset-form-section {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .asset-form-section h3 {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+    color: var(--orange);
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 12px;
+  }
+
   @media (min-width: 900px) {
     .demo-placards { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 899px) {
+    .multi-asset-form {
+      grid-template-columns: 1fr;
+    }
   }
 
   @media (max-width: 480px) {
@@ -274,6 +334,8 @@
     .demo-placard { min-height: 90px; padding: 12px; }
     .demo-placard-title { font-size: 0.95rem; margin-bottom: 2px; }
     .demo-placard-desc { font-size: 0.75rem; }
+    .asset-choice-container { gap: 12px; }
+    .asset-choice-btn { min-height: 100px; padding: 16px; font-size: 1rem; }
   }
 </style>
 </head>
@@ -376,9 +438,215 @@
     panel.innerHTML = html;
   }
 
+  let currentAssetAction = null;
+
+  function showChoicePage() {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Add Asset</h2>
+          <p>Select which type of asset to add</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="asset-choice-container">
+        <button class="asset-choice-btn" onclick="saveAsset('truck')">Save Truck</button>
+        <button class="asset-choice-btn" onclick="saveAsset('apu')">Save APU</button>
+        <button class="asset-choice-btn" onclick="saveAsset('trailer')">Save Trailer</button>
+        <button class="asset-choice-btn" onclick="saveAsset('reefer')">Save Reefer</button>
+      </div>
+    `;
+  }
+
+  function saveAsset(assetType) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    const assetLabels = {
+      truck: 'Truck',
+      apu: 'APU',
+      trailer: 'Trailer',
+      reefer: 'Reefer'
+    };
+
+    const assetLabel = assetLabels[assetType] || 'Asset';
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Add ${assetLabel}</h2>
+          <p>Enter your ${assetLabel.toLowerCase()} details</p>
+        </div>
+        <button class="demo-back-btn" onclick="showChoicePage()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); handleAssetSave('${assetType}')">
+          <div class="demo-form-group">
+            <label>Make/Model</label>
+            <input type="text" placeholder="e.g., Peterbilt 579" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Year</label>
+            <input type="number" placeholder="2020" required>
+          </div>
+          <div class="demo-form-group">
+            <label>VIN</label>
+            <input type="text" placeholder="Last 6 digits" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Unit #</label>
+            <input type="number" placeholder="Unit number" required>
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save ${assetLabel}</button>
+            <button type="button" class="demo-cancel-btn" onclick="showChoicePage()">Back</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function handleAssetSave(assetType) {
+    alert('Asset saved successfully!');
+    showChoicePage();
+  }
+
+  function showMultiAssetForm() {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Add Asset</h2>
+          <p>Fill in details for all assets you want to add</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); handleMultiAssetSave()">
+          <div class="multi-asset-form">
+            <div class="asset-form-section">
+              <h3>Truck</h3>
+              <div class="demo-form-group">
+                <label>Make/Model</label>
+                <input type="text" placeholder="e.g., Peterbilt 579">
+              </div>
+              <div class="demo-form-group">
+                <label>Year</label>
+                <input type="number" placeholder="2020">
+              </div>
+              <div class="demo-form-group">
+                <label>VIN</label>
+                <input type="text" placeholder="Last 6 digits">
+              </div>
+              <div class="demo-form-group">
+                <label>Unit #</label>
+                <input type="number" placeholder="Unit number">
+              </div>
+            </div>
+
+            <div class="asset-form-section">
+              <h3>APU</h3>
+              <div class="demo-form-group">
+                <label>Make/Model</label>
+                <input type="text" placeholder="e.g., Thermo King">
+              </div>
+              <div class="demo-form-group">
+                <label>Year</label>
+                <input type="number" placeholder="2020">
+              </div>
+              <div class="demo-form-group">
+                <label>VIN</label>
+                <input type="text" placeholder="Last 6 digits">
+              </div>
+              <div class="demo-form-group">
+                <label>Unit #</label>
+                <input type="number" placeholder="Unit number">
+              </div>
+            </div>
+
+            <div class="asset-form-section">
+              <h3>Trailer</h3>
+              <div class="demo-form-group">
+                <label>Make/Model</label>
+                <input type="text" placeholder="e.g., Wabash">
+              </div>
+              <div class="demo-form-group">
+                <label>Year</label>
+                <input type="number" placeholder="2020">
+              </div>
+              <div class="demo-form-group">
+                <label>VIN</label>
+                <input type="text" placeholder="Last 6 digits">
+              </div>
+              <div class="demo-form-group">
+                <label>Unit #</label>
+                <input type="number" placeholder="Unit number">
+              </div>
+            </div>
+
+            <div class="asset-form-section">
+              <h3>Reefer</h3>
+              <div class="demo-form-group">
+                <label>Make/Model</label>
+                <input type="text" placeholder="e.g., Carrier">
+              </div>
+              <div class="demo-form-group">
+                <label>Year</label>
+                <input type="number" placeholder="2020">
+              </div>
+              <div class="demo-form-group">
+                <label>VIN</label>
+                <input type="text" placeholder="Last 6 digits">
+              </div>
+              <div class="demo-form-group">
+                <label>Unit #</label>
+                <input type="number" placeholder="Unit number">
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save All Assets</button>
+            <button type="button" class="demo-cancel-btn" onclick="goBack()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function handleMultiAssetSave() {
+    alert('All assets saved successfully!');
+    goBack();
+  }
+
   function openForm(action, title) {
     const header = document.getElementById('panel-header');
     const panel = document.getElementById('panel-content');
+
+    if (action === 'add-asset' || action === 'edit-asset') {
+      if (window.innerWidth <= 767) {
+        currentAssetAction = action;
+        showChoicePage();
+      } else {
+        currentAssetAction = action;
+        showMultiAssetForm();
+      }
+      return;
+    }
 
     header.innerHTML = `
       <div class="demo-panel-header">
@@ -395,36 +663,7 @@
         <form onsubmit="event.preventDefault(); alert('Data saved successfully!')">
     `;
 
-    if (action === 'add-asset' || action === 'edit-asset') {
-      formHtml += `
-        <div class="demo-form-group">
-          <label>Asset Type</label>
-          <select required>
-            <option>Select asset type...</option>
-            <option>Truck</option>
-            <option>Trailer</option>
-            <option>APU</option>
-            <option>Reefer</option>
-          </select>
-        </div>
-        <div class="demo-form-group">
-          <label>Make/Model</label>
-          <input type="text" placeholder="e.g., Peterbilt 579" required>
-        </div>
-        <div class="demo-form-group">
-          <label>Year</label>
-          <input type="number" placeholder="2020" required>
-        </div>
-        <div class="demo-form-group">
-          <label>VIN</label>
-          <input type="text" placeholder="Last 6 digits" required>
-        </div>
-        <div class="demo-form-group">
-          <label>Unit #</label>
-          <input type="number" placeholder="Unit number" required>
-        </div>
-      `;
-    } else if (action === 'log-pm' || action === 'log-repair') {
+    if (action === 'log-pm' || action === 'log-repair') {
       formHtml += `
         <div class="demo-form-group">
           <label>Asset</label>
