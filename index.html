@@ -1056,6 +1056,104 @@
     showLogRepairPM();
   }
 
+  let repairHistoryFilter = 0;
+
+  function filterRepairHistory(assetIndex) {
+    repairHistoryFilter = assetIndex;
+    showRepairHistory();
+  }
+
+  function showRepairHistory() {
+    const header = document.getElementById("panel-header");
+    const panel = document.getElementById("panel-content");
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Repair History</h2>
+          <p>View all repairs and maintenance by asset</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    const assets = loadAssetsFromLocalStorage();
+    const logs = JSON.parse(localStorage.getItem("rigpmproMaintenanceLogs") || '[]');
+
+    if (assets.length === 0) {
+      panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet.</div>";
+      return;
+    }
+
+    let html = `<div style='padding: 16px; border-bottom: 2px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap;'>`;
+    assets.forEach((asset, index) => {
+      html += `<button onclick="filterRepairHistory(${index})" style='padding: 8px 16px; background: ${repairHistoryFilter === index ? '#FFFF00' : 'transparent'}; color: ${repairHistoryFilter === index ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>${asset.label}</button>`;
+    });
+    html += `</div>`;
+
+    const selectedAsset = assets[repairHistoryFilter];
+    const assetLogs = logs.filter(l => l.assetIndex === repairHistoryFilter);
+
+    html += `<div style='padding: 16px;'><div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; margin-bottom: 16px;'><h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.3rem;'>${selectedAsset.label}</h3>`;
+
+    if (assetLogs.length === 0) {
+      html += `<div style='color: var(--muted); text-align: center; padding: 20px;'>No maintenance logs for this asset yet.</div>`;
+    } else {
+      html += `<div style='font-size: 0.9rem;'>`;
+      assetLogs.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(log => {
+        html += `<div style='background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 4px; margin-bottom: 8px;'><div style='font-weight: 700; color: #FFFF00;'>${log.type}</div><div><strong>Description:</strong> ${log.description}</div><div><strong>Date:</strong> ${new Date(log.date).toLocaleDateString()}</div><div><strong>Cost:</strong> $${parseFloat(log.cost).toFixed(2)}</div></div>`;
+      });
+      html += `</div>`;
+    }
+    html += `</div></div>`;
+    panel.innerHTML = html;
+  }
+
+  let totalCostsFilter = 0;
+
+  function filterTotalCosts(assetIndex) {
+    totalCostsFilter = assetIndex;
+    showTotalCosts();
+  }
+
+  function showTotalCosts() {
+    const header = document.getElementById("panel-header");
+    const panel = document.getElementById("panel-content");
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Total Costs</h2>
+          <p>Maintenance spending by asset</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    const assets = loadAssetsFromLocalStorage();
+    const logs = JSON.parse(localStorage.getItem("rigpmproMaintenanceLogs") || '[]');
+
+    if (assets.length === 0) {
+      panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet.</div>";
+      return;
+    }
+
+    let html = `<div style='padding: 16px; border-bottom: 2px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap;'>`;
+    assets.forEach((asset, index) => {
+      html += `<button onclick="filterTotalCosts(${index})" style='padding: 8px 16px; background: ${totalCostsFilter === index ? '#FFFF00' : 'transparent'}; color: ${totalCostsFilter === index ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>${asset.label}</button>`;
+    });
+    html += `</div>`;
+
+    const selectedAsset = assets[totalCostsFilter];
+    const assetLogs = logs.filter(l => l.assetIndex === totalCostsFilter);
+    const totalCost = assetLogs.reduce((sum, log) => sum + (parseFloat(log.cost) || 0), 0);
+    const pmCost = assetLogs.filter(l => l.type === 'PM').reduce((sum, log) => sum + (parseFloat(log.cost) || 0), 0);
+    const repairCost = assetLogs.filter(l => l.type === 'Repair').reduce((sum, log) => sum + (parseFloat(log.cost) || 0), 0);
+
+    html += `<div style='padding: 16px;'><div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; margin-bottom: 16px;'><h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.3rem;'>${selectedAsset.label}</h3><div style='font-size: 1.1rem;'><div style='margin-bottom: 12px; padding: 12px; background: rgba(255, 255, 0, 0.1); border-left: 4px solid #FFFF00; border-radius: 4px;'><div style='color: #FFFF00; font-weight: 700;'>Total Cost</div><div style='font-size: 1.8rem; color: #FFFF00; font-weight: 700;'>$${totalCost.toFixed(2)}</div></div><div style='margin-bottom: 12px; padding: 8px;'><div><strong>PM Cost:</strong> $${pmCost.toFixed(2)}</div><div><strong>Repair Cost:</strong> $${repairCost.toFixed(2)}</div><div><strong>Log Entries:</strong> ${assetLogs.length}</div></div></div></div></div>`;
+    panel.innerHTML = html;
+  }
+
   function clearAssetCard(assetIndex) {
     document.querySelectorAll(`input[data-asset="${assetIndex}"]`).forEach(input => {
       input.value = '';
@@ -1094,6 +1192,16 @@
 
     if (action === 'log-repair') {
       showLogRepairPM();
+      return;
+    }
+
+    if (action === 'repair-history') {
+      showRepairHistory();
+      return;
+    }
+
+    if (action === 'total-costs') {
+      showTotalCosts();
       return;
     }
 
