@@ -1018,13 +1018,20 @@ let logRepairShowForm = true;
             </div>
           </div>
 
-          <div>
-            <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type of Work</label>
-            <select id="logType" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-              <option value=''>Select type...</option>
-              <option value='PM'>Preventive Maintenance (PM)</option>
-              <option value='Repair'>Repair</option>
-            </select>
+          <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 12px;'>
+            <div>
+              <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type of Work</label>
+              <select id="logType" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+                <option value=''>Select type...</option>
+                <option value='PM'>Preventive Maintenance (PM)</option>
+                <option value='Repair'>Repair</option>
+              </select>
+            </div>
+
+            <div>
+              <label style='display: block; margin-bottom: 4px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Mileage</label>
+              <input type='number' id="logMileage" placeholder='0' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+            </div>
           </div>
 
           <div>
@@ -1072,9 +1079,10 @@ let logRepairShowForm = true;
     const logType = document.getElementById("logType").value;
     const logDesc = document.getElementById("logDesc").value;
     const logDate = document.getElementById("logDate").value;
+    const logMileage = document.getElementById("logMileage").value;
     const logCost = document.getElementById("logCost").value || '0';
 
-    if (!assetIndex || !logType || !logDesc || !logDate) {
+    if (!assetIndex || !logType || !logDesc || !logDate || !logMileage) {
       alert('Please fill in all required fields');
       return;
     }
@@ -1087,6 +1095,7 @@ let logRepairShowForm = true;
       type: logType,
       description: logDesc,
       date: logDate,
+      mileage: parseInt(logMileage),
       cost: parseFloat(logCost),
       savedAt: new Date().toISOString()
     });
@@ -1218,6 +1227,7 @@ let logRepairShowForm = true;
           <tr style='border-bottom: 2px solid #FFFF00;'>
             <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Date</th>
             <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Asset</th>
+            <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Mileage</th>
             <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Type</th>
             <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Description</th>
             <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Cost</th>
@@ -1232,6 +1242,7 @@ let logRepairShowForm = true;
           <tr style='border-bottom: 1px solid rgba(255, 255, 0, 0.2);'>
             <td style='padding: 8px;'>${new Date(log.date).toLocaleDateString()}</td>
             <td style='padding: 8px;'>${assetName}</td>
+            <td style='padding: 8px; text-align: right;'>${log.mileage || '-'}</td>
             <td style='padding: 8px; color: #FFFF00; font-weight: 700;'>${log.type}</td>
             <td style='padding: 8px;'>${log.description}</td>
             <td style='padding: 8px; text-align: right;'>$${parseFloat(log.cost).toFixed(2)}</td>
