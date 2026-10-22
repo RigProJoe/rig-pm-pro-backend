@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleet Pricing Request | Rig PM Pro</title>
+<style>
+  :root {
+    --ink: #eef2f7;
+    --muted: #b6c0cc;
+    --paper: #11161c;
+    --soft: #1a212a;
+    --line: #2d3742;
+    --blue: #1d4f91;
+    --orange: #e8741c;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 32px;
+  }
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--soft);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 2px rgba(232, 116, 28, 0.2);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 560px) {
+    .two-col {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 560px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .button-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  button {
+    flex: 1;
+    padding: 14px 22px;
+    border: 0;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-submit {
+    background: var(--orange);
+    color: #fff;
+  }
+
+  .btn-submit:hover {
+    background: #d46817;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(232, 116, 28, 0.3);
+  }
+
+  .btn-back {
+    background: var(--soft);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+
+  .btn-back:hover {
+    background: var(--line);
+  }
+
+  .required {
+    color: var(--orange);
+  }
+
+  .help-text {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .success-message {
+    display: none;
+    background: rgba(45, 204, 112, 0.1);
+    border: 1px solid #2dcc70;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 20px;
+    color: #2dcc70;
+  }
+
+  .success-message.show {
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Fleet Pricing Request</h1>
+    <p class="subtitle">Tell us about your fleet and we'll provide a custom quote</p>
+  </header>
+
+  <div class="success-message" id="successMessage">
+    Thank you! Your fleet pricing request has been submitted. We'll be in touch within 24 hours.
+  </div>
+
+  <form id="fleetForm">
+    <!-- Company Information -->
+    <h3 style="color: var(--orange); margin-top: 0;">Company Information</h3>
+
+    <div class="form-group">
+      <label for="companyName">Company/Fleet Name <span class="required">*</span></label>
+      <input type="text" id="companyName" name="companyName" required>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="contactName">Contact Person <span class="required">*</span></label>
+        <input type="text" id="contactName" name="contactName" required>
+      </div>
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" placeholder="e.g., Owner, Fleet Manager">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone <span class="required">*</span></label>
+        <input type="tel" id="phone" name="phone" required>
+      </div>
+    </div>
+
+    <!-- Fleet Information -->
+    <h3 style="color: var(--orange);">Fleet Information</h3>
+
+    <div class="form-group">
+      <label for="fleetSize">Number of Assets <span class="required">*</span></label>
+      <input type="number" id="fleetSize" name="fleetSize" min="1" required placeholder="e.g., 5, 25, 100">
+      <p class="help-text">Total number of trucks, trailers, APUs, and reefers</p>
+    </div>
+
+    <div class="form-group">
+      <label>Asset Types <span class="required">*</span></label>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label style="display: flex; align-items: center; font-weight: 400; margin-bottom: 0;">
+            <input type="checkbox" name="assetType" value="truck"> Trucks
+          </label>
+        </div>
+        <div>
+          <label style="display: flex; align-items: center; font-weight: 400; margin-bottom: 0;">
+            <input type="checkbox" name="assetType" value="trailer"> Trailers
+          </label>
+        </div>
+        <div>
+          <label style="display: flex; align-items: center; font-weight: 400; margin-bottom: 0;">
+            <input type="checkbox" name="assetType" value="apu"> APUs
+          </label>
+        </div>
+        <div>
+          <label style="display: flex; align-items: center; font-weight: 400; margin-bottom: 0;">
+            <input type="checkbox" name="assetType" value="reefer"> Reefers
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="currentTracking">Current PM Tracking Method</label>
+      <select id="currentTracking" name="currentTracking">
+        <option value="">Select an option...</option>
+        <option value="spreadsheet">Spreadsheet (Excel, Google Sheets)</option>
+        <option value="paper">Paper logs</option>
+        <option value="other-software">Other software</option>
+        <option value="manual">Manual tracking</option>
+        <option value="none">Not currently tracking</option>
+      </select>
+    </div>
+
+    <!-- Additional Information -->
+    <h3 style="color: var(--orange);">Additional Information</h3>
+
+    <div class="form-group">
+      <label for="timeline">Timeline for Implementation</label>
+      <select id="timeline" name="timeline">
+        <option value="">Select a timeframe...</option>
+        <option value="immediate">Immediately</option>
+        <option value="1-month">Within 1 month</option>
+        <option value="2-3-months">2-3 months</option>
+        <option value="3-6-months">3-6 months</option>
+        <option value="exploring">Still exploring options</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="message">Additional Information or Questions</label>
+      <textarea id="message" name="message" placeholder="Tell us anything else about your fleet or specific needs..."></textarea>
+    </div>
+
+    <div class="button-row">
+      <button type="button" class="btn-back" onclick="window.location.href='lpv8.html'">← Back</button>
+      <button type="submit" class="btn-submit">Submit Request</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('fleetForm');
+  const successMessage = document.getElementById('successMessage');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Collect form data
+    const formData = new FormData(form);
+    const data = {
+      companyName: formData.get('companyName'),
+      contactName: formData.get('contactName'),
+      title: formData.get('title'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      fleetSize: formData.get('fleetSize'),
+      assetTypes: formData.getAll('assetType').join(', ') || 'Not specified',
+      currentTracking: formData.get('currentTracking') || 'Not specified',
+      timeline: formData.get('timeline') || 'Not specified',
+      message: formData.get('message')
+    };
+
+    // Note: This form currently shows a success message but doesn't send data anywhere.
+    // To integrate with email, you'll need to:
+    // 1. Add form submission to Formspree, Basin, or similar service
+    // 2. Or set up a backend endpoint to handle submissions
+    // 3. Or use a webhook service to forward submissions to email/Slack
+
+    console.log('Fleet pricing request:', data);
+
+    // Show success message
+    form.style.display = 'none';
+    successMessage.classList.add('show');
+
+    // Optionally redirect after 3 seconds
+    setTimeout(() => {
+      window.location.href = 'lpv8.html';
+    }, 3000);
+  });
+</script>
+
+</body>
+</html>
