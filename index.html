@@ -943,6 +943,8 @@
     showViewAssets();
   }
 
+  let logRepairShowForm = true;
+
   function showLogRepairPM() {
     const header = document.getElementById("panel-header");
     const panel = document.getElementById("panel-content");
@@ -964,70 +966,77 @@
       return;
     }
 
-    // Create 4-card layout similar to Add Asset screen
-    let html = `<div style='padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;'>`;
+    let html = `<div style='padding: 24px; max-width: 500px;'>`;
     
-    const assetTypes = ['Truck', 'APU', 'Trailer', 'Reefer'];
-    
-    assetTypes.forEach((assetType, typeIndex) => {
-      // Find first asset of this type
-      const assetIndex = assets.findIndex(a => a.data.type === assetType);
-      
-      if (assetIndex >= 0) {
-        const asset = assets[assetIndex];
+    if (logRepairShowForm) {
+      // Show form to log repair
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 16px;'>
+        <h3 style='margin: 0 0 16px; color: #FFFF00; font-size: 1.5rem;'>Log Repair/PM</h3>
         
-        html += `
-          <div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 16px;'>
-            <h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.5rem;'>${asset.label}</h3>
-            <div style='font-size: 0.9rem; margin-bottom: 16px; color: var(--muted);'>
-              ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
-              ${asset.data.make ? `<div><strong>Make:</strong> ${asset.data.make}</div>` : ""}
-              ${asset.data.model ? `<div><strong>Model:</strong> ${asset.data.model}</div>` : ""}
-            </div>
-
-            <form onsubmit="event.preventDefault(); saveMaintenanceLog(${assetIndex})" style='display: flex; flex-direction: column; gap: 12px;'>
-              <div>
-                <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type</label>
-                <select id="logType-${assetIndex}" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-                  <option value=''>Select type...</option>
-                  <option value='PM'>Preventive Maintenance (PM)</option>
-                  <option value='Repair'>Repair</option>
-                </select>
-              </div>
-
-              <div>
-                <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Description</label>
-                <input type='text' id="logDesc-${assetIndex}" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-              </div>
-
-              <div>
-                <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
-                <input type='date' id="logDate-${assetIndex}" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-              </div>
-
-              <div>
-                <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Cost ($)</label>
-                <input type='number' id="logCost-${assetIndex}" placeholder='0.00' step='0.01' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
-              </div>
-
-              <button type='submit' style='padding: 8px 12px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; align-self: flex-end;'>Save</button>
-            </form>
+        <form onsubmit="event.preventDefault(); saveMaintenanceLog()" style='display: flex; flex-direction: column; gap: 12px;'>
+          <div>
+            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Asset</label>
+            <select id="logAsset" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+              <option value=''>Select asset...</option>
+              ${assets.map((asset, idx) => `<option value='${idx}'>${asset.label}</option>`).join('')}
+            </select>
           </div>
-        `;
-      }
-    });
 
+          <div>
+            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type</label>
+            <select id="logType" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+              <option value=''>Select type...</option>
+              <option value='PM'>Preventive Maintenance (PM)</option>
+              <option value='Repair'>Repair</option>
+            </select>
+          </div>
+
+          <div>
+            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Description</label>
+            <input type='text' id="logDesc" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+          </div>
+
+          <div>
+            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
+            <input type='date' id="logDate" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+          </div>
+
+          <div>
+            <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Cost ($)</label>
+            <input type='number' id="logCost" placeholder='0.00' step='0.01' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
+          </div>
+
+          <div style='display: flex; gap: 8px; justify-content: flex-end;'>
+            <button type='button' onclick='showLogRepairPM()' style='padding: 8px 16px; background: transparent; color: #FFFF00; border: 2px solid #FFFF00; border-radius: 4px; font-weight: 600; cursor: pointer;'>Cancel</button>
+            <button type='submit' style='padding: 8px 16px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;'>Save</button>
+          </div>
+        </form>
+      </div>`;
+    } else {
+      // Show success message with option to add another
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 24px; text-align: center;'>
+        <h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.3rem;'>✓ Repair Logged</h3>
+        <p style='color: var(--muted); margin-bottom: 20px;'>Maintenance record saved successfully</p>
+        
+        <div style='display: flex; gap: 8px; flex-direction: column;'>
+          <button onclick='logRepairShowForm = true; showLogRepairPM();' style='padding: 12px 20px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;'>Add Another Repair</button>
+          <button onclick='goBack()' style='padding: 12px 20px; background: transparent; color: #FFFF00; border: 2px solid #FFFF00; border-radius: 4px; font-weight: 600; cursor: pointer;'>Done</button>
+        </div>
+      </div>`;
+    }
+    
     html += `</div>`;
     panel.innerHTML = html;
   }
 
-  function saveMaintenanceLog(assetIndex) {
-    const logType = document.getElementById(`logType-${assetIndex}`).value;
-    const logDesc = document.getElementById(`logDesc-${assetIndex}`).value;
-    const logDate = document.getElementById(`logDate-${assetIndex}`).value;
-    const logCost = document.getElementById(`logCost-${assetIndex}`).value || '0';
+  function saveMaintenanceLog() {
+    const assetIndex = document.getElementById("logAsset").value;
+    const logType = document.getElementById("logType").value;
+    const logDesc = document.getElementById("logDesc").value;
+    const logDate = document.getElementById("logDate").value;
+    const logCost = document.getElementById("logCost").value || '0';
 
-    if (!logType || !logDesc || !logDate) {
+    if (!assetIndex || !logType || !logDesc || !logDate) {
       alert('Please fill in all required fields');
       return;
     }
@@ -1036,7 +1045,7 @@
     let logs = JSON.parse(localStorage.getItem("rigpmproMaintenanceLogs") || '[]');
 
     logs.push({
-      assetIndex: assetIndex,
+      assetIndex: parseInt(assetIndex),
       type: logType,
       description: logDesc,
       date: logDate,
@@ -1045,7 +1054,9 @@
     });
 
     localStorage.setItem("rigpmproMaintenanceLogs", JSON.stringify(logs));
-    alert('Maintenance log saved!');
+    
+    // Show success and offer to add another
+    logRepairShowForm = false;
     showLogRepairPM();
   }
 
