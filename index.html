@@ -551,6 +551,30 @@
 
 <script>
   let previousCategory = null;
+  let demoState = { page: 'home', category: null, action: null };
+
+  // Manage browser history to keep demo alive
+  function pushDemoState(state) {
+    demoState = state;
+    window.history.pushState(state, '', window.location.href);
+  }
+
+  // Handle browser back button
+  window.addEventListener('popstate', (event) => {
+    if (event.state) {
+      demoState = event.state;
+      if (event.state.page === 'placards' && event.state.category) {
+        showPlacards(event.state.category);
+      } else if (event.state.page === 'home') {
+        selectCategory('assets');
+      }
+    }
+  });
+
+  // Push initial state
+  window.addEventListener('load', () => {
+    pushDemoState({ page: 'home', category: null, action: null });
+  });
 
   const categories = {
     assets: {
@@ -587,6 +611,7 @@
 
   function selectCategory(cat) {
     previousCategory = cat;
+    pushDemoState({ page: 'placards', category: cat, action: null });
 
     document.querySelectorAll('.demo-nav-btn').forEach(btn => {
       btn.classList.remove('active');
