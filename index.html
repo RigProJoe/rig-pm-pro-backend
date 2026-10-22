@@ -943,13 +943,6 @@
     showViewAssets();
   }
 
-  let logRepairFilter = 0;
-
-  function filterLogRepair(assetIndex) {
-    logRepairFilter = assetIndex;
-    showLogRepairPM();
-  }
-
   function showLogRepairPM() {
     const header = document.getElementById("panel-header");
     const panel = document.getElementById("panel-content");
@@ -971,60 +964,60 @@
       return;
     }
 
-    // Tabs for each asset
-    let html = `
-      <div style='padding: 16px; border-bottom: 2px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap;'>
-    `;
+    // Create 4-card layout similar to Add Asset screen
+    let html = `<div style='padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;'>`;
+    
+    const assetTypes = ['Truck', 'APU', 'Trailer', 'Reefer'];
+    
+    assetTypes.forEach((assetType, typeIndex) => {
+      // Find first asset of this type
+      const assetIndex = assets.findIndex(a => a.data.type === assetType);
+      
+      if (assetIndex >= 0) {
+        const asset = assets[assetIndex];
+        
+        html += `
+          <div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 16px;'>
+            <h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.5rem;'>${asset.label}</h3>
+            <div style='font-size: 0.9rem; margin-bottom: 16px; color: var(--muted);'>
+              ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
+              ${asset.data.make ? `<div><strong>Make:</strong> ${asset.data.make}</div>` : ""}
+              ${asset.data.model ? `<div><strong>Model:</strong> ${asset.data.model}</div>` : ""}
+            </div>
 
-    assets.forEach((asset, index) => {
-      html += `<button onclick="filterLogRepair(${index})" style='padding: 8px 16px; background: ${logRepairFilter === index ? '#FFFF00' : 'transparent'}; color: ${logRepairFilter === index ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>${asset.label}</button>`;
+            <form onsubmit="event.preventDefault(); saveMaintenanceLog(${assetIndex})" style='display: flex; flex-direction: column; gap: 12px;'>
+              <div>
+                <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type</label>
+                <select id="logType-${assetIndex}" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+                  <option value=''>Select type...</option>
+                  <option value='PM'>Preventive Maintenance (PM)</option>
+                  <option value='Repair'>Repair</option>
+                </select>
+              </div>
+
+              <div>
+                <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Description</label>
+                <input type='text' id="logDesc-${assetIndex}" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+              </div>
+
+              <div>
+                <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
+                <input type='date' id="logDate-${assetIndex}" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
+              </div>
+
+              <div>
+                <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Cost ($)</label>
+                <input type='number' id="logCost-${assetIndex}" placeholder='0.00' step='0.01' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
+              </div>
+
+              <button type='submit' style='padding: 8px 12px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; align-self: flex-end;'>Save</button>
+            </form>
+          </div>
+        `;
+      }
     });
 
     html += `</div>`;
-
-    // Maintenance form for selected asset
-    const selectedAsset = assets[logRepairFilter];
-    html += `
-      <div style='padding: 16px; max-width: 500px;'>
-        <div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; margin-bottom: 16px;'>
-          <h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.3rem;'>${selectedAsset.label}</h3>
-          <div style='font-size: 0.9rem; margin-bottom: 16px;'>
-            ${selectedAsset.data.year ? `<div><strong>Year:</strong> ${selectedAsset.data.year}</div>` : ""}
-            ${selectedAsset.data.make ? `<div><strong>Make:</strong> ${selectedAsset.data.make}</div>` : ""}
-            ${selectedAsset.data.model ? `<div><strong>Model:</strong> ${selectedAsset.data.model}</div>` : ""}
-          </div>
-
-          <form onsubmit="event.preventDefault(); saveMaintenanceLog(${logRepairFilter})">
-            <div style='margin-bottom: 12px;'>
-              <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Type</label>
-              <select id="logType-${logRepairFilter}" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-                <option value=''>Select type...</option>
-                <option value='PM'>Preventive Maintenance (PM)</option>
-                <option value='Repair'>Repair</option>
-              </select>
-            </div>
-
-            <div style='margin-bottom: 12px;'>
-              <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Description</label>
-              <input type='text' id="logDesc-${logRepairFilter}" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-            </div>
-
-            <div style='margin-bottom: 12px;'>
-              <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Date</label>
-              <input type='date' id="logDate-${logRepairFilter}" style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);' required>
-            </div>
-
-            <div style='margin-bottom: 16px;'>
-              <label style='display: block; margin-bottom: 3px; font-weight: 700; font-size: 0.8rem; color: #FFFF00;'>Cost ($)</label>
-              <input type='number' id="logCost-${logRepairFilter}" placeholder='0.00' step='0.01' style='width: 100%; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink);'>
-            </div>
-
-            <button type='submit' style='width: 100%; padding: 8px; background: var(--orange); color: #fff; border: 0; border-radius: 4px; font-weight: 600; cursor: pointer;'>Save Maintenance Log</button>
-          </form>
-        </div>
-      </div>
-    `;
-
     panel.innerHTML = html;
   }
 
