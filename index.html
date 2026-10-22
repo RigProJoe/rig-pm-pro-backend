@@ -1058,6 +1058,18 @@ let logRepairShowForm = true;
             </div>
           </div>
 
+          <div class='log-row-2col'>
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Vendor</label>
+              <input type='text' id="logVendor" placeholder='Repair shop name' style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+            </div>
+
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>City/State</label>
+              <input type='text' id="logCityState" placeholder='City, State' style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+            </div>
+          </div>
+
           <div>
             <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Description</label>
             <input type='text' id="logDesc" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
@@ -1107,9 +1119,11 @@ let logRepairShowForm = true;
     const logDesc = document.getElementById("logDesc").value;
     const logDate = document.getElementById("logDate").value;
     const logMileage = document.getElementById("logMileage").value;
+    const logVendor = document.getElementById("logVendor").value;
+    const logCityState = document.getElementById("logCityState").value;
     const logCost = document.getElementById("logCost").value || '0';
 
-    if (!assetIndex || !logType || !logDesc || !logDate || !logMileage) {
+    if (!assetIndex || !logType || !logDesc || !logDate || !logMileage || !logVendor || !logCityState) {
       alert('Please fill in all required fields');
       return;
     }
@@ -1123,6 +1137,8 @@ let logRepairShowForm = true;
       description: logDesc,
       date: logDate,
       mileage: parseInt(logMileage),
+      vendor: logVendor,
+      cityState: logCityState,
       cost: parseFloat(logCost),
       savedAt: new Date().toISOString()
     });
@@ -1256,6 +1272,8 @@ let logRepairShowForm = true;
             <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Asset</th>
             <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Mileage</th>
             <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Type</th>
+            <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Vendor</th>
+            <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>City/State</th>
             <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Description</th>
             <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Cost</th>
           </tr>
@@ -1271,6 +1289,8 @@ let logRepairShowForm = true;
             <td style='padding: 8px;'>${assetName}</td>
             <td style='padding: 8px; text-align: right;'>${log.mileage || '-'}</td>
             <td style='padding: 8px; color: #FFFF00; font-weight: 700;'>${log.type}</td>
+            <td style='padding: 8px;'>${log.vendor || '-'}</td>
+            <td style='padding: 8px;'>${log.cityState || '-'}</td>
             <td style='padding: 8px;'>${log.description}</td>
             <td style='padding: 8px; text-align: right;'>$${parseFloat(log.cost).toFixed(2)}</td>
           </tr>
