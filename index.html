@@ -760,9 +760,13 @@
       </div>
     `;
 
-    assetFormState.currentAsset = 0;
-    assetFormState.completed = [false, false, false, false];
-    assetFormState.data = [{}, {}, {}, {}];
+    // Only initialize if not already initialized
+    if (!assetFormState.initialized) {
+      assetFormState.currentAsset = 0;
+      assetFormState.completed = [false, false, false, false];
+      assetFormState.data = [{}, {}, {}, {}];
+      assetFormState.initialized = true;
+    }
 
     let cardsHtml = '<div class="asset-cards-grid">';
 
@@ -1046,6 +1050,8 @@
   }
 
   function goBack() {
+    // Reset form state when user backs out
+    assetFormState.initialized = false;
     if (previousCategory) {
       showPlacards(previousCategory);
     }
