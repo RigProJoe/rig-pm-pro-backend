@@ -815,6 +815,7 @@
     } else {
       alert('Please fill in at least one field');
     }
+  }
 
   function saveAssetsToLocalStorage() {
     const assets = [];
@@ -884,7 +885,6 @@
     assets.splice(index, 1);
     localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
     showViewAssets();
-  }
   }
 
   function clearAssetCard(assetIndex) {
