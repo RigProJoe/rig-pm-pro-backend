@@ -860,6 +860,13 @@
     return stored ? JSON.parse(stored) : [];
   }
 
+  let viewAssetsFilter = 'all';
+
+  function filterViewAssets(filterType) {
+    viewAssetsFilter = filterType;
+    showViewAssets();
+  }
+
   function showViewAssets() {
     const header = document.getElementById("panel-header");
     const panel = document.getElementById("panel-content");
@@ -875,15 +882,38 @@
     `;
 
     const assets = loadAssetsFromLocalStorage();
-    
+
     if (assets.length === 0) {
       panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet. Add assets to see them here.</div>";
       return;
     }
 
-    let html = "<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>";
+    // Filter assets by type
+    const filteredAssets = viewAssetsFilter === 'all'
+      ? assets
+      : assets.filter(a => a.type === viewAssetsFilter);
 
-    assets.forEach((asset, index) => {
+    // Tab buttons
+    let html = `
+      <div style='padding: 16px; border-bottom: 2px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap;'>
+        <button onclick="filterViewAssets('all')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'all' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'all' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>All Assets</button>
+        <button onclick="filterViewAssets('Truck')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'Truck' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'Truck' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Trucks</button>
+        <button onclick="filterViewAssets('Trailer')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'Trailer' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'Trailer' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Trailers</button>
+        <button onclick="filterViewAssets('APU')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'APU' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'APU' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>APUs</button>
+        <button onclick="filterViewAssets('Reefer')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'Reefer' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'Reefer' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Reefers</button>
+      </div>
+    `;
+
+    if (filteredAssets.length === 0) {
+      html += `<div style='padding: 40px; text-align: center; color: var(--muted);'>No ${viewAssetsFilter === 'all' ? 'assets' : viewAssetsFilter + 's'} saved yet.</div>`;
+      panel.innerHTML = html;
+      return;
+    }
+
+    html += "<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>";
+
+    filteredAssets.forEach((asset, index) => {
+      const originalIndex = assets.indexOf(asset);
       html += `
         <div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px;'>
           <h3 style='margin: 0 0 12px; color: var(--orange); font-size: 1.1rem; border-bottom: 1px solid var(--line); padding-bottom: 8px;'>${asset.label}</h3>
@@ -894,11 +924,11 @@
             ${asset.data.unit ? `<div><strong>Unit #:</strong> ${asset.data.unit}</div>` : ""}
             ${asset.data.vin ? `<div><strong>VIN #:</strong> ${asset.data.vin}</div>` : ""}
           </div>
-          <button onclick="deleteAsset(${index})" style='margin-top: 12px; width: 100%; padding: 8px; background: var(--line); border: 1px solid var(--orange); color: var(--orange); border-radius: 4px; cursor: pointer; font-weight: 600;'>Delete</button>
+          <button onclick="deleteAsset(${originalIndex})" style='margin-top: 12px; width: 100%; padding: 8px; background: var(--line); border: 1px solid var(--orange); color: var(--orange); border-radius: 4px; cursor: pointer; font-weight: 600;'>Delete</button>
         </div>
       `;
     });
-    
+
     html += "</div>";
     panel.innerHTML = html;
   }
