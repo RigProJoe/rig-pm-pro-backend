@@ -73,21 +73,21 @@
   .demo-exit-btn:hover { opacity: 0.9; }
 
   .demo-menu-toggle-btn {
-    background: none;
-    border: none;
-    color: var(--ink);
+    background: var(--blue);
+    color: #fff;
+    border: 0;
     cursor: pointer;
-    font-size: 1.5rem;
-    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 6px;
     display: none;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
   }
 
-  .demo-menu-toggle-btn:hover { opacity: 0.8; }
-
-  .demo-menu-toggle-btn.visible { display: flex; }
+  .demo-menu-toggle-btn:hover { opacity: 0.9; }
 
   .demo-content {
     display: flex;
@@ -570,31 +570,16 @@
   }
 
   @media (max-width: 767px) {
-    /* Hide category tree titles on phone (both orientations) */
-    .demo-nav-btn {
-      color: transparent;
-      font-size: 0.8rem;
-      padding: 12px 8px;
-      min-width: 40px;
-      min-height: 40px;
-    }
-
-    /* Ensure active indicator shows even when text is hidden */
-    .demo-nav-btn.active {
-      border-left-color: var(--orange);
-      background: var(--line);
-    }
-
-    /* Hide sidebar by default on phone */
+    /* Sidebar becomes an overlay drawer on phone - text stays visible */
     .demo-sidebar {
       position: fixed;
       left: 0;
       top: 60px;
       height: calc(100% - 60px);
-      width: 200px;
       z-index: 100;
       transform: translateX(-100%);
       transition: transform 0.3s ease;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.4);
     }
 
     .demo-sidebar.visible {
@@ -603,6 +588,9 @@
 
     /* Show menu toggle button on phone */
     .demo-menu-toggle-btn { display: flex; }
+
+    /* Hide the redundant category-level header (sidebar already shows selection) */
+    .category-level-header { display: none; }
 
     /* Adjust main content on phone */
     .demo-content {
@@ -614,8 +602,17 @@
     }
   }
 
+  /* Sidebar width scales by orientation */
+  @media (max-width: 767px) and (orientation: portrait) {
+    .demo-sidebar { width: 200px; }
+  }
+
+  @media (max-width: 767px) and (orientation: landscape) {
+    .demo-sidebar { width: 240px; }
+  }
+
   @media (max-width: 480px) {
-    .demo-sidebar { width: 120px; }
+    .demo-sidebar { width: 170px; }
     .demo-nav-btn { padding: 10px 12px; }
     .demo-header h1 { font-size: 1rem; }
     .demo-placards { grid-template-columns: 1fr; }
@@ -631,7 +628,7 @@
 
 <div class="demo-container">
   <div class="demo-header">
-    <button class="demo-menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenu()" title="Open Menu">☰ Open Menu</button>
+    <button class="demo-menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenu()">Close</button>
     <h1>Rig PM Pro Demo</h1>
     <button class="demo-exit-btn" onclick="exitDemo()">Exit Demo</button>
   </div>
@@ -657,16 +654,10 @@
   let menuVisible = true;
 
   function toggleMenu() {
-    const sidebar = document.querySelector('.demo-sidebar');
-    const btn = document.getElementById('menuToggleBtn');
-    menuVisible = !menuVisible;
-
     if (menuVisible) {
-      sidebar.classList.add('visible');
-      btn.textContent = '☰ Close Menu';
+      hideMenu();
     } else {
-      sidebar.classList.remove('visible');
-      btn.textContent = '☰ Open Menu';
+      showMenu();
     }
   }
 
@@ -675,7 +666,7 @@
     const btn = document.getElementById('menuToggleBtn');
     sidebar.classList.remove('visible');
     menuVisible = false;
-    btn.textContent = '☰ Open Menu';
+    btn.textContent = 'Open';
   }
 
   function showMenu() {
@@ -683,7 +674,16 @@
     const btn = document.getElementById('menuToggleBtn');
     sidebar.classList.add('visible');
     menuVisible = true;
-    btn.textContent = '☰ Close Menu';
+    btn.textContent = 'Close';
+  }
+
+  function initMenuState() {
+    const sidebar = document.querySelector('.demo-sidebar');
+    const btn = document.getElementById('menuToggleBtn');
+    // Menu starts open by default on phone (both orientations)
+    sidebar.classList.add('visible');
+    menuVisible = true;
+    if (btn) btn.textContent = 'Close';
   }
 
   // Manage browser history to keep demo alive
@@ -768,7 +768,7 @@
     const panel = document.getElementById('panel-content');
 
     header.innerHTML = `
-      <div class="demo-panel-header">
+      <div class="demo-panel-header category-level-header">
         <div>
           <h2>${content.title}</h2>
           <p>${content.desc}</p>
@@ -2066,6 +2066,7 @@ function populateRepairFormFromAsset(assetIndex) {
   });
 
   window.addEventListener('load', () => {
+    initMenuState();
     selectCategory('assets');
   });
 </script>
