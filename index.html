@@ -292,6 +292,11 @@
 
   .demo-cancel-btn:hover { background: rgba(232, 116, 28, 0.1); }
 
+  /* Responsive Asset Choice Container - 4-button Add Asset selection screen
+     Portrait phone (<768px): 2x2 grid, standard button size
+     Landscape phone (<768px, landscape): 2x2 grid, SCALED DOWN to fit viewport without scroll
+     Tablet (768-899px): 2x2 grid, standard size
+     Desktop (900px+): 2x2 grid, standard size */
   .asset-choice-container {
     display: grid;
     gap: 16px;
@@ -300,6 +305,7 @@
     margin: 0 auto;
   }
 
+  /* Standard button size for portrait phone and larger screens */
   .asset-choice-btn {
     background: linear-gradient(135deg, var(--soft) 0%, rgba(26, 33, 42, 0.8) 100%);
     border: 2px solid var(--line);
@@ -323,6 +329,20 @@
     background: linear-gradient(135deg, var(--line) 0%, var(--soft) 100%);
     transform: translateY(-2px);
     box-shadow: 0 8px 16px rgba(232, 116, 28, 0.3);
+  }
+
+  /* LANDSCAPE PHONE: Scale down buttons to fit all 4 without scrolling */
+  @media (max-width: 767px) and (orientation: landscape) {
+    .asset-choice-container {
+      gap: 8px;
+    }
+
+    .asset-choice-btn {
+      padding: 12px;
+      min-height: 80px;
+      font-size: 0.9rem;
+      border-radius: 8px;
+    }
   }
 
   .asset-cards-grid {
@@ -668,6 +688,16 @@
 
   let currentAssetAction = null;
 
+  // Build #33: Show the 4-button Add Asset selection screen
+  // Flow: User clicks one of the four "Add" buttons → opens form for that asset type →
+  //        user fills in details → clicks Save → returns to this screen (4-button selection)
+  //
+  // Responsive breakpoints:
+  // - Portrait phone (<768px): 2x2 grid, standard button size (120px min-height, 24px padding, 1.1rem font)
+  // - Landscape phone (<768px, landscape): 2x2 grid, SCALED DOWN (80px min-height, 12px padding, 0.9rem font)
+  //   to ensure all 4 buttons fit in viewport without vertical scrolling
+  // - Tablet (768-899px): 2x2 grid, standard size
+  // - Desktop (900px+): 2x2 grid, standard size
   function showChoicePage() {
     const header = document.getElementById('panel-header');
     const panel = document.getElementById('panel-content');
@@ -684,10 +714,10 @@
 
     panel.innerHTML = `
       <div class="asset-choice-container">
-        <button class="asset-choice-btn" onclick="saveAsset('truck')">Save Truck</button>
-        <button class="asset-choice-btn" onclick="saveAsset('apu')">Save APU</button>
-        <button class="asset-choice-btn" onclick="saveAsset('trailer')">Save Trailer</button>
-        <button class="asset-choice-btn" onclick="saveAsset('reefer')">Save Reefer</button>
+        <button class="asset-choice-btn" onclick="saveAsset('truck')">Add Truck</button>
+        <button class="asset-choice-btn" onclick="saveAsset('apu')">Add APU</button>
+        <button class="asset-choice-btn" onclick="saveAsset('trailer')">Add Trailer</button>
+        <button class="asset-choice-btn" onclick="saveAsset('reefer')">Add Reefer</button>
       </div>
     `;
   }
