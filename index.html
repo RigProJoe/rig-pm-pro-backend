@@ -972,9 +972,16 @@
 
   function deleteAsset(index) {
     const assets = loadAssetsFromLocalStorage();
-    assets.splice(index, 1);
-    localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
-    showViewAssets();
+    const asset = assets[index];
+    if (!asset) return;
+
+    const message = `Delete "${asset.label}"?\n\nThe asset will be removed from inventory, but all repair and PM history will be retained for your records.`;
+
+    if (confirm(message)) {
+      assets.splice(index, 1);
+      localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
+      showViewAssets();
+    }
   }
 
 let logRepairShowForm = true;
