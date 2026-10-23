@@ -889,8 +889,12 @@
             <input type="number" placeholder="2020" required>
           </div>
           <div class="demo-form-group">
-            <label>Make/Model</label>
-            <input type="text" placeholder="e.g., Peterbilt 579" required>
+            <label>Make</label>
+            <input type="text" placeholder="e.g., Peterbilt" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Model</label>
+            <input type="text" placeholder="e.g., 579" required>
           </div>
           <div class="demo-form-group">
             <label>VIN</label>
@@ -1195,8 +1199,12 @@
             <input type="number" id="editYear" placeholder="2020" value="${asset.data.year || ''}" required>
           </div>
           <div class="demo-form-group">
-            <label>Make/Model</label>
-            <input type="text" id="editMakeModel" placeholder="e.g., Peterbilt 579" value="${asset.data.make ? asset.data.make + ' ' + asset.data.model : ''}" required>
+            <label>Make</label>
+            <input type="text" id="editMake" placeholder="e.g., Peterbilt" value="${asset.data.make || ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Model</label>
+            <input type="text" id="editModel" placeholder="e.g., 579" value="${asset.data.model || ''}" required>
           </div>
           <div class="demo-form-group">
             <label>VIN</label>
@@ -1221,12 +1229,8 @@
 
     if (index === undefined || !assets[index]) return;
 
-    const makeModel = document.getElementById('editMakeModel').value;
-    const [make, ...modelParts] = makeModel.split(' ');
-    const model = modelParts.join(' ');
-
-    assets[index].data.make = make;
-    assets[index].data.model = model;
+    assets[index].data.make = document.getElementById('editMake').value;
+    assets[index].data.model = document.getElementById('editModel').value;
     assets[index].data.year = document.getElementById('editYear').value;
     assets[index].data.vin = document.getElementById('editVin').value;
     assets[index].data.unit = document.getElementById('editUnit').value;
