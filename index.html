@@ -1374,8 +1374,8 @@
 
     const isExpanded = window.pmListExpanded !== false; // default expanded
 
-    html += `<div style='background: var(--soft); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px;'>
-      <div onclick="togglePMListExpanded(${index})" style='display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer;'>
+    html += `<div style='background: var(--soft); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; max-width: 560px; width: 100%;'>
+      <div onclick="togglePMListExpanded(${index})" style='display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer; gap: 12px;'>
         <div style='font-weight: 700;'>${asset.label} PM Items</div>
         <div style='display: flex; align-items: center; gap: 12px;'>
           <span style='font-size: 0.85rem; color: var(--muted);'>${okCount} OK · ${dueSoonCount} Due Soon · ${overdueCount} Overdue</span>
@@ -1385,14 +1385,14 @@
     </div>`;
 
     if (isExpanded) {
-      html += `<div style='display: flex; flex-direction: column; gap: 10px;'>`;
+      html += `<div style='display: flex; flex-direction: column; gap: 10px; max-width: 560px;'>`;
 
       asset.data.pmItems.forEach((item) => {
         const calc = calculatePMStatus(item, currentReading);
         const statusColor = pmStatusColor(calc.status);
 
         html += `
-          <div onclick="showEditPMItemForm(${index}, '${item.id}')" style='background: var(--soft); border: 1px solid var(--line); border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;'>
+          <div onclick="showEditPMItemForm(${index}, '${item.id}')" style='background: var(--soft); border: 1px solid var(--line); border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%;'>
             <div style='font-weight: 700; font-size: 1rem;'>${item.name}</div>
             <span style='color: ${statusColor}; font-weight: 700; font-size: 0.85rem; white-space: nowrap;'>${calc.status}</span>
           </div>
