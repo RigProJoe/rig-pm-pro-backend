@@ -1140,8 +1140,12 @@
     return (assetType === 'APU' || assetType === 'Reefer') ? 'Hours' : 'Miles';
   }
 
-  function pmDefaultDueSoonThreshold(assetType) {
-    return (assetType === 'APU' || assetType === 'Reefer') ? 250 : 10000;
+  // Default per-item warning thresholds, scaled to unit type. User can edit per item.
+  function pmDefaultThresholds(assetType) {
+    const isHours = (assetType === 'APU' || assetType === 'Reefer');
+    return isHours
+      ? { due: 250, dueVerySoon: 100, critical: 25 }
+      : { due: 10000, dueVerySoon: 5000, critical: 1000 };
   }
 
   // Default maintenance category names only - no preloaded intervals.
@@ -1155,21 +1159,32 @@
   }
 
   function ensurePMItemsInitialized(asset) {
+    const defaults = pmDefaultThresholds(asset.type);
     if (!asset.data.pmItems) {
       asset.data.pmItems = getDefaultPMItemNames().map((name, i) => ({
         id: 'pm-' + Date.now() + '-' + i,
         name: name,
         interval: '',
         dateCompleted: '',
-        readingAtCompletion: ''
+        readingAtCompletion: '',
+        dueThreshold: defaults.due,
+        dueVerySoonThreshold: defaults.dueVerySoon,
+        criticalThreshold: defaults.critical
       }));
-    }
-    if (asset.data.dueSoonThreshold === undefined || asset.data.dueSoonThreshold === '') {
-      asset.data.dueSoonThreshold = pmDefaultDueSoonThreshold(asset.type);
+    } else {
+      // Backfill thresholds on items saved before this feature existed
+      asset.data.pmItems.forEach((item) => {
+        if (item.dueThreshold === undefined) item.dueThreshold = defaults.due;
+        if (item.dueVerySoonThreshold === undefined) item.dueVerySoonThreshold = defaults.dueVerySoon;
+        if (item.criticalThreshold === undefined) item.criticalThreshold = defaults.critical;
+      });
     }
   }
 
-  function calculatePMStatus(item, currentReading, dueSoonThreshold) {
+  // Per-item graduated warning: OVERDUE (past due) > CRITICAL > DUE VERY SOON > DUE > OK
+  // Each item carries its own thresholds since different maintenance items may need
+  // different warning windows (e.g. brakes vs. an air dryer cartridge).
+  function calculatePMStatus(item, currentReading) {
     const interval = parseFloat(item.interval);
     const readingAtCompletion = parseFloat(item.readingAtCompletion);
     const current = parseFloat(currentReading);
@@ -1185,11 +1200,19 @@
     }
 
     const remaining = nextDueAt - current;
+    const critical = parseFloat(item.criticalThreshold);
+    const dueVerySoon = parseFloat(item.dueVerySoonThreshold);
+    const due = parseFloat(item.dueThreshold);
+
     let status;
     if (remaining < 0) {
       status = 'OVERDUE';
-    } else if (remaining <= parseFloat(dueSoonThreshold || 0)) {
-      status = 'DUE SOON';
+    } else if (!isNaN(critical) && remaining <= critical) {
+      status = 'CRITICAL';
+    } else if (!isNaN(dueVerySoon) && remaining <= dueVerySoon) {
+      status = 'DUE VERY SOON';
+    } else if (!isNaN(due) && remaining <= due) {
+      status = 'DUE';
     } else {
       status = 'OK';
     }
@@ -1199,8 +1222,10 @@
 
   function pmStatusColor(status) {
     switch (status) {
-      case 'OVERDUE': return '#ff4d4d';
-      case 'DUE SOON': return '#e8741c';
+      case 'OVERDUE': return '#b30000';
+      case 'CRITICAL': return '#ff4d4d';
+      case 'DUE VERY SOON': return '#e8741c';
+      case 'DUE': return '#e0c200';
       case 'OK': return '#4caf50';
       default: return 'var(--muted)';
     }
@@ -1335,7 +1360,7 @@
     html += `<div style='display: flex; flex-direction: column; gap: 12px;'>`;
 
     asset.data.pmItems.forEach((item) => {
-      const calc = calculatePMStatus(item, currentReading, asset.data.dueSoonThreshold);
+      const calc = calculatePMStatus(item, currentReading);
       const statusColor = pmStatusColor(calc.status);
 
       html += `
@@ -1373,6 +1398,7 @@
     if (!asset) { showPMInfoEntry(); return; }
 
     const unitLabel = pmReadingUnit(asset.type);
+    const defaults = pmDefaultThresholds(asset.type);
 
     header.innerHTML = `
       <div class="demo-panel-header">
@@ -1403,6 +1429,18 @@
             <label>${unitLabel} at Completion</label>
             <input type="number" id="pmItemReading" placeholder="e.g., 546912">
           </div>
+          <div class="demo-form-group">
+            <label>Warn "Due" when remaining falls to (${unitLabel})</label>
+            <input type="number" id="pmItemDueThreshold" value="${defaults.due}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Warn "Due Very Soon" when remaining falls to (${unitLabel})</label>
+            <input type="number" id="pmItemDueVerySoonThreshold" value="${defaults.dueVerySoon}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Warn "Critical" when remaining falls to (${unitLabel})</label>
+            <input type="number" id="pmItemCriticalThreshold" value="${defaults.critical}" required>
+          </div>
           <div class="demo-form-buttons">
             <button type="submit" class="demo-save-btn">Save Item</button>
             <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Cancel</button>
@@ -1424,7 +1462,10 @@
       name: document.getElementById('pmItemName').value,
       interval: document.getElementById('pmItemInterval').value,
       dateCompleted: document.getElementById('pmItemDate').value,
-      readingAtCompletion: document.getElementById('pmItemReading').value
+      readingAtCompletion: document.getElementById('pmItemReading').value,
+      dueThreshold: document.getElementById('pmItemDueThreshold').value,
+      dueVerySoonThreshold: document.getElementById('pmItemDueVerySoonThreshold').value,
+      criticalThreshold: document.getElementById('pmItemCriticalThreshold').value
     });
 
     saveAssetsToLocalStorage(assets);
@@ -1472,6 +1513,18 @@
             <label>${unitLabel} at Completion</label>
             <input type="number" id="pmItemReading" value="${item.readingAtCompletion}">
           </div>
+          <div class="demo-form-group">
+            <label>Warn "Due" when remaining falls to (${unitLabel})</label>
+            <input type="number" id="pmItemDueThreshold" value="${item.dueThreshold}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Warn "Due Very Soon" when remaining falls to (${unitLabel})</label>
+            <input type="number" id="pmItemDueVerySoonThreshold" value="${item.dueVerySoonThreshold}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Warn "Critical" when remaining falls to (${unitLabel})</label>
+            <input type="number" id="pmItemCriticalThreshold" value="${item.criticalThreshold}" required>
+          </div>
           <div class="demo-form-buttons">
             <button type="submit" class="demo-save-btn">Save Changes</button>
             <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Cancel</button>
@@ -1493,6 +1546,9 @@
     item.interval = document.getElementById('pmItemInterval').value;
     item.dateCompleted = document.getElementById('pmItemDate').value;
     item.readingAtCompletion = document.getElementById('pmItemReading').value;
+    item.dueThreshold = document.getElementById('pmItemDueThreshold').value;
+    item.dueVerySoonThreshold = document.getElementById('pmItemDueVerySoonThreshold').value;
+    item.criticalThreshold = document.getElementById('pmItemCriticalThreshold').value;
 
     saveAssetsToLocalStorage(assets);
     showPMSchedule(index);
