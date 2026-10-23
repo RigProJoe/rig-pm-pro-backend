@@ -2048,7 +2048,8 @@ function populateRepairFormFromAsset(assetIndex) {
     // Reset form state when user backs out
     assetFormState.initialized = false;
     if (previousCategory) {
-      showMenu();
+      // Just go back to previous screen - don't auto-open the menu.
+      // Menu only opens via the explicit Open/Close toggle button.
       showPlacards(previousCategory);
     }
   }
