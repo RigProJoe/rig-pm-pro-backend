@@ -667,7 +667,8 @@
 
   <div class="demo-content">
     <div class="demo-sidebar">
-      <button class="demo-nav-btn active" onclick="selectCategory('assets')">Assets</button>
+      <button class="demo-nav-btn active" onclick="selectCategory('pminfo')">PM Info</button>
+      <button class="demo-nav-btn" onclick="selectCategory('assets')">Assets</button>
       <button class="demo-nav-btn" onclick="selectCategory('maintenance')">Maintenance</button>
       <button class="demo-nav-btn" onclick="selectCategory('account')">Account Settings</button>
     </div>
@@ -728,10 +729,12 @@
   window.addEventListener('popstate', (event) => {
     if (event.state) {
       demoState = event.state;
-      if (event.state.page === 'placards' && event.state.category) {
+      if (event.state.page === 'placards' && event.state.category === 'pminfo') {
+        showPMInfoEntry();
+      } else if (event.state.page === 'placards' && event.state.category) {
         showPlacards(event.state.category);
       } else if (event.state.page === 'home') {
-        selectCategory('assets');
+        selectCategory('pminfo');
       }
     }
   });
@@ -778,6 +781,7 @@
     document.querySelectorAll('.demo-nav-btn').forEach(btn => {
       btn.classList.remove('active');
       if (btn.textContent.toLowerCase() === cat.toLowerCase() ||
+          (cat === 'pminfo' && btn.innerHTML.includes('PM Info')) ||
           (cat === 'assets' && btn.innerHTML.includes('Assets')) ||
           (cat === 'maintenance' && btn.innerHTML.includes('Maintenance')) ||
           (cat === 'account' && btn.innerHTML.includes('Account'))) {
@@ -791,7 +795,11 @@
     }
     isInitialLoad = false;
 
-    showPlacards(cat);
+    if (cat === 'pminfo') {
+      showPMInfoEntry();
+    } else {
+      showPlacards(cat);
+    }
   }
 
   function showPlacards(cat) {
@@ -1082,6 +1090,386 @@
   function loadAssetsFromLocalStorage() {
     const stored = localStorage.getItem("rigpmproAssets");
     return stored ? JSON.parse(stored) : [];
+  }
+
+  function saveAssetsToLocalStorage(assets) {
+    localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
+  }
+
+  // ===== PM Info (Preventive Maintenance interval tracking) =====
+
+  // APU/Reefer run on hours; Truck/Trailer run on odometer miles.
+  function pmReadingUnit(assetType) {
+    return (assetType === 'APU' || assetType === 'Reefer') ? 'Hours' : 'Miles';
+  }
+
+  function pmDefaultDueSoonThreshold(assetType) {
+    return (assetType === 'APU' || assetType === 'Reefer') ? 250 : 10000;
+  }
+
+  // Default maintenance category names only - no preloaded intervals.
+  // User sources and enters their own interval numbers.
+  function getDefaultPMItemNames() {
+    return [
+      'Oil Change', 'Chassis Lube', 'Air Filter', 'Fuel Filter',
+      'Coolant Flush', 'Transmission Service', 'Brake Inspection',
+      'Tire Rotation', 'DPF Cleaning', 'DEF Filter Replacement',
+      'Air Dryer Cartridge'
+    ];
+  }
+
+  function ensurePMItemsInitialized(asset) {
+    if (!asset.data.pmItems) {
+      asset.data.pmItems = getDefaultPMItemNames().map((name, i) => ({
+        id: 'pm-' + Date.now() + '-' + i,
+        name: name,
+        interval: '',
+        dateCompleted: '',
+        readingAtCompletion: ''
+      }));
+    }
+    if (asset.data.dueSoonThreshold === undefined || asset.data.dueSoonThreshold === '') {
+      asset.data.dueSoonThreshold = pmDefaultDueSoonThreshold(asset.type);
+    }
+  }
+
+  function calculatePMStatus(item, currentReading, dueSoonThreshold) {
+    const interval = parseFloat(item.interval);
+    const readingAtCompletion = parseFloat(item.readingAtCompletion);
+    const current = parseFloat(currentReading);
+
+    if (isNaN(interval) || isNaN(readingAtCompletion)) {
+      return { nextDueAt: null, remaining: null, status: 'NOT SET' };
+    }
+
+    const nextDueAt = readingAtCompletion + interval;
+
+    if (isNaN(current)) {
+      return { nextDueAt: nextDueAt, remaining: null, status: 'NO READING' };
+    }
+
+    const remaining = nextDueAt - current;
+    let status;
+    if (remaining < 0) {
+      status = 'OVERDUE';
+    } else if (remaining <= parseFloat(dueSoonThreshold || 0)) {
+      status = 'DUE SOON';
+    } else {
+      status = 'OK';
+    }
+
+    return { nextDueAt: nextDueAt, remaining: remaining, status: status };
+  }
+
+  function pmStatusColor(status) {
+    switch (status) {
+      case 'OVERDUE': return '#ff4d4d';
+      case 'DUE SOON': return '#e8741c';
+      case 'OK': return '#4caf50';
+      default: return 'var(--muted)';
+    }
+  }
+
+  function showPMInfoEntry() {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+
+    header.innerHTML = `
+      <div class="demo-panel-header category-level-header">
+        <div>
+          <h2>PM Info</h2>
+          <p>Check maintenance intervals and update readings</p>
+        </div>
+      </div>
+    `;
+
+    if (assets.length === 0) {
+      panel.innerHTML = `
+        <div style='padding: 40px; text-align: center; color: var(--muted);'>
+          No assets saved yet. Add an asset first to track its maintenance intervals.
+        </div>
+      `;
+      return;
+    }
+
+    let html = `<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>`;
+    assets.forEach((asset, index) => {
+      html += `
+        <div onclick="selectAssetForPMInfo(${index})" style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;'>
+          <h3 style='margin: 0 0 12px; color: var(--orange); font-size: 1.1rem; border-bottom: 1px solid var(--line); padding-bottom: 8px;'>${asset.label}</h3>
+          <div style='font-size: 0.9rem;'>
+            ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
+            ${asset.data.make ? `<div><strong>Make:</strong> ${asset.data.make}</div>` : ""}
+            ${asset.data.model ? `<div><strong>Model:</strong> ${asset.data.model}</div>` : ""}
+            ${asset.data.unit ? `<div><strong>Unit #:</strong> ${asset.data.unit}</div>` : ""}
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    panel.innerHTML = html;
+  }
+
+  function selectAssetForPMInfo(index) {
+    window.pmInfoAssetIndex = index;
+    showPMReadingInput(index);
+  }
+
+  function showPMReadingInput(index) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    ensurePMItemsInitialized(asset);
+    saveAssetsToLocalStorage(assets);
+
+    const unitLabel = pmReadingUnit(asset.type);
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>${asset.label}</h2>
+          <p>Enter current ${unitLabel.toLowerCase()} for accurate tracking</p>
+        </div>
+        <button class="demo-back-btn" onclick="showPMInfoEntry()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); savePMReading(${index})">
+          <div class="demo-form-group">
+            <label>Current ${unitLabel}</label>
+            <input type="number" id="pmCurrentReading" placeholder="e.g., 590050" value="${asset.data.currentReading || ''}">
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save & Continue</button>
+            <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Skip</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function savePMReading(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    const value = document.getElementById('pmCurrentReading').value;
+    asset.data.currentReading = value;
+    saveAssetsToLocalStorage(assets);
+
+    showPMSchedule(index);
+  }
+
+  function showPMSchedule(index) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    ensurePMItemsInitialized(asset);
+    saveAssetsToLocalStorage(assets);
+
+    const unitLabel = pmReadingUnit(asset.type);
+    const currentReading = asset.data.currentReading;
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>${asset.label} - PM Schedule</h2>
+          <p>Current ${unitLabel}: ${currentReading || 'not set'}</p>
+        </div>
+        <button class="demo-back-btn" onclick="showPMInfoEntry()">← Back</button>
+      </div>
+    `;
+
+    let html = `<div style='padding: 16px;'>`;
+
+    html += `<div style='margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;'>
+      <button onclick="showPMReadingInput(${index})" style='padding: 10px 16px; background: var(--blue); color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-weight: 600;'>Update ${unitLabel} Reading</button>
+      <button onclick="showAddPMItemForm(${index})" style='padding: 10px 16px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-weight: 600;'>+ Add Maintenance Item</button>
+    </div>`;
+
+    html += `<div style='display: flex; flex-direction: column; gap: 12px;'>`;
+
+    asset.data.pmItems.forEach((item) => {
+      const calc = calculatePMStatus(item, currentReading, asset.data.dueSoonThreshold);
+      const statusColor = pmStatusColor(calc.status);
+
+      html += `
+        <div style='background: var(--soft); border: 1px solid var(--line); border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 14px;'>
+          <div style='display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;'>
+            <div>
+              <div style='font-weight: 700; font-size: 1rem;'>${item.name}</div>
+              <div style='font-size: 0.85rem; color: var(--muted); margin-top: 4px;'>
+                ${item.interval ? `Every ${item.interval} ${unitLabel.toLowerCase()}` : 'No interval set'}
+                ${item.dateCompleted ? ` · Last done ${item.dateCompleted} at ${item.readingAtCompletion}` : ''}
+              </div>
+              ${calc.remaining !== null ? `<div style='font-size: 0.85rem; margin-top: 4px;'>${calc.remaining < 0 ? Math.abs(Math.round(calc.remaining)) + ' ' + unitLabel.toLowerCase() + ' overdue' : Math.round(calc.remaining) + ' ' + unitLabel.toLowerCase() + ' remaining'}</div>` : ''}
+            </div>
+            <div style='display: flex; flex-direction: column; align-items: flex-end; gap: 6px;'>
+              <span style='color: ${statusColor}; font-weight: 700; font-size: 0.85rem;'>${calc.status}</span>
+              <div style='display: flex; gap: 6px;'>
+                <button onclick="showEditPMItemForm(${index}, '${item.id}')" style='padding: 6px 10px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 4px; cursor: pointer; font-size: 0.8rem;'>Edit</button>
+                <button onclick="deletePMItem(${index}, '${item.id}')" style='padding: 6px 10px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 4px; cursor: pointer; font-size: 0.8rem;'>Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+    panel.innerHTML = html;
+  }
+
+  function showAddPMItemForm(index) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    const unitLabel = pmReadingUnit(asset.type);
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Add Maintenance Item</h2>
+          <p>Track a new PM category for ${asset.label}</p>
+        </div>
+        <button class="demo-back-btn" onclick="showPMSchedule(${index})">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); savePMItem(${index})">
+          <div class="demo-form-group">
+            <label>Item Name</label>
+            <input type="text" id="pmItemName" placeholder="e.g., Oil Change" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Service Interval (${unitLabel})</label>
+            <input type="number" id="pmItemInterval" placeholder="e.g., 50000" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Date Last Completed</label>
+            <input type="date" id="pmItemDate">
+          </div>
+          <div class="demo-form-group">
+            <label>${unitLabel} at Completion</label>
+            <input type="number" id="pmItemReading" placeholder="e.g., 546912">
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save Item</button>
+            <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Cancel</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function savePMItem(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    ensurePMItemsInitialized(asset);
+
+    asset.data.pmItems.push({
+      id: 'pm-' + Date.now(),
+      name: document.getElementById('pmItemName').value,
+      interval: document.getElementById('pmItemInterval').value,
+      dateCompleted: document.getElementById('pmItemDate').value,
+      readingAtCompletion: document.getElementById('pmItemReading').value
+    });
+
+    saveAssetsToLocalStorage(assets);
+    showPMSchedule(index);
+  }
+
+  function showEditPMItemForm(index, itemId) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    const item = (asset.data.pmItems || []).find(i => i.id === itemId);
+    if (!item) { showPMSchedule(index); return; }
+
+    const unitLabel = pmReadingUnit(asset.type);
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Edit Maintenance Item</h2>
+          <p>Update interval or mark as serviced</p>
+        </div>
+        <button class="demo-back-btn" onclick="showPMSchedule(${index})">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); updatePMItem(${index}, '${itemId}')">
+          <div class="demo-form-group">
+            <label>Item Name</label>
+            <input type="text" id="pmItemName" value="${item.name}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Service Interval (${unitLabel})</label>
+            <input type="number" id="pmItemInterval" value="${item.interval}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Date Last Completed</label>
+            <input type="date" id="pmItemDate" value="${item.dateCompleted}">
+          </div>
+          <div class="demo-form-group">
+            <label>${unitLabel} at Completion</label>
+            <input type="number" id="pmItemReading" value="${item.readingAtCompletion}">
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save Changes</button>
+            <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Cancel</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function updatePMItem(index, itemId) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    const item = (asset.data.pmItems || []).find(i => i.id === itemId);
+    if (!item) { showPMSchedule(index); return; }
+
+    item.name = document.getElementById('pmItemName').value;
+    item.interval = document.getElementById('pmItemInterval').value;
+    item.dateCompleted = document.getElementById('pmItemDate').value;
+    item.readingAtCompletion = document.getElementById('pmItemReading').value;
+
+    saveAssetsToLocalStorage(assets);
+    showPMSchedule(index);
+  }
+
+  function deletePMItem(index, itemId) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    asset.data.pmItems = (asset.data.pmItems || []).filter(i => i.id !== itemId);
+    saveAssetsToLocalStorage(assets);
+    showPMSchedule(index);
   }
 
   let viewAssetsFilter = 'all';
@@ -2078,7 +2466,11 @@ function populateRepairFormFromAsset(assetIndex) {
     if (previousCategory) {
       // Just go back to previous screen - don't auto-open the menu.
       // Menu only opens via the explicit Open/Close toggle button.
-      showPlacards(previousCategory);
+      if (previousCategory === 'pminfo') {
+        showPMInfoEntry();
+      } else {
+        showPlacards(previousCategory);
+      }
     }
   }
 
@@ -2104,7 +2496,7 @@ function populateRepairFormFromAsset(assetIndex) {
 
   window.addEventListener('load', () => {
     initMenuState();
-    selectCategory('assets');
+    selectCategory('pminfo');
   });
 </script>
 
