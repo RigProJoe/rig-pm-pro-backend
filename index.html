@@ -744,139 +744,8 @@
   }
 
   function handleAssetSave(assetType) {
-    // Extract form data from the form inputs
-    const form = document.querySelector('.demo-form');
-    if (!form) return;
-
-    const inputs = form.querySelectorAll('input');
-    const makeModel = inputs[0].value.trim();
-    const year = inputs[1].value.trim();
-    const vin = inputs[2].value.trim();
-    const unit = inputs[3].value.trim();
-
-    if (!makeModel || !year || !vin || !unit) {
-      alert('Please fill in all fields');
-      return;
-    }
-
-    // Parse make and model
-    const [make, ...modelParts] = makeModel.split(' ');
-    const model = modelParts.join(' ');
-
-    // Load existing assets
-    const existingAssets = loadAssetsFromLocalStorage();
-
-    // Create new asset
-    const newAsset = {
-      type: assetType,
-      label: assetType,
-      data: {
-        make: make,
-        model: model,
-        year: year,
-        vin: vin,
-        unit: unit
-      },
-      savedAt: new Date().toISOString()
-    };
-
-    // Add to existing assets
-    existingAssets.push(newAsset);
-    localStorage.setItem("rigpmproAssets", JSON.stringify(existingAssets));
-
-    // Show "Add another?" prompt
-    const addAnother = confirm('Asset saved successfully!\n\nAdd another asset?');
-    if (addAnother) {
-      showAssetTypeSelection(); // Show asset type selection again
-    } else {
-      showChoicePage(); // Go back to main menu
-    }
-  }
-
-  function showAssetTypeSelection() {
-    const header = document.getElementById('panel-header');
-    const panel = document.getElementById('panel-content');
-
-    header.innerHTML = `
-      <div class="demo-panel-header">
-        <div>
-          <h2>Add Asset</h2>
-          <p>Select asset type</p>
-        </div>
-        <button class="demo-back-btn" onclick="showChoicePage()">← Back</button>
-      </div>
-    `;
-
-    panel.innerHTML = `
-      <div class="demo-asset-type-selection">
-        <button class="demo-asset-type-btn" onclick="saveAsset('Truck')">
-          <div class="asset-type-label">Truck</div>
-          <div class="asset-type-desc">Add a truck</div>
-        </button>
-        <button class="demo-asset-type-btn" onclick="saveAsset('APU')">
-          <div class="asset-type-label">APU</div>
-          <div class="asset-type-desc">Add an APU</div>
-        </button>
-        <button class="demo-asset-type-btn" onclick="saveAsset('Trailer')">
-          <div class="asset-type-label">Trailer</div>
-          <div class="asset-type-desc">Add a trailer</div>
-        </button>
-        <button class="demo-asset-type-btn" onclick="saveAsset('Reefer')">
-          <div class="asset-type-label">Reefer</div>
-          <div class="asset-type-desc">Add a reefer</div>
-        </button>
-      </div>
-    `;
-
-    // Add CSS for asset type selection buttons
-    if (!document.getElementById('asset-type-styles')) {
-      const style = document.createElement('style');
-      style.id = 'asset-type-styles';
-      style.textContent = `
-        .demo-asset-type-selection {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 16px;
-          padding: 20px;
-        }
-
-        .demo-asset-type-btn {
-          padding: 20px;
-          border: 2px solid #ffc107;
-          border-radius: 8px;
-          background: #fff;
-          cursor: pointer;
-          text-align: center;
-          transition: all 0.3s ease;
-          font-size: 1rem;
-        }
-
-        .demo-asset-type-btn:hover {
-          background: #fff9e6;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          transform: translateY(-2px);
-        }
-
-        .asset-type-label {
-          font-weight: bold;
-          font-size: 1.1rem;
-          margin-bottom: 8px;
-          color: #333;
-        }
-
-        .asset-type-desc {
-          font-size: 0.9rem;
-          color: #666;
-        }
-
-        @media (max-width: 768px) {
-          .demo-asset-type-selection {
-            grid-template-columns: 1fr;
-          }
-        }
-      `;
-      document.head.appendChild(style);
-    }
+    alert('Asset saved successfully!');
+    showChoicePage();
   }
 
   let assetFormState = {
@@ -1859,13 +1728,7 @@ let logRepairShowForm = false;
     const header = document.getElementById('panel-header');
     const panel = document.getElementById('panel-content');
 
-    if (action === 'add-asset') {
-      // Single-asset-at-a-time flow
-      showAssetTypeSelection();
-      return;
-    }
-
-    if (action === 'edit-asset') {
+    if (action === 'add-asset' || action === 'edit-asset') {
       if (window.innerWidth <= 767) {
         currentAssetAction = action;
         showChoicePage();
