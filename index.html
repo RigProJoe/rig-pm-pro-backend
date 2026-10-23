@@ -1031,6 +1031,19 @@
     showViewAssets();
   }
 
+  let logRepairAssetFilter = 'all';
+
+  function filterRepairAssets(type) {
+    logRepairAssetFilter = type;
+    showLogRepairPM();
+  }
+
+  function selectAssetForRepair(index) {
+    window.preSelectedAssetIndex = index;
+    logRepairShowForm = true;
+    showLogRepairPM();
+  }
+
   function logRepairForAsset(index) {
     const assets = loadAssetsFromLocalStorage();
     const asset = assets[index];
@@ -1038,6 +1051,7 @@
 
     // Store the asset index and open Log Repair/PM form
     window.preSelectedAssetIndex = index;
+    logRepairShowForm = true;
     showLogRepairPM();
   }
 
@@ -1055,7 +1069,7 @@
     }
   }
 
-let logRepairShowForm = true;
+let logRepairShowForm = false;
 
   function updateAssetDropdown() {
     const assetTypeSelect = document.getElementById("logAssetType");
@@ -1084,7 +1098,70 @@ let logRepairShowForm = true;
   function showLogRepairPM() {
     const header = document.getElementById("panel-header");
     const panel = document.getElementById("panel-content");
+    const assets = loadAssetsFromLocalStorage();
 
+    if (assets.length === 0) {
+      header.innerHTML = `
+        <div class="demo-panel-header">
+          <div>
+            <h2>Log Repair/PM</h2>
+            <p>Record maintenance and repairs for your assets</p>
+          </div>
+          <button class="demo-back-btn" onclick="goBack()">← Back</button>
+        </div>
+      `;
+      panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet. Add assets first to log maintenance.</div>";
+      return;
+    }
+
+    // If no asset is pre-selected, show asset selection screen first
+    if (window.preSelectedAssetIndex === undefined && !logRepairShowForm) {
+      header.innerHTML = `
+        <div class="demo-panel-header">
+          <div>
+            <h2>Select Asset</h2>
+            <p>Choose an asset to log repair/PM</p>
+          </div>
+          <button class="demo-back-btn" onclick="goBack()">← Back</button>
+        </div>
+      `;
+
+      // Build asset selection screen (similar to View Assets)
+      let html = `<div style='padding: 16px; border-bottom: 2px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap;'>
+        <button onclick="filterRepairAssets('all')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'all' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'all' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>All Assets</button>
+        <button onclick="filterRepairAssets('Truck')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'Truck' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'Truck' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Trucks</button>
+        <button onclick="filterRepairAssets('Trailer')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'Trailer' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'Trailer' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Trailers</button>
+        <button onclick="filterRepairAssets('APU')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'APU' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'APU' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>APUs</button>
+        <button onclick="filterRepairAssets('Reefer')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'Reefer' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'Reefer' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Reefers</button>
+      </div>`;
+
+      const filteredAssets = logRepairAssetFilter === 'all'
+        ? assets
+        : assets.filter(a => a.type === logRepairAssetFilter);
+
+      html += `<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>`;
+
+      filteredAssets.forEach((asset, index) => {
+        const originalIndex = assets.indexOf(asset);
+        html += `
+          <div onclick="selectAssetForRepair(${originalIndex})" style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;'>
+            <h3 style='margin: 0 0 12px; color: var(--orange); font-size: 1.1rem; border-bottom: 1px solid var(--line); padding-bottom: 8px;'>${asset.label}</h3>
+            <div style='font-size: 0.9rem;'>
+              ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
+              ${asset.data.make ? `<div><strong>Make:</strong> ${asset.data.make}</div>` : ""}
+              ${asset.data.model ? `<div><strong>Model:</strong> ${asset.data.model}</div>` : ""}
+              ${asset.data.unit ? `<div><strong>Unit #:</strong> ${asset.data.unit}</div>` : ""}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      panel.innerHTML = html;
+      return;
+    }
+
+    // If we get here, show the repair form
     header.innerHTML = `
       <div class="demo-panel-header">
         <div>
@@ -1095,16 +1172,9 @@ let logRepairShowForm = true;
       </div>
     `;
 
-    const assets = loadAssetsFromLocalStorage();
-
-    if (assets.length === 0) {
-      panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet. Add assets first to log maintenance.</div>";
-      return;
-    }
-
     let html = `<div style='padding: 24px; display: flex; justify-content: center;'>`;
 
-    // Set flag to show form (in case we came from asset selection)
+    // Set flag to show form
     logRepairShowForm = true;
     
     if (logRepairShowForm) {
