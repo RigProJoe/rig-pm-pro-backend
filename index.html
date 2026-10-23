@@ -929,22 +929,45 @@
     filteredAssets.forEach((asset, index) => {
       const originalIndex = assets.indexOf(asset);
       html += `
-        <div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px;'>
+        <div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; display: flex; flex-direction: column;'>
           <h3 style='margin: 0 0 12px; color: var(--orange); font-size: 1.1rem; border-bottom: 1px solid var(--line); padding-bottom: 8px;'>${asset.label}</h3>
-          <div style='font-size: 0.9rem;'>
+          <div style='font-size: 0.9rem; flex: 1;'>
             ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
             ${asset.data.make ? `<div><strong>Make:</strong> ${asset.data.make}</div>` : ""}
             ${asset.data.model ? `<div><strong>Model:</strong> ${asset.data.model}</div>` : ""}
             ${asset.data.unit ? `<div><strong>Unit #:</strong> ${asset.data.unit}</div>` : ""}
             ${asset.data.vin ? `<div><strong>VIN #:</strong> ${asset.data.vin}</div>` : ""}
           </div>
-          <button onclick="deleteAsset(${originalIndex})" style='margin-top: 12px; width: 100%; padding: 8px; background: var(--line); border: 1px solid var(--orange); color: var(--orange); border-radius: 4px; cursor: pointer; font-weight: 600;'>Delete</button>
+          <div style='margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;'>
+            <button onclick="editAsset(${originalIndex})" style='padding: 10px; background: var(--blue); border: 1px solid var(--blue); color: white; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;'>Edit</button>
+            <button onclick="logRepairForAsset(${originalIndex})" style='padding: 10px; background: var(--orange); border: 1px solid var(--orange); color: white; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;'>Log Repair</button>
+            <button onclick="deleteAsset(${originalIndex})" style='padding: 10px; background: var(--line); border: 1px solid #e74c3c; color: #e74c3c; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;'>Delete</button>
+          </div>
         </div>
       `;
     });
 
     html += "</div>";
     panel.innerHTML = html;
+  }
+
+  function editAsset(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) return;
+
+    // Open the asset form for this type
+    saveAsset(asset.type.toLowerCase());
+  }
+
+  function logRepairForAsset(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) return;
+
+    // Store the asset index and open Log Repair/PM form
+    window.preSelectedAssetIndex = index;
+    showLogRepairPM();
   }
 
   function deleteAsset(index) {
@@ -1002,6 +1025,9 @@ let logRepairShowForm = true;
     }
 
     let html = `<div style='padding: 24px; display: flex; justify-content: center;'>`;
+
+    // Set flag to show form (in case we came from asset selection)
+    logRepairShowForm = true;
     
     if (logRepairShowForm) {
       // Show form to log repair - wider index card layout
@@ -1122,6 +1148,21 @@ let logRepairShowForm = true;
     
     html += `</div>`;
     panel.innerHTML = html;
+
+    // Auto-select asset if one was pre-selected from View Assets
+    if (window.preSelectedAssetIndex !== undefined) {
+      setTimeout(() => {
+        const asset = assets[window.preSelectedAssetIndex];
+        if (asset) {
+          document.getElementById("logAssetType").value = asset.type;
+          updateAssetDropdown();
+          setTimeout(() => {
+            document.getElementById("logAsset").value = window.preSelectedAssetIndex;
+          }, 100);
+        }
+        window.preSelectedAssetIndex = undefined; // Clear after use
+      }, 50);
+    }
   }
 
   function saveMaintenanceLog() {
