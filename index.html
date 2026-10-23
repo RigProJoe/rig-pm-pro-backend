@@ -589,8 +589,16 @@
     /* Show menu toggle button on phone */
     .demo-menu-toggle-btn { display: flex; }
 
-    /* Hide the redundant category-level header (sidebar already shows selection) */
-    .category-level-header { display: none; }
+    /* Hide all panel header titles/descriptions on phone at every step - maximizes space for cards/forms */
+    .demo-panel-header h2,
+    .demo-panel-header p {
+      display: none;
+    }
+
+    /* Collapse header padding since text is gone (keeps Back button comfortable) */
+    .demo-panel-header {
+      padding: 10px 16px;
+    }
 
     /* Adjust main content on phone */
     .demo-content {
