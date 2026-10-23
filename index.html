@@ -855,10 +855,13 @@
   }
 
   function saveAssetsToLocalStorage() {
-    const assets = [];
+    // Load existing assets to preserve them
+    const existingAssets = loadAssetsFromLocalStorage();
+
+    // Add newly completed assets from form
     assetFormState.assetTypes.forEach((type, index) => {
       if (assetFormState.completed[index] && Object.keys(assetFormState.data[index]).length > 0) {
-        assets.push({
+        existingAssets.push({
           type: type,
           label: assetFormState.assetLabels[index],
           data: assetFormState.data[index],
@@ -866,7 +869,8 @@
         });
       }
     });
-    localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
+
+    localStorage.setItem("rigpmproAssets", JSON.stringify(existingAssets));
   }
 
   function loadAssetsFromLocalStorage() {
