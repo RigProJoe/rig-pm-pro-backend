@@ -1083,7 +1083,8 @@ let logRepairShowForm = false;
     }
 
     const assets = loadAssetsFromLocalStorage();
-    const matchingAssets = assets.filter(a => a.type === assetType);
+    // Check both old and new asset formats for backward compatibility
+    const matchingAssets = assets.filter(a => a.type === assetType || a.data?.type === assetType);
     
     let html = '<option value="">Select which asset...</option>';
     matchingAssets.forEach((asset, idx) => {
