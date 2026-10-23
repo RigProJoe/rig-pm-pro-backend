@@ -72,6 +72,23 @@
 
   .demo-exit-btn:hover { opacity: 0.9; }
 
+  .demo-menu-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 8px 12px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .demo-menu-toggle-btn:hover { opacity: 0.8; }
+
+  .demo-menu-toggle-btn.visible { display: flex; }
+
   .demo-content {
     display: flex;
     flex: 1;
@@ -552,9 +569,54 @@
     }
   }
 
+  @media (max-width: 767px) {
+    /* Hide category tree titles on phone (both orientations) */
+    .demo-nav-btn {
+      color: transparent;
+      font-size: 0.8rem;
+      padding: 12px 8px;
+      min-width: 40px;
+      min-height: 40px;
+    }
+
+    /* Ensure active indicator shows even when text is hidden */
+    .demo-nav-btn.active {
+      border-left-color: var(--orange);
+      background: var(--line);
+    }
+
+    /* Hide sidebar by default on phone */
+    .demo-sidebar {
+      position: fixed;
+      left: 0;
+      top: 60px;
+      height: calc(100% - 60px);
+      width: 200px;
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+
+    .demo-sidebar.visible {
+      transform: translateX(0);
+    }
+
+    /* Show menu toggle button on phone */
+    .demo-menu-toggle-btn { display: flex; }
+
+    /* Adjust main content on phone */
+    .demo-content {
+      width: 100%;
+    }
+
+    .demo-main {
+      width: 100%;
+    }
+  }
+
   @media (max-width: 480px) {
     .demo-sidebar { width: 120px; }
-    .demo-nav-btn { padding: 10px 12px; font-size: 0.9rem; }
+    .demo-nav-btn { padding: 10px 12px; }
     .demo-header h1 { font-size: 1rem; }
     .demo-placards { grid-template-columns: 1fr; }
     .demo-placard { min-height: 90px; padding: 12px; }
@@ -569,6 +631,7 @@
 
 <div class="demo-container">
   <div class="demo-header">
+    <button class="demo-menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenu()" title="Open Menu">☰ Open Menu</button>
     <h1>Rig PM Pro Demo</h1>
     <button class="demo-exit-btn" onclick="exitDemo()">Exit Demo</button>
   </div>
@@ -590,6 +653,38 @@
 <script>
   let previousCategory = null;
   let demoState = { page: 'home', category: null, action: null };
+  let isInitialLoad = true;
+  let menuVisible = true;
+
+  function toggleMenu() {
+    const sidebar = document.querySelector('.demo-sidebar');
+    const btn = document.getElementById('menuToggleBtn');
+    menuVisible = !menuVisible;
+
+    if (menuVisible) {
+      sidebar.classList.add('visible');
+      btn.textContent = '☰ Close Menu';
+    } else {
+      sidebar.classList.remove('visible');
+      btn.textContent = '☰ Open Menu';
+    }
+  }
+
+  function hideMenu() {
+    const sidebar = document.querySelector('.demo-sidebar');
+    const btn = document.getElementById('menuToggleBtn');
+    sidebar.classList.remove('visible');
+    menuVisible = false;
+    btn.textContent = '☰ Open Menu';
+  }
+
+  function showMenu() {
+    const sidebar = document.querySelector('.demo-sidebar');
+    const btn = document.getElementById('menuToggleBtn');
+    sidebar.classList.add('visible');
+    menuVisible = true;
+    btn.textContent = '☰ Close Menu';
+  }
 
   // Manage browser history to keep demo alive
   function pushDemoState(state) {
@@ -650,10 +745,19 @@
 
     document.querySelectorAll('.demo-nav-btn').forEach(btn => {
       btn.classList.remove('active');
-      if (btn.textContent.toLowerCase() === cat.toLowerCase()) {
+      if (btn.textContent.toLowerCase() === cat.toLowerCase() ||
+          (cat === 'assets' && btn.innerHTML.includes('Assets')) ||
+          (cat === 'maintenance' && btn.innerHTML.includes('Maintenance')) ||
+          (cat === 'account' && btn.innerHTML.includes('Account'))) {
         btn.classList.add('active');
       }
     });
+
+    // Hide menu after category selection (but not on initial load)
+    if (!isInitialLoad) {
+      hideMenu();
+    }
+    isInitialLoad = false;
 
     showPlacards(cat);
   }
@@ -1936,6 +2040,7 @@ function populateRepairFormFromAsset(assetIndex) {
     // Reset form state when user backs out
     assetFormState.initialized = false;
     if (previousCategory) {
+      showMenu();
       showPlacards(previousCategory);
     }
   }
@@ -1943,6 +2048,22 @@ function populateRepairFormFromAsset(assetIndex) {
   function exitDemo() {
     window.location.href = '/';
   }
+
+  // Swipe gesture to open menu
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  document.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const swipeDistance = touchEndX - touchStartX;
+
+    // Swipe from left edge to right (>50px) opens menu
+    if (touchStartX < 20 && swipeDistance > 50) {
+      showMenu();
+    }
+  });
 
   window.addEventListener('load', () => {
     selectCategory('assets');
