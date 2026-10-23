@@ -1089,7 +1089,10 @@ let logRepairShowForm = false;
     let html = '<option value="">Select which asset...</option>';
     matchingAssets.forEach((asset, idx) => {
       const actualIndex = assets.indexOf(asset);
-      html += `<option value='${actualIndex}'>${asset.label}</option>`;
+      const makeModel = asset.data.make && asset.data.model ? `${asset.data.make} ${asset.data.model}` : 'Unknown';
+      const unitNum = asset.data.unit ? `Unit ${asset.data.unit}` : 'No Unit';
+      const displayLabel = `${asset.type} - ${makeModel} - ${unitNum}`;
+      html += `<option value='${actualIndex}'>${displayLabel}</option>`;
     });
     
     assetSelect.innerHTML = html;
