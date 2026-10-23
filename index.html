@@ -1157,18 +1157,29 @@
 
   // Default maintenance category names only - no preloaded intervals.
   // User sources and enters their own interval numbers.
-  function getDefaultPMItemNames() {
-    return [
-      'Oil Change', 'Chassis Lube', 'Air Filter', 'Fuel Filter',
-      'Coolant Flush', 'Transmission Service', 'Brake Inspection',
-      'DPF Cleaning', 'DEF Filter Replacement', 'Air Dryer Cartridge'
-    ];
+  // Lists are tailored per asset type since a truck's PM items don't apply to
+  // an APU or trailer. User can always add/edit/remove items regardless of type.
+  function getDefaultPMItemNames(assetType) {
+    switch (assetType) {
+      case 'APU':
+        return ['PM'];
+      case 'Trailer':
+        return [];
+      case 'Reefer':
+        return ['PM', 'EGR Cleaning'];
+      default: // Truck
+        return [
+          'Oil Change', 'Chassis Lube', 'Air Filter', 'Fuel Filter',
+          'Coolant Flush', 'Transmission Service', 'Brake Inspection',
+          'DPF Cleaning', 'DEF Filter Replacement', 'Air Dryer Cartridge'
+        ];
+    }
   }
 
   function ensurePMItemsInitialized(asset) {
     const defaultThreshold = pmDefaultThreshold(asset.type);
     if (!asset.data.pmItems) {
-      asset.data.pmItems = getDefaultPMItemNames().map((name, i) => ({
+      asset.data.pmItems = getDefaultPMItemNames(asset.type).map((name, i) => ({
         id: 'pm-' + Date.now() + '-' + i,
         name: name,
         interval: '',
@@ -1352,37 +1363,52 @@
       <button onclick="showAddPMItemForm(${index})" style='padding: 10px 16px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-weight: 600;'>+ Add Maintenance Item</button>
     </div>`;
 
-    html += `<div style='display: flex; flex-direction: column; gap: 12px;'>`;
-
+    // Tally counts for the collapsed summary line
+    let okCount = 0, dueSoonCount = 0, overdueCount = 0;
     asset.data.pmItems.forEach((item) => {
-      const calc = calculatePMStatus(item, currentReading);
-      const statusColor = pmStatusColor(calc.status);
-
-      html += `
-        <div style='background: var(--soft); border: 1px solid var(--line); border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 14px;'>
-          <div style='display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;'>
-            <div>
-              <div style='font-weight: 700; font-size: 1rem;'>${item.name}</div>
-              <div style='font-size: 0.85rem; color: var(--muted); margin-top: 4px;'>
-                ${item.interval ? `Every ${item.interval} ${unitLabel.toLowerCase()}` : 'No interval set'}
-                ${item.dateCompleted ? ` · Last done ${formatDateMMDDYYYY(item.dateCompleted)} at ${item.readingAtCompletion}` : ''}
-              </div>
-              ${calc.remaining !== null ? `<div style='font-size: 0.85rem; margin-top: 4px;'>${calc.remaining < 0 ? Math.abs(Math.round(calc.remaining)) + ' ' + unitLabel.toLowerCase() + ' overdue' : Math.round(calc.remaining) + ' ' + unitLabel.toLowerCase() + ' remaining'}</div>` : ''}
-            </div>
-            <div style='display: flex; flex-direction: column; align-items: flex-end; gap: 6px;'>
-              <span style='color: ${statusColor}; font-weight: 700; font-size: 0.85rem;'>${calc.status}</span>
-              <div style='display: flex; gap: 6px;'>
-                <button onclick="showEditPMItemForm(${index}, '${item.id}')" style='padding: 6px 10px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 4px; cursor: pointer; font-size: 0.8rem;'>Edit</button>
-                <button onclick="deletePMItem(${index}, '${item.id}')" style='padding: 6px 10px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 4px; cursor: pointer; font-size: 0.8rem;'>Delete</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
+      const status = calculatePMStatus(item, currentReading).status;
+      if (status === 'OVERDUE') overdueCount++;
+      else if (status === 'DUE SOON') dueSoonCount++;
+      else if (status === 'OK') okCount++;
     });
 
-    html += `</div></div>`;
+    const isExpanded = window.pmListExpanded !== false; // default expanded
+
+    html += `<div style='background: var(--soft); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px;'>
+      <div onclick="togglePMListExpanded(${index})" style='display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer;'>
+        <div style='font-weight: 700;'>${asset.label} PM Items</div>
+        <div style='display: flex; align-items: center; gap: 12px;'>
+          <span style='font-size: 0.85rem; color: var(--muted);'>${okCount} OK · ${dueSoonCount} Due Soon · ${overdueCount} Overdue</span>
+          <span style='font-size: 1.1rem; font-weight: 700; width: 20px; text-align: center;'>${isExpanded ? '−' : '+'}</span>
+        </div>
+      </div>
+    </div>`;
+
+    if (isExpanded) {
+      html += `<div style='display: flex; flex-direction: column; gap: 10px;'>`;
+
+      asset.data.pmItems.forEach((item) => {
+        const calc = calculatePMStatus(item, currentReading);
+        const statusColor = pmStatusColor(calc.status);
+
+        html += `
+          <div onclick="showEditPMItemForm(${index}, '${item.id}')" style='background: var(--soft); border: 1px solid var(--line); border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;'>
+            <div style='font-weight: 700; font-size: 1rem;'>${item.name}</div>
+            <span style='color: ${statusColor}; font-weight: 700; font-size: 0.85rem; white-space: nowrap;'>${calc.status}</span>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+    }
+
+    html += `</div>`;
     panel.innerHTML = html;
+  }
+
+  function togglePMListExpanded(index) {
+    window.pmListExpanded = !(window.pmListExpanded !== false);
+    showPMSchedule(index);
   }
 
   function showAddPMItemForm(index) {
@@ -1506,9 +1532,19 @@
             <button type="submit" class="demo-save-btn">Save Changes</button>
             <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Cancel</button>
           </div>
+          <div class="demo-form-buttons" style="margin-top: 10px;">
+            <button type="button" onclick="confirmDeletePMItem(${index}, '${itemId}')" style='padding: 10px 16px; background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%;'>Delete Item</button>
+          </div>
         </form>
       </div>
     `;
+  }
+
+  function confirmDeletePMItem(index, itemId) {
+    const confirmed = confirm('Delete this maintenance item? This will permanently erase all PM data for this item (interval, dates, mileage history). This cannot be undone.');
+    if (confirmed) {
+      deletePMItem(index, itemId);
+    }
   }
 
   function updatePMItem(index, itemId) {
