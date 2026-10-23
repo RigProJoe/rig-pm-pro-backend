@@ -956,8 +956,79 @@
     const asset = assets[index];
     if (!asset) return;
 
-    // Open the asset form for this type
-    saveAsset(asset.type.toLowerCase());
+    // Store the index being edited
+    window.editingAssetIndex = index;
+
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    const assetLabels = {
+      'Truck': 'Truck',
+      'APU': 'APU',
+      'Trailer': 'Trailer',
+      'Reefer': 'Reefer'
+    };
+
+    const assetLabel = assetLabels[asset.type] || 'Asset';
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Edit ${assetLabel}</h2>
+          <p>Update ${assetLabel.toLowerCase()} details</p>
+        </div>
+        <button class="demo-back-btn" onclick="showViewAssets()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); handleEditAssetSave('${asset.type}')">
+          <div class="demo-form-group">
+            <label>Make/Model</label>
+            <input type="text" id="editMakeModel" placeholder="e.g., Peterbilt 579" value="${asset.data.make ? asset.data.make + ' ' + asset.data.model : ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Year</label>
+            <input type="number" id="editYear" placeholder="2020" value="${asset.data.year || ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>VIN</label>
+            <input type="text" id="editVin" placeholder="Last 6 digits" value="${asset.data.vin || ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Unit #</label>
+            <input type="number" id="editUnit" placeholder="Unit number" value="${asset.data.unit || ''}" required>
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Update ${assetLabel}</button>
+            <button type="button" class="demo-cancel-btn" onclick="showViewAssets()">Back</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function handleEditAssetSave(assetType) {
+    const assets = loadAssetsFromLocalStorage();
+    const index = window.editingAssetIndex;
+
+    if (index === undefined || !assets[index]) return;
+
+    const makeModel = document.getElementById('editMakeModel').value;
+    const [make, ...modelParts] = makeModel.split(' ');
+    const model = modelParts.join(' ');
+
+    assets[index].data.make = make;
+    assets[index].data.model = model;
+    assets[index].data.year = document.getElementById('editYear').value;
+    assets[index].data.vin = document.getElementById('editVin').value;
+    assets[index].data.unit = document.getElementById('editUnit').value;
+
+    localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
+    window.editingAssetIndex = undefined;
+    alert('Asset updated successfully!');
+    showViewAssets();
   }
 
   function logRepairForAsset(index) {
