@@ -565,10 +565,9 @@
     .multi-asset-form {
       grid-template-columns: 1fr;
     }
-  }
 
-  @media (max-width: 767px) {
-    /* Sidebar becomes an overlay drawer on phone - text stays visible */
+    /* Sidebar becomes an overlay drawer on phone AND tablet - text stays visible.
+       Auto-hides on category selection for consistency across both breakpoints. */
     .demo-sidebar {
       position: fixed;
       left: 0;
@@ -584,9 +583,25 @@
       transform: translateX(0);
     }
 
-    /* Show menu toggle button on phone */
+    /* Show menu toggle button on phone and tablet */
     .demo-menu-toggle-btn { display: flex; }
 
+    /* Adjust main content on phone and tablet */
+    .demo-content {
+      width: 100%;
+    }
+
+    .demo-main {
+      width: 100%;
+    }
+  }
+
+  /* Tablet-only sidebar width (phone gets its own orientation-based widths below) */
+  @media (min-width: 768px) and (max-width: 899px) {
+    .demo-sidebar { width: 280px; }
+  }
+
+  @media (max-width: 767px) {
     /* Keep title on one line - buttons on both sides were squeezing it to wrap */
     .demo-header {
       padding: 10px 8px;
@@ -620,15 +635,6 @@
     /* Collapse header padding since text is gone (keeps Back button comfortable) */
     .demo-panel-header {
       padding: 10px 16px;
-    }
-
-    /* Adjust main content on phone */
-    .demo-content {
-      width: 100%;
-    }
-
-    .demo-main {
-      width: 100%;
     }
   }
 
@@ -894,23 +900,23 @@
         <form onsubmit="event.preventDefault(); handleAssetSave('${assetType}')">
           <div class="demo-form-group">
             <label>Year</label>
-            <input type="number" placeholder="2020" required>
+            <input type="number" id="newAssetYear" placeholder="2020" required>
           </div>
           <div class="demo-form-group">
             <label>Make</label>
-            <input type="text" placeholder="e.g., Peterbilt" required>
+            <input type="text" id="newAssetMake" placeholder="e.g., Peterbilt" required>
           </div>
           <div class="demo-form-group">
             <label>Model</label>
-            <input type="text" placeholder="e.g., 579" required>
+            <input type="text" id="newAssetModel" placeholder="e.g., 579" required>
           </div>
           <div class="demo-form-group">
             <label>VIN</label>
-            <input type="text" placeholder="Last 6 digits" required>
+            <input type="text" id="newAssetVin" placeholder="Last 6 digits" required>
           </div>
           <div class="demo-form-group">
             <label>Unit #</label>
-            <input type="number" placeholder="Unit number" required>
+            <input type="number" id="newAssetUnit" placeholder="Unit number" required>
           </div>
           <div class="demo-form-buttons">
             <button type="submit" class="demo-save-btn">Save ${assetLabel}</button>
@@ -922,6 +928,37 @@
   }
 
   function handleAssetSave(assetType) {
+    const assetLabels = {
+      truck: 'Truck',
+      apu: 'APU',
+      trailer: 'Trailer',
+      reefer: 'Reefer'
+    };
+    const assetLabel = assetLabels[assetType] || 'Asset';
+
+    const data = {
+      year: document.getElementById('newAssetYear').value,
+      make: document.getElementById('newAssetMake').value,
+      model: document.getElementById('newAssetModel').value,
+      vin: document.getElementById('newAssetVin').value,
+      unit: document.getElementById('newAssetUnit').value
+    };
+
+    const dupCheck = checkForDuplicateAsset(data);
+    if (dupCheck.isDuplicate) {
+      alert(`Error: ${dupCheck.message}\n\nPlease enter a different value.`);
+      return;
+    }
+
+    const assets = loadAssetsFromLocalStorage();
+    assets.push({
+      type: assetLabel,
+      label: assetLabel,
+      data: data,
+      savedAt: new Date().toISOString()
+    });
+    saveAssetsToLocalStorage(assets);
+
     alert('Asset saved successfully!');
     showChoicePage();
   }
