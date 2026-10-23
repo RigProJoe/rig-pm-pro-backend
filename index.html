@@ -1110,6 +1110,29 @@
   }
 
 let logRepairShowForm = false;
+let logRepairAssetLocked = false; // True if coming from View Assets card click
+
+function populateRepairFormFromAsset(assetIndex) {
+  const assets = loadAssetsFromLocalStorage();
+  const asset = assets[assetIndex];
+
+  if (!asset || !asset.data) return;
+
+  // Pre-populate the asset info fields (Make, Model, Year, VIN, Unit #)
+  // These would be display-only or read-only fields
+  const data = asset.data;
+
+  // Store asset info for display (could be shown as read-only fields or labels)
+  window.selectedAssetData = {
+    index: assetIndex,
+    type: asset.type,
+    make: data.make || '',
+    model: data.model || '',
+    year: data.year || '',
+    vin: data.vin || '',
+    unit: data.unit || ''
+  };
+}
 
   function updateAssetDropdown() {
     const assetTypeSelect = document.getElementById("logAssetType");
@@ -1261,11 +1284,12 @@ let logRepairShowForm = false;
                 <option value='Trailer'>Trailer</option>
                 <option value='Reefer'>Reefer</option>
               </select>
+              <small id="assetTypeLocked" style='display: none; color: #ff9d4f; font-size: 0.85rem; margin-top: 4px;'>Asset type locked (selected from card)</small>
             </div>
 
             <div>
               <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Which Asset</label>
-              <select id="logAsset" style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' disabled required>
+              <select id="logAsset" onchange="populateRepairFormFromAsset(this.value)" style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' disabled required>
                 <option value=''>Select specific asset...</option>
               </select>
             </div>
@@ -1343,13 +1367,27 @@ let logRepairShowForm = false;
 
     // Auto-select asset if one was pre-selected from View Assets
     if (window.preSelectedAssetIndex !== undefined) {
+      logRepairAssetLocked = true;
       setTimeout(() => {
         const asset = assets[window.preSelectedAssetIndex];
         if (asset) {
-          document.getElementById("logAssetType").value = asset.type;
+          const typeField = document.getElementById("logAssetType");
+          const lockedMsg = document.getElementById("assetTypeLocked");
+
+          // Set asset type and lock it
+          typeField.value = asset.type;
+          typeField.disabled = true;
+          typeField.style.opacity = '0.6';
+          typeField.style.backgroundColor = '#f5f5f5';
+          typeField.style.cursor = 'not-allowed';
+          lockedMsg.style.display = 'block';
+
           updateAssetDropdown();
           setTimeout(() => {
-            document.getElementById("logAsset").value = window.preSelectedAssetIndex;
+            const assetSelect = document.getElementById("logAsset");
+            assetSelect.value = window.preSelectedAssetIndex;
+            // Pre-populate the form with this asset's data
+            populateRepairFormFromAsset(window.preSelectedAssetIndex);
           }, 100);
         }
         window.preSelectedAssetIndex = undefined; // Clear after use
