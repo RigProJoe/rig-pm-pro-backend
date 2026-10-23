@@ -1075,17 +1075,17 @@ let logRepairShowForm = false;
     const assetTypeSelect = document.getElementById("logAssetType");
     const assetSelect = document.getElementById("logAsset");
     const assetType = assetTypeSelect.value;
-    
+
     if (!assetType) {
-      assetSelect.innerHTML = '<option value="">Select specific asset...</option>';
+      assetSelect.innerHTML = '<option value="">Select which asset...</option>';
       assetSelect.disabled = true;
       return;
     }
-    
+
     const assets = loadAssetsFromLocalStorage();
-    const matchingAssets = assets.filter(a => a.data.type === assetType);
+    const matchingAssets = assets.filter(a => a.type === assetType);
     
-    let html = '<option value="">Select specific asset...</option>';
+    let html = '<option value="">Select which asset...</option>';
     matchingAssets.forEach((asset, idx) => {
       const actualIndex = assets.indexOf(asset);
       html += `<option value='${actualIndex}'>${asset.label}</option>`;
@@ -1220,7 +1220,7 @@ let logRepairShowForm = false;
             </div>
 
             <div>
-              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Specific Asset</label>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Which Asset</label>
               <select id="logAsset" style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' disabled required>
                 <option value=''>Select specific asset...</option>
               </select>
