@@ -589,6 +589,30 @@
     /* Show menu toggle button on phone */
     .demo-menu-toggle-btn { display: flex; }
 
+    /* Keep title on one line - buttons on both sides were squeezing it to wrap */
+    .demo-header {
+      padding: 10px 8px;
+      gap: 6px;
+    }
+
+    .demo-header h1 {
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .demo-exit-btn,
+    .demo-menu-toggle-btn {
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+    }
+
     /* Hide all panel header titles/descriptions on phone at every step - maximizes space for cards/forms */
     .demo-panel-header h2,
     .demo-panel-header p {
@@ -622,7 +646,9 @@
   @media (max-width: 480px) {
     .demo-sidebar { width: 170px; }
     .demo-nav-btn { padding: 10px 12px; }
-    .demo-header h1 { font-size: 1rem; }
+    .demo-header h1 { font-size: 0.85rem; }
+    .demo-exit-btn,
+    .demo-menu-toggle-btn { font-size: 0.75rem; padding: 6px 8px; }
     .demo-placards { grid-template-columns: 1fr; }
     .demo-placard { min-height: 90px; padding: 12px; }
     .demo-placard-title { font-size: 0.95rem; margin-bottom: 2px; }
