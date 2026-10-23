@@ -861,12 +861,12 @@
       <div class="demo-form">
         <form onsubmit="event.preventDefault(); handleAssetSave('${assetType}')">
           <div class="demo-form-group">
-            <label>Make/Model</label>
-            <input type="text" placeholder="e.g., Peterbilt 579" required>
-          </div>
-          <div class="demo-form-group">
             <label>Year</label>
             <input type="number" placeholder="2020" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Make/Model</label>
+            <input type="text" placeholder="e.g., Peterbilt 579" required>
           </div>
           <div class="demo-form-group">
             <label>VIN</label>
@@ -1167,12 +1167,12 @@
       <div class="demo-form">
         <form onsubmit="event.preventDefault(); handleEditAssetSave('${asset.type}')">
           <div class="demo-form-group">
-            <label>Make/Model</label>
-            <input type="text" id="editMakeModel" placeholder="e.g., Peterbilt 579" value="${asset.data.make ? asset.data.make + ' ' + asset.data.model : ''}" required>
-          </div>
-          <div class="demo-form-group">
             <label>Year</label>
             <input type="number" id="editYear" placeholder="2020" value="${asset.data.year || ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Make/Model</label>
+            <input type="text" id="editMakeModel" placeholder="e.g., Peterbilt 579" value="${asset.data.make ? asset.data.make + ' ' + asset.data.model : ''}" required>
           </div>
           <div class="demo-form-group">
             <label>VIN</label>
