@@ -636,7 +636,7 @@
 
 <div class="demo-container">
   <div class="demo-header">
-    <button class="demo-menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenu()">Close</button>
+    <button class="demo-menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenu()">Close Menu</button>
     <h1>Rig PM Pro Demo</h1>
     <button class="demo-exit-btn" onclick="exitDemo()">Exit Demo</button>
   </div>
@@ -674,7 +674,7 @@
     const btn = document.getElementById('menuToggleBtn');
     sidebar.classList.remove('visible');
     menuVisible = false;
-    btn.textContent = 'Open';
+    btn.textContent = 'Open Menu';
   }
 
   function showMenu() {
@@ -682,7 +682,7 @@
     const btn = document.getElementById('menuToggleBtn');
     sidebar.classList.add('visible');
     menuVisible = true;
-    btn.textContent = 'Close';
+    btn.textContent = 'Close Menu';
   }
 
   function initMenuState() {
@@ -691,7 +691,7 @@
     // Menu starts open by default on phone (both orientations)
     sidebar.classList.add('visible');
     menuVisible = true;
-    if (btn) btn.textContent = 'Close';
+    if (btn) btn.textContent = 'Close Menu';
   }
 
   // Manage browser history to keep demo alive
