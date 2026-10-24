@@ -1214,7 +1214,7 @@
       case 'APU':
         return ['PM'];
       case 'Trailer':
-        return ['Annual DOT Inspection'];
+        return ['DOT Inspection - Trailer'];
       case 'Reefer':
         return ['PM', 'EGR Cleaning'];
       default: // Truck
@@ -1222,14 +1222,14 @@
           'Oil Change', 'Chassis Lube', 'Air Filter', 'Fuel Filter',
           'Coolant Flush', 'Transmission Service', 'Brake Inspection',
           'DPF Cleaning', 'DEF Filter Replacement', 'Air Dryer Cartridge',
-          'Annual DOT Inspection'
+          'DOT Inspection - Truck'
         ];
     }
   }
 
-  // Determine if a PM item is date-based (Annual DOT Inspection) or mileage-based
+  // Determine if a PM item is date-based (DOT Inspection) or mileage-based
   function getItemIntervalType(itemName) {
-    return itemName === 'Annual DOT Inspection' ? 'days' : 'mileage';
+    return itemName.includes('DOT Inspection') ? 'days' : 'mileage';
   }
 
   function ensurePMItemsInitialized(asset) {
