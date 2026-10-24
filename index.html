@@ -1420,6 +1420,9 @@
     `;
 
     assets.forEach((asset) => {
+      // Skip Trailer - tracked by date only (Annual DOT Inspection), not mileage/hours
+      if (asset.type === 'Trailer') return;
+
       const unit = (asset.type === 'APU' || asset.type === 'Reefer') ? 'hrs' : 'mi';
       formHtml += `
         <div>
