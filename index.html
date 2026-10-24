@@ -1238,6 +1238,100 @@
   }
 
   function showPMInfoEntry() {
+    const assets = loadAssetsFromLocalStorage();
+
+    if (assets.length === 0) {
+      const header = document.getElementById('panel-header');
+      const panel = document.getElementById('panel-content');
+      header.innerHTML = `
+        <div class="demo-panel-header category-level-header">
+          <div>
+            <h2>PM Info</h2>
+            <p>Check maintenance intervals and update readings</p>
+          </div>
+        </div>
+      `;
+      panel.innerHTML = `
+        <div style='padding: 40px; text-align: center; color: var(--muted);'>
+          No assets saved yet. Add an asset first to track its maintenance intervals.
+        </div>
+      `;
+      return;
+    }
+
+    // Check if mileage was already entered in this session
+    const mileageEnteredThisSession = sessionStorage.getItem('mileage_entered_session');
+
+    if (mileageEnteredThisSession === 'true') {
+      // Already entered in this session, show asset cards directly
+      showPMInfoCards();
+    } else {
+      // First time this session, show mileage entry form
+      showMileageEntryForm();
+    }
+  }
+
+  function showMileageEntryForm() {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+
+    header.innerHTML = `
+      <div class="demo-panel-header category-level-header">
+        <div>
+          <h2>PM Info - Update Readings</h2>
+          <p>Enter current mileage or hours for all assets</p>
+        </div>
+      </div>
+    `;
+
+    let formHtml = `
+      <div style='max-width: 600px; margin: 0 auto; padding: 16px;'>
+        <form onsubmit="event.preventDefault(); saveMileageReadings()">
+          <div style='display: grid; gap: 16px;'>
+    `;
+
+    assets.forEach((asset) => {
+      const unit = (asset.type === 'APU' || asset.type === 'Reefer') ? 'hrs' : 'mi';
+      formHtml += `
+        <div>
+          <label style='display: block; margin-bottom: 8px; font-weight: 600; color: var(--ink);'>${asset.label} (${unit})</label>
+          <input type='number' class='mileage-input' data-asset-index='${assets.indexOf(asset)}' value='${asset.data.currentReading || ''}' placeholder='Enter ${unit}' style='width: 100%; padding: 12px; background: var(--soft); border: 1px solid var(--line); border-radius: 6px; color: var(--ink);'>
+        </div>
+      `;
+    });
+
+    formHtml += `
+          </div>
+          <div style='display: flex; gap: 12px; margin-top: 24px;'>
+            <button type='submit' style='flex: 1; padding: 12px 24px; background: var(--orange); color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-weight: 600;'>Update & View Status</button>
+            <button type='button' onclick="showPMInfoCards()" style='padding: 12px 24px; background: transparent; color: var(--orange); border: 2px solid var(--orange); border-radius: 6px; cursor: pointer; font-weight: 600;'>Skip</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    panel.innerHTML = formHtml;
+  }
+
+  function saveMileageReadings() {
+    const assets = loadAssetsFromLocalStorage();
+    const inputs = document.querySelectorAll('.mileage-input');
+
+    inputs.forEach(input => {
+      const assetIndex = parseInt(input.dataset.assetIndex);
+      const reading = parseInt(input.value);
+      if (!isNaN(reading) && assets[assetIndex]) {
+        assets[assetIndex].data.currentReading = reading;
+      }
+    });
+
+    saveAssetsToLocalStorage(assets);
+    sessionStorage.setItem('mileage_entered_session', 'true');
+    showPMInfoCards();
+  }
+
+  function showPMInfoCards() {
     const header = document.getElementById('panel-header');
     const panel = document.getElementById('panel-content');
     const assets = loadAssetsFromLocalStorage();
@@ -1246,19 +1340,10 @@
       <div class="demo-panel-header category-level-header">
         <div>
           <h2>PM Info</h2>
-          <p>Check maintenance intervals and update readings</p>
+          <p>Asset maintenance status overview</p>
         </div>
       </div>
     `;
-
-    if (assets.length === 0) {
-      panel.innerHTML = `
-        <div style='padding: 40px; text-align: center; color: var(--muted);'>
-          No assets saved yet. Add an asset first to track its maintenance intervals.
-        </div>
-      `;
-      return;
-    }
 
     let html = `<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>`;
     assets.forEach((asset, index) => {
