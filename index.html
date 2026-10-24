@@ -1233,39 +1233,60 @@
   }
 
   function ensurePMItemsInitialized(asset) {
-    const defaultThreshold = pmDefaultThreshold(asset.type);
     if (!asset.data.pmItems) {
       asset.data.pmItems = getDefaultPMItemNames(asset.type).map((name, i) => {
         const intervalType = getItemIntervalType(name);
+        // Set default checkpoints for DOT Inspection items
+        let checkpoint1 = null, checkpoint2 = null, checkpoint3 = null;
+        if (name.includes('DOT Inspection')) {
+          checkpoint1 = '60';
+          checkpoint2 = '30';
+          checkpoint3 = '15';
+        }
         const item = {
           id: 'pm-' + Date.now() + '-' + i,
           name: name,
           interval: intervalType === 'days' ? '365' : '',
           dateCompleted: '',
           readingAtCompletion: '',
-          dueSoonThreshold: intervalType === 'days' ? '60' : defaultThreshold,
+          checkpoint1: checkpoint1,
+          checkpoint2: checkpoint2,
+          checkpoint3: checkpoint3,
           interval_type: intervalType
         };
         return item;
       });
     } else {
-      // Backfill threshold and interval_type on items saved before this feature existed
+      // Backfill checkpoint fields and interval_type on items saved before this feature existed
       asset.data.pmItems.forEach((item) => {
-        if (item.dueSoonThreshold === undefined) item.dueSoonThreshold = pmDefaultThreshold(asset.type);
         if (item.interval_type === undefined) item.interval_type = getItemIntervalType(item.name);
+        // Migrate old dueSoonThreshold to checkpoint1 if it exists
+        if (item.dueSoonThreshold !== undefined && item.checkpoint1 === undefined) {
+          item.checkpoint1 = item.dueSoonThreshold;
+          delete item.dueSoonThreshold;
+        }
+        // Ensure checkpoint fields exist
+        if (item.checkpoint1 === undefined) item.checkpoint1 = null;
+        if (item.checkpoint2 === undefined) item.checkpoint2 = null;
+        if (item.checkpoint3 === undefined) item.checkpoint3 = null;
       });
     }
   }
 
-  // Per-item warning: OVERDUE (past due) > DUE SOON (within the item's own threshold) > OK
-  // Each item carries its own threshold since different maintenance items may need
-  // different warning windows (e.g. brakes vs. an air dryer cartridge).
-  // Supports both MILEAGE-BASED (oil change, etc.) and DATE-BASED (Annual DOT Inspection)
+  // Multi-checkpoint warning system: OVERDUE > CRITICAL > DUE SOON > OK
+  // Users can set up to 3 checkpoints to escalate urgency (e.g., 60, 30, 15 days)
+  // Supports both MILEAGE-BASED (oil change, etc.) and DATE-BASED (DOT Inspection)
   function calculatePMStatus(item, currentReading) {
     const interval = parseFloat(item.interval);
     const intervalType = item.interval_type || 'mileage';
 
-    // DATE-BASED ITEMS (Annual DOT Inspection)
+    // Collect checkpoints and filter out null/empty values, sort descending
+    const checkpoints = [item.checkpoint1, item.checkpoint2, item.checkpoint3]
+      .map(cp => cp === null || cp === '' ? null : parseFloat(cp))
+      .filter(cp => cp !== null && !isNaN(cp))
+      .sort((a, b) => b - a);
+
+    // DATE-BASED ITEMS (DOT Inspection)
     if (intervalType === 'days') {
       const dateCompleted = item.dateCompleted ? new Date(item.dateCompleted) : null;
 
@@ -1281,22 +1302,26 @@
       nextDueAt.setDate(nextDueAt.getDate() + interval);
 
       const daysRemaining = Math.floor((nextDueAt - today) / (1000 * 60 * 60 * 24));
-      const dueSoonThreshold = parseFloat(item.dueSoonThreshold);
 
-      let status;
+      let status = 'OK';
       if (daysRemaining < 0) {
         status = 'OVERDUE';
-      } else if (!isNaN(dueSoonThreshold) && daysRemaining <= dueSoonThreshold) {
-        status = 'DUE SOON';
-      } else {
-        status = 'OK';
+      } else if (checkpoints.length > 0) {
+        if (daysRemaining <= checkpoints[checkpoints.length - 1]) {
+          status = 'CRITICAL';
+        } else if (checkpoints.length > 1 && daysRemaining <= checkpoints[1]) {
+          status = 'CRITICAL';
+        } else if (daysRemaining <= checkpoints[0]) {
+          status = 'DUE SOON';
+        }
       }
 
       return {
         nextDueAt: nextDueAt.toISOString().split('T')[0],
         remaining: daysRemaining,
         status: status,
-        unit: 'days'
+        unit: 'days',
+        checkpoints: checkpoints
       };
     }
 
@@ -1315,23 +1340,27 @@
     }
 
     const remaining = nextDueAt - current;
-    const dueSoonThreshold = parseFloat(item.dueSoonThreshold);
 
-    let status;
+    let status = 'OK';
     if (remaining < 0) {
       status = 'OVERDUE';
-    } else if (!isNaN(dueSoonThreshold) && remaining <= dueSoonThreshold) {
-      status = 'DUE SOON';
-    } else {
-      status = 'OK';
+    } else if (checkpoints.length > 0) {
+      if (remaining <= checkpoints[checkpoints.length - 1]) {
+        status = 'CRITICAL';
+      } else if (checkpoints.length > 1 && remaining <= checkpoints[1]) {
+        status = 'CRITICAL';
+      } else if (remaining <= checkpoints[0]) {
+        status = 'DUE SOON';
+      }
     }
 
-    return { nextDueAt: nextDueAt, remaining: remaining, status: status, unit: 'miles' };
+    return { nextDueAt: nextDueAt, remaining: remaining, status: status, unit: 'miles', checkpoints: checkpoints };
   }
 
   function pmStatusColor(status) {
     switch (status) {
       case 'OVERDUE': return '#ff4d4d';
+      case 'CRITICAL': return '#ff0000';
       case 'DUE SOON': return '#e8741c';
       case 'OK': return '#4caf50';
       default: return 'var(--muted)';
@@ -1624,8 +1653,16 @@
             <input type="number" id="pmItemReading" placeholder="e.g., 546912">
           </div>
           <div class="demo-form-group">
-            <label>Warn "Due Soon" when remaining falls to (${unitLabel})</label>
-            <input type="number" id="pmItemDueSoonThreshold" value="${defaultThreshold}" required>
+            <label>Checkpoint 1 (${unitLabel}) - Optional</label>
+            <input type="number" id="pmItemCheckpoint1" placeholder="e.g., 60 (days) or 5000 (miles)">
+          </div>
+          <div class="demo-form-group">
+            <label>Checkpoint 2 (${unitLabel}) - Optional</label>
+            <input type="number" id="pmItemCheckpoint2" placeholder="e.g., 30 (days) or 2500 (miles)">
+          </div>
+          <div class="demo-form-group">
+            <label>Checkpoint 3 (${unitLabel}) - Optional</label>
+            <input type="number" id="pmItemCheckpoint3" placeholder="e.g., 15 (days) or 1000 (miles)">
           </div>
           <div class="demo-form-buttons">
             <button type="submit" class="demo-save-btn">Save Item</button>
@@ -1652,7 +1689,9 @@
       interval: document.getElementById('pmItemInterval').value,
       dateCompleted: document.getElementById('pmItemDate').value,
       readingAtCompletion: document.getElementById('pmItemReading').value,
-      dueSoonThreshold: document.getElementById('pmItemDueSoonThreshold').value,
+      checkpoint1: document.getElementById('pmItemCheckpoint1').value || null,
+      checkpoint2: document.getElementById('pmItemCheckpoint2').value || null,
+      checkpoint3: document.getElementById('pmItemCheckpoint3').value || null,
       interval_type: intervalType
     });
 
