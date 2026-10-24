@@ -1164,33 +1164,45 @@
       case 'APU':
         return ['PM'];
       case 'Trailer':
-        return [];
+        return ['Annual DOT Inspection'];
       case 'Reefer':
         return ['PM', 'EGR Cleaning'];
       default: // Truck
         return [
           'Oil Change', 'Chassis Lube', 'Air Filter', 'Fuel Filter',
           'Coolant Flush', 'Transmission Service', 'Brake Inspection',
-          'DPF Cleaning', 'DEF Filter Replacement', 'Air Dryer Cartridge'
+          'DPF Cleaning', 'DEF Filter Replacement', 'Air Dryer Cartridge',
+          'Annual DOT Inspection'
         ];
     }
+  }
+
+  // Determine if a PM item is date-based (Annual DOT Inspection) or mileage-based
+  function getItemIntervalType(itemName) {
+    return itemName === 'Annual DOT Inspection' ? 'days' : 'mileage';
   }
 
   function ensurePMItemsInitialized(asset) {
     const defaultThreshold = pmDefaultThreshold(asset.type);
     if (!asset.data.pmItems) {
-      asset.data.pmItems = getDefaultPMItemNames(asset.type).map((name, i) => ({
-        id: 'pm-' + Date.now() + '-' + i,
-        name: name,
-        interval: '',
-        dateCompleted: '',
-        readingAtCompletion: '',
-        dueSoonThreshold: defaultThreshold
-      }));
+      asset.data.pmItems = getDefaultPMItemNames(asset.type).map((name, i) => {
+        const intervalType = getItemIntervalType(name);
+        const item = {
+          id: 'pm-' + Date.now() + '-' + i,
+          name: name,
+          interval: intervalType === 'days' ? '365' : '',
+          dateCompleted: '',
+          readingAtCompletion: '',
+          dueSoonThreshold: intervalType === 'days' ? '60' : defaultThreshold,
+          interval_type: intervalType
+        };
+        return item;
+      });
     } else {
-      // Backfill threshold on items saved before this feature existed
+      // Backfill threshold and interval_type on items saved before this feature existed
       asset.data.pmItems.forEach((item) => {
-        if (item.dueSoonThreshold === undefined) item.dueSoonThreshold = defaultThreshold;
+        if (item.dueSoonThreshold === undefined) item.dueSoonThreshold = pmDefaultThreshold(asset.type);
+        if (item.interval_type === undefined) item.interval_type = getItemIntervalType(item.name);
       });
     }
   }
@@ -1198,8 +1210,47 @@
   // Per-item warning: OVERDUE (past due) > DUE SOON (within the item's own threshold) > OK
   // Each item carries its own threshold since different maintenance items may need
   // different warning windows (e.g. brakes vs. an air dryer cartridge).
+  // Supports both MILEAGE-BASED (oil change, etc.) and DATE-BASED (Annual DOT Inspection)
   function calculatePMStatus(item, currentReading) {
     const interval = parseFloat(item.interval);
+    const intervalType = item.interval_type || 'mileage';
+
+    // DATE-BASED ITEMS (Annual DOT Inspection)
+    if (intervalType === 'days') {
+      const dateCompleted = item.dateCompleted ? new Date(item.dateCompleted) : null;
+
+      if (!dateCompleted || isNaN(dateCompleted.getTime()) || isNaN(interval)) {
+        return { nextDueAt: null, remaining: null, status: 'NOT SET' };
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      dateCompleted.setHours(0, 0, 0, 0);
+
+      const nextDueAt = new Date(dateCompleted);
+      nextDueAt.setDate(nextDueAt.getDate() + interval);
+
+      const daysRemaining = Math.floor((nextDueAt - today) / (1000 * 60 * 60 * 24));
+      const dueSoonThreshold = parseFloat(item.dueSoonThreshold);
+
+      let status;
+      if (daysRemaining < 0) {
+        status = 'OVERDUE';
+      } else if (!isNaN(dueSoonThreshold) && daysRemaining <= dueSoonThreshold) {
+        status = 'DUE SOON';
+      } else {
+        status = 'OK';
+      }
+
+      return {
+        nextDueAt: nextDueAt.toISOString().split('T')[0],
+        remaining: daysRemaining,
+        status: status,
+        unit: 'days'
+      };
+    }
+
+    // MILEAGE-BASED ITEMS (Oil Change, etc.)
     const readingAtCompletion = parseFloat(item.readingAtCompletion);
     const current = parseFloat(currentReading);
 
@@ -1225,7 +1276,7 @@
       status = 'OK';
     }
 
-    return { nextDueAt: nextDueAt, remaining: remaining, status: status };
+    return { nextDueAt: nextDueAt, remaining: remaining, status: status, unit: 'miles' };
   }
 
   function pmStatusColor(status) {
@@ -1555,13 +1606,17 @@
 
     ensurePMItemsInitialized(asset);
 
+    const itemName = document.getElementById('pmItemName').value;
+    const intervalType = getItemIntervalType(itemName);
+
     asset.data.pmItems.push({
       id: 'pm-' + Date.now(),
-      name: document.getElementById('pmItemName').value,
+      name: itemName,
       interval: document.getElementById('pmItemInterval').value,
       dateCompleted: document.getElementById('pmItemDate').value,
       readingAtCompletion: document.getElementById('pmItemReading').value,
-      dueSoonThreshold: document.getElementById('pmItemDueSoonThreshold').value
+      dueSoonThreshold: document.getElementById('pmItemDueSoonThreshold').value,
+      interval_type: intervalType
     });
 
     saveAssetsToLocalStorage(assets);
