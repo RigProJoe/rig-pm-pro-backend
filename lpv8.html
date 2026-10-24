@@ -224,11 +224,21 @@
   <section id="demo">
     <div class="wrap">
       <h2 id="demo-heading">Try it before you sign up</h2>
-      <a class="fleet-card" href="index.html" id="demo-link" style="margin-bottom:24px">
-        <h3 id="demo-title">Try the live demo</h3>
-        <p id="demo-description">Free, no sign-up. Walk through the same screens you will use: add your truck, log work, see your totals, and export a file. Demo records are saved locally so you can continue later.</p>
-        <span class="btn" id="demo-btn-text">Try the live demo</span>
-      </a>
+      <div id="demo-cards-container" style="display: grid; gap: 24px;">
+        <!-- Try Demo card (enabled for new users, disabled for returning users) -->
+        <a class="fleet-card" href="/app.html" id="try-demo-link" style="margin-bottom:0">
+          <h3>Try the live demo</h3>
+          <p id="try-demo-description">Free, no sign-up. Walk through the same screens you will use: add your truck, log work, see your totals, and more. Demo records are saved locally.</p>
+          <span class="btn" id="try-demo-btn">Try the live demo</span>
+        </a>
+
+        <!-- Continue Demo card (enabled for returning users, hidden for new users) -->
+        <a class="fleet-card" href="/app.html" id="continue-demo-link" style="margin-bottom:0; display: none;">
+          <h3>Continue the live demo</h3>
+          <p>Welcome back! Your assets and maintenance records are saved. Pick up where you left off.</p>
+          <span class="btn" id="continue-demo-btn">Continue the live demo</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -255,22 +265,24 @@
           console.error("Error parsing assets:", parseErr);
         }
 
-        const titleEl = document.getElementById("demo-title");
-        const descEl = document.getElementById("demo-description");
-        const btnEl = document.getElementById("demo-btn-text");
+        const tryDemoLink = document.getElementById("try-demo-link");
+        const continueDemoLink = document.getElementById("continue-demo-link");
+        const tryDemoBtn = document.getElementById("try-demo-btn");
 
         if (hasExistingData) {
-          // Returning user with existing data
-          console.log("Showing CONTINUE button (returning user)");
-          titleEl.textContent = "Continue the live demo";
-          descEl.textContent = "Welcome back! Your assets and maintenance records are saved. Pick up where you left off.";
-          btnEl.textContent = "Continue the live demo";
+          // Returning user: Show both buttons, disable Try, enable Continue
+          console.log("Showing BOTH buttons (returning user) - Try disabled, Continue active");
+          tryDemoLink.style.opacity = "0.5";
+          tryDemoLink.style.cursor = "not-allowed";
+          tryDemoBtn.style.opacity = "0.6";
+          tryDemoBtn.style.cursor = "not-allowed";
+          tryDemoLink.onclick = (e) => { e.preventDefault(); return false; };
+
+          continueDemoLink.style.display = "block";
         } else {
-          // New user
-          console.log("Showing TRY button (new user)");
-          titleEl.textContent = "Try the live demo";
-          descEl.textContent = "Free, no sign-up. Walk through the same screens you will use: add your truck, log work, see your totals, and more. Your data is saved locally.";
-          btnEl.textContent = "Try the live demo";
+          // New user: Show only Try button, active
+          console.log("Showing TRY button only (new user)");
+          continueDemoLink.style.display = "none";
         }
       } catch (e) {
         console.error("Error in initializeDemoButton:", e);
