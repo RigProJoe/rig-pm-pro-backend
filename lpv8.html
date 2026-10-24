@@ -237,7 +237,23 @@
     function initializeDemoButton() {
       try {
         const storedAssets = localStorage.getItem("rigpmproAssets");
-        const hasExistingData = storedAssets && JSON.parse(storedAssets).length > 0;
+        const storedLogs = localStorage.getItem("rigpmproMaintenanceLogs");
+
+        // Debug logging
+        console.log("lpv8.html - Checking localStorage...");
+        console.log("rigpmproAssets:", storedAssets ? "Found (" + storedAssets.length + " bytes)" : "Not found");
+        console.log("rigpmproMaintenanceLogs:", storedLogs ? "Found" : "Not found");
+
+        let hasExistingData = false;
+        try {
+          if (storedAssets) {
+            const parsed = JSON.parse(storedAssets);
+            hasExistingData = Array.isArray(parsed) && parsed.length > 0;
+            console.log("Assets parsed successfully. Count:", parsed.length);
+          }
+        } catch (parseErr) {
+          console.error("Error parsing assets:", parseErr);
+        }
 
         const titleEl = document.getElementById("demo-title");
         const descEl = document.getElementById("demo-description");
@@ -245,17 +261,19 @@
 
         if (hasExistingData) {
           // Returning user with existing data
+          console.log("Showing CONTINUE button (returning user)");
           titleEl.textContent = "Continue the live demo";
           descEl.textContent = "Welcome back! Your assets and maintenance records are saved. Pick up where you left off.";
           btnEl.textContent = "Continue the live demo";
         } else {
           // New user
+          console.log("Showing TRY button (new user)");
           titleEl.textContent = "Try the live demo";
           descEl.textContent = "Free, no sign-up. Walk through the same screens you will use: add your truck, log work, see your totals, and more. Your data is saved locally.";
           btnEl.textContent = "Try the live demo";
         }
       } catch (e) {
-        console.error("Error checking demo data:", e);
+        console.error("Error in initializeDemoButton:", e);
         // Fall back to default "Try" state
       }
     }
@@ -264,7 +282,8 @@
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initializeDemoButton);
     } else {
-      initializeDemoButton();
+      // Slight delay to ensure everything is ready
+      setTimeout(initializeDemoButton, 100);
     }
   </script>
 </main>
