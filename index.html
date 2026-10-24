@@ -745,9 +745,17 @@
     }
   });
 
+  // Determine auto entry point based on asset state
+  function getAutoEntryPoint() {
+    const assets = loadAssetsFromLocalStorage();
+    return assets.length === 0 ? 'assets' : 'pminfo';
+  }
+
   // Push initial state
   window.addEventListener('load', () => {
+    const entryPoint = getAutoEntryPoint();
     pushDemoState({ page: 'home', category: null, action: null });
+    selectCategory(entryPoint);
   });
 
   const categories = {
@@ -812,6 +820,7 @@
     const content = categories[cat];
     const header = document.getElementById('panel-header');
     const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
 
     header.innerHTML = `
       <div class="demo-panel-header category-level-header">
@@ -824,8 +833,13 @@
 
     let html = '<div class="demo-placards">';
     content.placards.forEach(p => {
+      // Disable "View Assets" card if no assets exist
+      const isViewAssetsDisabled = (p.action === 'view-assets' && assets.length === 0);
+      const disabledStyle = isViewAssetsDisabled ? 'opacity: 0.5; cursor: not-allowed;' : '';
+      const onClickHandler = isViewAssetsDisabled ? '' : `openForm('${p.action}', '${p.title}')`;
+
       html += `
-        <div class="demo-placard" onclick="openForm('${p.action}', '${p.title}')">
+        <div class="demo-placard" onclick="${onClickHandler}" style="${disabledStyle}">
           <div class="demo-placard-title">${p.title}</div>
           <div class="demo-placard-desc">${p.desc}</div>
         </div>
@@ -1322,8 +1336,8 @@
     const assets = loadAssetsFromLocalStorage();
 
     if (assets.length === 0) {
-      // New user: redirect to Add Asset instead of showing empty PM Info screen
-      showChoicePage();
+      // No assets: redirect to Assets category (user must add assets first)
+      selectCategory('assets');
       return;
     }
 
