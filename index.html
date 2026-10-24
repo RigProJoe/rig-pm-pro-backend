@@ -1,0 +1,2838 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rig PM Pro Demo | Asset & Maintenance Tracker</title>
+<style>
+  :root {
+    --ink: #eef2f7;
+    --muted: #b6c0cc;
+    --paper: #11161c;
+    --soft: #1a212a;
+    --line: #2d3742;
+    --blue: #1d4f91;
+    --orange: #e8741c;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  .demo-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .demo-header {
+    background: var(--soft);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .demo-header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .demo-exit-btn {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .demo-exit-btn:hover { background: var(--line); }
+
+  .demo-menu-toggle-btn {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .demo-menu-toggle-btn:hover { background: var(--line); }
+
+  .demo-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .demo-sidebar {
+    width: 200px;
+    background: var(--soft);
+    border-right: 1px solid var(--line);
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+
+  .demo-nav-btn {
+    width: 100%;
+    padding: 12px 16px;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+    border-left: 3px solid transparent;
+    transition: background 0.2s;
+  }
+
+  .demo-nav-btn:hover { background: var(--line); }
+
+  .demo-nav-btn.active {
+    background: var(--line);
+    border-left-color: var(--orange);
+    font-weight: 600;
+  }
+
+  .demo-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .demo-panel-header {
+    background: var(--soft);
+    border-bottom: 1px solid var(--line);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .demo-panel-header h2 {
+    margin: 0 0 6px;
+    font-size: 1.3rem !important;
+  }
+
+  .demo-panel-header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .demo-back-btn {
+    background: var(--blue);
+    color: #fff;
+    border: 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .demo-back-btn:hover { opacity: 0.9; }
+
+  .demo-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+  }
+
+  .demo-placards {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .demo-placard {
+    background: linear-gradient(135deg, var(--soft) 0%, rgba(26, 33, 42, 0.8) 100%);
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 60px;
+  }
+
+  .demo-placard:hover {
+    border-color: var(--orange);
+    background: linear-gradient(135deg, var(--line) 0%, var(--soft) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(232, 116, 28, 0.2);
+  }
+
+  .demo-placard-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: #fff;
+  }
+
+  .demo-placard-desc {
+    display: none;
+  }
+
+  .demo-form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .demo-form-group {
+    margin-bottom: 18px;
+  }
+
+  .demo-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .demo-form-group input,
+  .demo-form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  .asset-form-section {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .asset-form-section h3 {
+    grid-column: 1 / -1;
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    color: var(--orange);
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .asset-form-section .demo-form-group {
+    margin-bottom: 0;
+  }
+
+  .asset-form-section .demo-form-group label {
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+
+  .asset-form-section .demo-form-group input {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .demo-form-group input:focus,
+  .demo-form-group select:focus {
+    outline: none;
+    border-color: var(--orange);
+  }
+
+  .demo-form-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .demo-save-btn {
+    background: var(--orange);
+    color: #fff;
+    border: 0;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .demo-save-btn:hover { opacity: 0.9; }
+
+  .demo-cancel-btn {
+    background: transparent;
+    color: var(--orange);
+    border: 2px solid var(--orange);
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .demo-cancel-btn:hover { background: rgba(232, 116, 28, 0.1); }
+
+  /* Responsive Asset Choice Container - 4-button Add Asset selection screen
+     Portrait phone (<768px): 2x2 grid, standard button size
+     Landscape phone (<768px, landscape): 2x2 grid, SCALED DOWN to fit viewport without scroll
+     Tablet (768-899px): 2x2 grid, standard size
+     Desktop (900px+): 2x2 grid, standard size */
+  .asset-choice-container {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Standard button size for portrait phone and larger screens */
+  .asset-choice-btn {
+    background: linear-gradient(135deg, var(--soft) 0%, rgba(26, 33, 42, 0.8) 100%);
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 120px;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .asset-choice-btn:hover {
+    border-color: var(--orange);
+    background: linear-gradient(135deg, var(--line) 0%, var(--soft) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(232, 116, 28, 0.3);
+  }
+
+  /* LANDSCAPE PHONE: Scale down buttons to fit all 4 without scrolling */
+  @media (max-width: 767px) and (orientation: landscape) {
+    .asset-choice-container {
+      gap: 8px;
+    }
+
+    .asset-choice-btn {
+      padding: 12px;
+      min-height: 80px;
+      font-size: 0.9rem;
+      border-radius: 8px;
+    }
+  }
+
+  .asset-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .asset-card {
+    background: var(--soft);
+    border: 2px solid #FFD700 !important;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .asset-card-active {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(232, 116, 28, 0.2);
+  }
+
+  .asset-card-completed {
+    background: rgba(100, 120, 140, 0.3);
+    opacity: 0.6;
+  }
+
+  .asset-card h3 {
+    margin: 0 0 10px;
+    font-size: 1.5rem !important;
+    color: #FFFF00 !important;
+    font-weight: 700;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .asset-card-content {
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  .form-field {
+    margin-bottom: 8px;
+  }
+
+  .form-field label {
+    display: block;
+    margin-bottom: 3px;
+    font-weight: 700;
+    font-size: 0.8rem !important;
+    color: #FFFF00 !important;
+  }
+
+  .form-field input {
+    width: 100%;
+    max-width: 100px;
+    padding: 6px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+
+  .form-field input:focus {
+    outline: none;
+    border-color: var(--orange);
+  }
+
+  /* Hide number input spinners - user input only */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  /* Field-specific widths */
+  input[data-field="year"] {
+    max-width: 70px;
+  }
+
+  input[data-field="make"] {
+    max-width: 220px;
+  }
+
+  input[data-field="model"] {
+    max-width: 220px;
+  }
+
+  input[data-field="make"],
+  input[data-field="model"] {
+    overflow: hidden;
+    text-overflow: clip;
+    font-size: 0.85rem;
+  }
+
+  input[data-field="unit"] {
+    max-width: 80px;
+  }
+
+  input[data-field="vin"] {
+    max-width: 80px;
+  }
+
+  .form-field input:disabled {
+    background: var(--line);
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .asset-card-buttons {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end !important;
+    margin-top: 8px;
+  }
+
+  .btn-save, .btn-clear, .btn-cancel {
+    flex: 0 0 auto;
+    padding: 4px 8px !important;
+    border: 0;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-save {
+    background: var(--orange) !important;
+    color: #fff !important;
+    display: inline-block !important;
+    visibility: visible !important;
+  }
+
+  .btn-save:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  .btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-clear {
+    background: transparent !important;
+    color: #FFFF00 !important;
+    border: 1px solid #FFFF00 !important;
+    display: inline-block !important;
+    visibility: visible !important;
+  }
+
+  .btn-clear:hover:not(:disabled) {
+    background: rgba(255, 255, 0, 0.15) !important;
+    color: #FFFF00 !important;
+    border-color: #FFFF00 !important;
+  }
+
+  .btn-clear:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-cancel {
+    background: transparent !important;
+    color: var(--orange) !important;
+    border: 1px solid var(--orange) !important;
+    display: inline-block !important;
+    visibility: visible !important;
+  }
+
+  .btn-cancel:hover {
+    background: rgba(232, 116, 28, 0.1) !important;
+  }
+
+  .multi-asset-form {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .asset-form-section {
+    background: var(--soft);
+    border: 2px solid #FFD700;
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+
+
+  @media (min-width: 900px) {
+    .demo-placards { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 899px) {
+    .multi-asset-form {
+      grid-template-columns: 1fr;
+    }
+
+    /* Sidebar becomes an overlay drawer on phone AND tablet - text stays visible.
+       Auto-hides on category selection for consistency across both breakpoints. */
+    .demo-sidebar {
+      position: fixed;
+      left: 0;
+      top: 60px;
+      height: calc(100% - 60px);
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.4);
+    }
+
+    .demo-sidebar.visible {
+      transform: translateX(0);
+    }
+
+    /* Show menu toggle button on phone and tablet */
+    .demo-menu-toggle-btn { display: flex; }
+
+    /* Adjust main content on phone and tablet */
+    .demo-content {
+      width: 100%;
+    }
+
+    .demo-main {
+      width: 100%;
+    }
+  }
+
+  /* Tablet-only sidebar width (phone gets its own orientation-based widths below) */
+  @media (min-width: 768px) and (max-width: 899px) {
+    .demo-sidebar { width: 280px; }
+  }
+
+  @media (max-width: 767px) {
+    /* Keep title on one line - buttons on both sides were squeezing it to wrap */
+    .demo-header {
+      padding: 10px 8px;
+      gap: 6px;
+    }
+
+    .demo-header h1 {
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .demo-exit-btn,
+    .demo-menu-toggle-btn {
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+    }
+
+    /* Hide all panel header titles/descriptions on phone at every step - maximizes space for cards/forms */
+    .demo-panel-header h2,
+    .demo-panel-header p {
+      display: none;
+    }
+
+    /* Collapse header padding since text is gone (keeps Back button comfortable) */
+    .demo-panel-header {
+      padding: 10px 16px;
+    }
+  }
+
+  /* Sidebar width scales by orientation */
+  @media (max-width: 767px) and (orientation: portrait) {
+    .demo-sidebar { width: 200px; }
+  }
+
+  @media (max-width: 767px) and (orientation: landscape) {
+    .demo-sidebar { width: 240px; }
+  }
+
+  @media (max-width: 480px) {
+    .demo-sidebar { width: 170px; }
+    .demo-nav-btn { padding: 10px 12px; }
+    .demo-header h1 { font-size: 0.85rem; }
+    .demo-exit-btn,
+    .demo-menu-toggle-btn { font-size: 0.75rem; padding: 6px 8px; }
+    .demo-placards { grid-template-columns: 1fr; }
+    .demo-placard { min-height: 55px; padding: 12px; }
+    .demo-placard-title { font-size: 0.95rem; margin-bottom: 2px; }
+    .demo-placard-desc { font-size: 0.75rem; }
+    .asset-choice-container { gap: 12px; }
+    .asset-choice-btn { min-height: 100px; padding: 16px; font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-container">
+  <div class="demo-header">
+    <button class="demo-menu-toggle-btn" id="menuToggleBtn" onclick="toggleMenu()">Close Menu</button>
+    <h1>Rig PM Pro Demo</h1>
+    <button class="demo-exit-btn" onclick="exitDemo()">Exit Demo</button>
+  </div>
+
+  <div class="demo-content">
+    <div class="demo-sidebar">
+      <button class="demo-nav-btn active" onclick="selectCategory('pminfo')">PM Info</button>
+      <button class="demo-nav-btn" onclick="selectCategory('assets')">Assets</button>
+      <button class="demo-nav-btn" onclick="selectCategory('maintenance')">Maintenance</button>
+      <button class="demo-nav-btn" onclick="selectCategory('account')">Account Settings</button>
+    </div>
+
+    <div class="demo-main">
+      <div id="panel-header"></div>
+      <div class="demo-area" id="panel-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let previousCategory = null;
+  let demoState = { page: 'home', category: null, action: null };
+  let isInitialLoad = true;
+  let menuVisible = true;
+
+  function toggleMenu() {
+    if (menuVisible) {
+      hideMenu();
+    } else {
+      showMenu();
+    }
+  }
+
+  function hideMenu() {
+    const sidebar = document.querySelector('.demo-sidebar');
+    const btn = document.getElementById('menuToggleBtn');
+    sidebar.classList.remove('visible');
+    menuVisible = false;
+    btn.textContent = 'Open Menu';
+  }
+
+  function showMenu() {
+    const sidebar = document.querySelector('.demo-sidebar');
+    const btn = document.getElementById('menuToggleBtn');
+    sidebar.classList.add('visible');
+    menuVisible = true;
+    btn.textContent = 'Close Menu';
+  }
+
+  function initMenuState() {
+    const sidebar = document.querySelector('.demo-sidebar');
+    const btn = document.getElementById('menuToggleBtn');
+    // Menu starts open by default on phone (both orientations)
+    sidebar.classList.add('visible');
+    menuVisible = true;
+    if (btn) btn.textContent = 'Close Menu';
+  }
+
+  // Manage browser history to keep demo alive
+  function pushDemoState(state) {
+    demoState = state;
+    window.history.pushState(state, '', window.location.href);
+  }
+
+  // Handle browser back button
+  window.addEventListener('popstate', (event) => {
+    if (event.state) {
+      demoState = event.state;
+      if (event.state.page === 'placards' && event.state.category === 'pminfo') {
+        showPMInfoEntry();
+      } else if (event.state.page === 'placards' && event.state.category) {
+        showPlacards(event.state.category);
+      } else if (event.state.page === 'home') {
+        selectCategory('pminfo');
+      }
+    }
+  });
+
+  // Determine auto entry point based on asset state
+  function getAutoEntryPoint() {
+    const assets = loadAssetsFromLocalStorage();
+    return assets.length === 0 ? 'assets' : 'pminfo';
+  }
+
+  // Push initial state
+  window.addEventListener('load', () => {
+    const entryPoint = getAutoEntryPoint();
+    pushDemoState({ page: 'home', category: null, action: null });
+    selectCategory(entryPoint);
+  });
+
+  const categories = {
+    assets: {
+      title: 'Assets',
+      desc: 'Manage your trucks, trailers, APU, and reefer units',
+      placards: [
+        { title: 'Add Asset', desc: 'Add a new truck, trailer, APU, or reefer to track', action: 'add-asset' },
+        { title: 'View Assets', desc: 'See all your equipment in one place', action: 'view-assets' }
+      ]
+    },
+    maintenance: {
+      title: 'Maintenance',
+      desc: 'Log and track preventive maintenance across all assets',
+      placards: [
+        { title: 'Log Repair/PM', desc: 'Record preventive maintenance or repairs', action: 'log-repair' },
+        { title: 'Repair History', desc: 'View all repairs by asset or date', action: 'repair-history' },
+        { title: 'Total Costs', desc: 'See maintenance spending by month, quarter, or year', action: 'total-costs' }
+      ]
+    },
+    account: {
+      title: 'Account Settings',
+      desc: 'Manage your account, billing, and preferences',
+      placards: [
+        { title: 'Profile', desc: 'Update your name, email, and contact information', action: 'profile' },
+        { title: 'Billing & Subscription', desc: 'Manage your plan, payment method, and receipts', action: 'billing' },
+        { title: 'Preferences', desc: 'Set notifications, export options, and display preferences', action: 'preferences' },
+        { title: 'Support', desc: 'Contact support or view documentation', action: 'support' }
+      ]
+    }
+  };
+
+  function selectCategory(cat) {
+    previousCategory = cat;
+    pushDemoState({ page: 'placards', category: cat, action: null });
+
+    document.querySelectorAll('.demo-nav-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.textContent.toLowerCase() === cat.toLowerCase() ||
+          (cat === 'pminfo' && btn.innerHTML.includes('PM Info')) ||
+          (cat === 'assets' && btn.innerHTML.includes('Assets')) ||
+          (cat === 'maintenance' && btn.innerHTML.includes('Maintenance')) ||
+          (cat === 'account' && btn.innerHTML.includes('Account'))) {
+        btn.classList.add('active');
+      }
+    });
+
+    // Hide menu after category selection (but not on initial load)
+    if (!isInitialLoad) {
+      hideMenu();
+    }
+    isInitialLoad = false;
+
+    if (cat === 'pminfo') {
+      showPMInfoEntry();
+    } else {
+      showPlacards(cat);
+    }
+  }
+
+  function showPlacards(cat) {
+    const content = categories[cat];
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+
+    // Customize description for Assets category when no assets exist
+    let displayDesc = content.desc;
+    if (cat === 'assets' && assets.length === 0) {
+      displayDesc = 'Enter your first asset to begin';
+    }
+
+    header.innerHTML = `
+      <div class="demo-panel-header category-level-header">
+        <div>
+          <h2>${content.title}</h2>
+          <p>${displayDesc}</p>
+        </div>
+      </div>
+    `;
+
+    let html = '<div class="demo-placards">';
+    content.placards.forEach(p => {
+      // Disable "View Assets" card if no assets exist
+      const isViewAssetsDisabled = (p.action === 'view-assets' && assets.length === 0);
+      const disabledStyle = isViewAssetsDisabled ? 'opacity: 0.5; cursor: not-allowed;' : '';
+      const onClickHandler = isViewAssetsDisabled ? '' : `openForm('${p.action}', '${p.title}')`;
+
+      html += `
+        <div class="demo-placard" onclick="${onClickHandler}" style="${disabledStyle}">
+          <div class="demo-placard-title">${p.title}</div>
+          <div class="demo-placard-desc">${p.desc}</div>
+        </div>
+      `;
+    });
+    html += '</div>';
+
+    panel.innerHTML = html;
+  }
+
+  let currentAssetAction = null;
+
+  // Build #33: Show the 4-button Add Asset selection screen
+  // Flow: User clicks one of the four "Add" buttons → opens form for that asset type →
+  //        user fills in details → clicks Save → returns to this screen (4-button selection)
+  //
+  // Responsive breakpoints:
+  // - Portrait phone (<768px): 2x2 grid, standard button size (120px min-height, 24px padding, 1.1rem font)
+  // - Landscape phone (<768px, landscape): 2x2 grid, SCALED DOWN (80px min-height, 12px padding, 0.9rem font)
+  //   to ensure all 4 buttons fit in viewport without vertical scrolling
+  // - Tablet (768-899px): 2x2 grid, standard size
+  // - Desktop (900px+): 2x2 grid, standard size
+  function showChoicePage() {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Add Asset</h2>
+          <p>Select which type of asset to add</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="asset-choice-container">
+        <button class="asset-choice-btn" onclick="saveAsset('truck')">Add Truck</button>
+        <button class="asset-choice-btn" onclick="saveAsset('apu')">Add APU</button>
+        <button class="asset-choice-btn" onclick="saveAsset('trailer')">Add Trailer</button>
+        <button class="asset-choice-btn" onclick="saveAsset('reefer')">Add Reefer</button>
+      </div>
+    `;
+  }
+
+  function saveAsset(assetType) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    const assetLabels = {
+      truck: 'Truck',
+      apu: 'APU',
+      trailer: 'Trailer',
+      reefer: 'Reefer'
+    };
+
+    const assetLabel = assetLabels[assetType] || 'Asset';
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Add ${assetLabel}</h2>
+          <p>Enter your ${assetLabel.toLowerCase()} details</p>
+        </div>
+        <button class="demo-back-btn" onclick="showChoicePage()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); handleAssetSave('${assetType}')">
+          <div class="demo-form-group">
+            <label>Year</label>
+            <input type="number" id="newAssetYear" placeholder="2020" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Make</label>
+            <input type="text" id="newAssetMake" placeholder="e.g., Peterbilt" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Model</label>
+            <input type="text" id="newAssetModel" placeholder="e.g., 579" required>
+          </div>
+          <div class="demo-form-group">
+            <label>VIN</label>
+            <input type="text" id="newAssetVin" placeholder="Last 6 digits" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Unit #</label>
+            <input type="number" id="newAssetUnit" placeholder="Unit number" required>
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save ${assetLabel}</button>
+            <button type="button" class="demo-cancel-btn" onclick="showChoicePage()">Back</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function handleAssetSave(assetType) {
+    const assetLabels = {
+      truck: 'Truck',
+      apu: 'APU',
+      trailer: 'Trailer',
+      reefer: 'Reefer'
+    };
+    const assetLabel = assetLabels[assetType] || 'Asset';
+
+    const data = {
+      year: document.getElementById('newAssetYear').value,
+      make: document.getElementById('newAssetMake').value,
+      model: document.getElementById('newAssetModel').value,
+      vin: document.getElementById('newAssetVin').value,
+      unit: document.getElementById('newAssetUnit').value
+    };
+
+    const dupCheck = checkForDuplicateAsset(data);
+    if (dupCheck.isDuplicate) {
+      alert(`Error: ${dupCheck.message}\n\nPlease enter a different value.`);
+      return;
+    }
+
+    const assets = loadAssetsFromLocalStorage();
+    const wasFirstAsset = assets.length === 0;
+
+    assets.push({
+      type: assetLabel,
+      label: assetLabel,
+      data: data,
+      savedAt: new Date().toISOString()
+    });
+    saveAssetsToLocalStorage(assets);
+
+    // Show post-save options
+    showAssetSaveOptions(wasFirstAsset);
+  }
+
+  function showAssetSaveOptions(wasFirstAsset) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    header.innerHTML = `
+      <div class="demo-panel-header category-level-header">
+        <div>
+          <h2>Asset Saved!</h2>
+          <p>What would you like to do next?</p>
+        </div>
+      </div>
+    `;
+
+    const doneButtonText = wasFirstAsset ? 'Done → Go to PM Info' : 'Done → Back to Menu';
+    const doneOnClick = wasFirstAsset ? "showPMInfoEntry()" : "goBack()";
+
+    panel.innerHTML = `
+      <div style='max-width: 500px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;'>
+        <button onclick="showChoicePage()" style='padding: 14px 24px; background: var(--blue); color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1rem;'>
+          + Add Another Asset
+        </button>
+        <button onclick="${doneOnClick}" style='padding: 14px 24px; background: transparent; color: var(--orange); border: 2px solid var(--orange); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1rem;'>
+          ${doneButtonText}
+        </button>
+      </div>
+    `;
+  }
+
+  let assetFormState = {
+    currentAsset: 0,
+    completed: [false, false, false, false],
+    data: [{}, {}, {}, {}],
+    assetTypes: ['Truck', 'APU', 'Trailer', 'Reefer'],
+    assetLabels: ['Truck', 'APU', 'Trailer', 'Reefer']
+  };
+
+  function showMultiAssetForm() {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Add Assets</h2>
+          <p>Fill in asset details - complete one at a time</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    // Only initialize if not already initialized
+    if (!assetFormState.initialized) {
+      assetFormState.currentAsset = 0;
+      assetFormState.completed = [false, false, false, false];
+      assetFormState.data = [{}, {}, {}, {}];
+      assetFormState.initialized = true;
+    }
+
+    let cardsHtml = '<div class="asset-cards-grid">';
+
+    for (let i = 0; i < 4; i++) {
+      const isActive = i === assetFormState.currentAsset;
+      const isCompleted = assetFormState.completed[i];
+      const shadeClass = isCompleted ? 'asset-card-completed' : '';
+      const displayClass = isActive ? 'asset-card-active' : '';
+
+      cardsHtml += `
+        <div class="asset-card ${shadeClass} ${displayClass}" id="asset-card-${i}">
+          <h3>${assetFormState.assetLabels[i]}</h3>
+          <div class="asset-card-content">
+            <div class="form-field">
+              <label>Year</label>
+              <input type="number" class="asset-field" data-asset="${i}" data-field="year" placeholder="2020" ${isCompleted ? 'disabled' : ''}>
+            </div>
+            <div class="form-field">
+              <label>Make</label>
+              <input type="text" class="asset-field" data-asset="${i}" data-field="make" placeholder="Make" ${isCompleted ? 'disabled' : ''}>
+            </div>
+            <div class="form-field">
+              <label>Model</label>
+              <input type="text" class="asset-field" data-asset="${i}" data-field="model" placeholder="Model" ${isCompleted ? 'disabled' : ''}>
+            </div>
+            <div class="form-field">
+              <label>Unit #</label>
+              <input type="text" class="asset-field" data-asset="${i}" data-field="unit" placeholder="Unit #" maxlength="10" ${isCompleted ? 'disabled' : ''}>
+            </div>
+            <div class="form-field">
+              <label>VIN #</label>
+              <input type="text" class="asset-field" data-asset="${i}" data-field="vin" placeholder="VIN #" maxlength="10" ${isCompleted ? 'disabled' : ''}>
+            </div>
+          </div>
+          <div class="asset-card-buttons">
+            <button type="button" class="btn-save" onclick="saveAssetCard(${i})" ${isCompleted ? 'disabled' : ''}>Save</button>
+            ${i > 0 ? `<button type="button" class="btn-cancel" onclick="cancelAssetCard(${i})">Cancel</button>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    cardsHtml += '</div>';
+    panel.innerHTML = cardsHtml;
+  }
+
+  function checkForDuplicateAsset(assetData) {
+    // Check if VIN or Truck # already exists
+    const existingAssets = loadAssetsFromLocalStorage();
+    const vin = assetData.vin?.toLowerCase().trim();
+    const truckNum = assetData.unit?.toLowerCase().trim();
+
+    for (let asset of existingAssets) {
+      if (asset.data) {
+        const existingVin = asset.data.vin?.toLowerCase().trim();
+        const existingTruckNum = asset.data.unit?.toLowerCase().trim();
+
+        if (vin && vin === existingVin) {
+          return { isDuplicate: true, field: 'vin', message: 'VIN already exists' };
+        }
+        if (truckNum && truckNum === existingTruckNum) {
+          return { isDuplicate: true, field: 'unit', message: 'Truck # already exists' };
+        }
+      }
+    }
+    return { isDuplicate: false };
+  }
+
+  function highlightDuplicateField(assetIndex, fieldName) {
+    const input = document.querySelector(`input[data-asset="${assetIndex}"][data-field="${fieldName}"]`);
+    if (input) {
+      input.style.borderColor = '#d32f2f';
+      input.style.boxShadow = '0 0 8px rgba(211, 47, 47, 0.5)';
+      input.style.backgroundColor = '#ffebee';
+      setTimeout(() => {
+        input.style.borderColor = '';
+        input.style.boxShadow = '';
+        input.style.backgroundColor = '';
+      }, 3000);
+    }
+  }
+
+  function saveAssetCard(assetIndex) {
+    const inputs = document.querySelectorAll(`input[data-asset="${assetIndex}"]`);
+    const data = {};
+    let hasData = false;
+
+    inputs.forEach(input => {
+      data[input.dataset.field] = input.value;
+      if (input.value) hasData = true;
+    });
+
+    if (hasData) {
+      // Check for duplicates
+      const dupCheck = checkForDuplicateAsset(data);
+      if (dupCheck.isDuplicate) {
+        alert(`Error: ${dupCheck.message}\n\nPlease enter a different value.`);
+        highlightDuplicateField(assetIndex, dupCheck.field);
+        return;
+      }
+
+      // Save only this asset (not all completed ones)
+      const existingAssets = loadAssetsFromLocalStorage();
+      existingAssets.push({
+        type: assetFormState.assetTypes[assetIndex],
+        label: assetFormState.assetLabels[assetIndex],
+        data: data,
+        savedAt: new Date().toISOString()
+      });
+      localStorage.setItem("rigpmproAssets", JSON.stringify(existingAssets));
+
+      // Mark as completed for UI purposes
+      assetFormState.data[assetIndex] = data;
+      assetFormState.completed[assetIndex] = true;
+
+      if (assetIndex === 3) {
+        // All done - reset form and go back
+        assetFormState.completed = [false, false, false, false];
+        assetFormState.data = [{}, {}, {}, {}];
+        assetFormState.currentAsset = 0;
+        alert('All assets saved successfully!');
+        goBack();
+      } else {
+        // Move to next card
+        assetFormState.currentAsset = assetIndex + 1;
+        showMultiAssetForm();
+      }
+    } else {
+      alert('Please fill in at least one field');
+    }
+  }
+
+  function loadAssetsFromLocalStorage() {
+    const stored = localStorage.getItem("rigpmproAssets");
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  function saveAssetsToLocalStorage(assets) {
+    localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
+  }
+
+  // Dates are stored as ISO (YYYY-MM-DD, required by <input type="date">) but
+  // displayed as mm/dd/yyyy wherever shown as read-only text.
+  function formatDateMMDDYYYY(isoDateStr) {
+    if (!isoDateStr) return '';
+    const parts = isoDateStr.split('-');
+    if (parts.length !== 3) return isoDateStr;
+    const [year, month, day] = parts;
+    return `${month}/${day}/${year}`;
+  }
+
+  // ===== PM Info (Preventive Maintenance interval tracking) =====
+
+  // APU/Reefer run on hours; Truck/Trailer run on odometer miles.
+  function pmReadingUnit(assetType) {
+    return (assetType === 'APU' || assetType === 'Reefer') ? 'Hours' : 'Miles';
+  }
+
+  // Default per-item "due soon" warning threshold, scaled to unit type. User can edit per item.
+  function pmDefaultThreshold(assetType) {
+    return (assetType === 'APU' || assetType === 'Reefer') ? 250 : 10000;
+  }
+
+  // Default maintenance category names only - no preloaded intervals.
+  // User sources and enters their own interval numbers.
+  // Lists are tailored per asset type since a truck's PM items don't apply to
+  // an APU or trailer. User can always add/edit/remove items regardless of type.
+  function getDefaultPMItemNames(assetType) {
+    switch (assetType) {
+      case 'APU':
+        return ['PM'];
+      case 'Trailer':
+        return ['Annual DOT Inspection'];
+      case 'Reefer':
+        return ['PM', 'EGR Cleaning'];
+      default: // Truck
+        return [
+          'Oil Change', 'Chassis Lube', 'Air Filter', 'Fuel Filter',
+          'Coolant Flush', 'Transmission Service', 'Brake Inspection',
+          'DPF Cleaning', 'DEF Filter Replacement', 'Air Dryer Cartridge',
+          'Annual DOT Inspection'
+        ];
+    }
+  }
+
+  // Determine if a PM item is date-based (Annual DOT Inspection) or mileage-based
+  function getItemIntervalType(itemName) {
+    return itemName.includes('Annual DOT Inspection') ? 'days' : 'mileage';
+  }
+
+  function ensurePMItemsInitialized(asset) {
+    if (!asset.data.pmItems) {
+      asset.data.pmItems = getDefaultPMItemNames(asset.type).map((name, i) => {
+        const intervalType = getItemIntervalType(name);
+        // Set default checkpoints for DOT Inspection items
+        let checkpoint1 = null, checkpoint2 = null, checkpoint3 = null;
+        if (name.includes('DOT Inspection')) {
+          checkpoint1 = '60';
+          checkpoint2 = '30';
+          checkpoint3 = '15';
+        }
+        const item = {
+          id: 'pm-' + Date.now() + '-' + i,
+          name: name,
+          interval: intervalType === 'days' ? '365' : '',
+          dateCompleted: '',
+          readingAtCompletion: '',
+          checkpoint1: checkpoint1,
+          checkpoint2: checkpoint2,
+          checkpoint3: checkpoint3,
+          interval_type: intervalType
+        };
+        return item;
+      });
+    } else {
+      // Backfill checkpoint fields and interval_type on items saved before this feature existed
+      asset.data.pmItems.forEach((item) => {
+        if (item.interval_type === undefined) item.interval_type = getItemIntervalType(item.name);
+        // Migrate old dueSoonThreshold to checkpoint1 if it exists
+        if (item.dueSoonThreshold !== undefined && item.checkpoint1 === undefined) {
+          item.checkpoint1 = item.dueSoonThreshold;
+          delete item.dueSoonThreshold;
+        }
+        // Ensure checkpoint fields exist
+        if (item.checkpoint1 === undefined) item.checkpoint1 = null;
+        if (item.checkpoint2 === undefined) item.checkpoint2 = null;
+        if (item.checkpoint3 === undefined) item.checkpoint3 = null;
+      });
+    }
+  }
+
+  // Multi-checkpoint warning system: OVERDUE > CRITICAL > DUE SOON > OK
+  // Users can set up to 3 checkpoints to escalate urgency (e.g., 60, 30, 15 days)
+  // Supports both MILEAGE-BASED (oil change, etc.) and DATE-BASED (DOT Inspection)
+  function calculatePMStatus(item, currentReading) {
+    const interval = parseFloat(item.interval);
+    const intervalType = item.interval_type || 'mileage';
+
+    // Collect checkpoints and filter out null/empty values, sort descending
+    const checkpoints = [item.checkpoint1, item.checkpoint2, item.checkpoint3]
+      .map(cp => cp === null || cp === '' ? null : parseFloat(cp))
+      .filter(cp => cp !== null && !isNaN(cp))
+      .sort((a, b) => b - a);
+
+    // DATE-BASED ITEMS (DOT Inspection)
+    if (intervalType === 'days') {
+      const dateCompleted = item.dateCompleted ? new Date(item.dateCompleted) : null;
+
+      if (!dateCompleted || isNaN(dateCompleted.getTime()) || isNaN(interval)) {
+        return { nextDueAt: null, remaining: null, status: 'NOT SET' };
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      dateCompleted.setHours(0, 0, 0, 0);
+
+      const nextDueAt = new Date(dateCompleted);
+      nextDueAt.setDate(nextDueAt.getDate() + interval);
+
+      const daysRemaining = Math.floor((nextDueAt - today) / (1000 * 60 * 60 * 24));
+
+      let status = 'OK';
+      if (daysRemaining < 0) {
+        status = 'OVERDUE';
+      } else if (checkpoints.length > 0) {
+        if (daysRemaining <= checkpoints[checkpoints.length - 1]) {
+          status = 'CRITICAL';
+        } else if (checkpoints.length > 1 && daysRemaining <= checkpoints[1]) {
+          status = 'CRITICAL';
+        } else if (daysRemaining <= checkpoints[0]) {
+          status = 'DUE SOON';
+        }
+      }
+
+      return {
+        nextDueAt: nextDueAt.toISOString().split('T')[0],
+        remaining: daysRemaining,
+        status: status,
+        unit: 'days',
+        checkpoints: checkpoints
+      };
+    }
+
+    // MILEAGE-BASED ITEMS (Oil Change, etc.)
+    const readingAtCompletion = parseFloat(item.readingAtCompletion);
+    const current = parseFloat(currentReading);
+
+    if (isNaN(interval) || isNaN(readingAtCompletion)) {
+      return { nextDueAt: null, remaining: null, status: 'NOT SET' };
+    }
+
+    const nextDueAt = readingAtCompletion + interval;
+
+    if (isNaN(current)) {
+      return { nextDueAt: nextDueAt, remaining: null, status: 'NO READING' };
+    }
+
+    const remaining = nextDueAt - current;
+
+    let status = 'OK';
+    if (remaining < 0) {
+      status = 'OVERDUE';
+    } else if (checkpoints.length > 0) {
+      if (remaining <= checkpoints[checkpoints.length - 1]) {
+        status = 'CRITICAL';
+      } else if (checkpoints.length > 1 && remaining <= checkpoints[1]) {
+        status = 'CRITICAL';
+      } else if (remaining <= checkpoints[0]) {
+        status = 'DUE SOON';
+      }
+    }
+
+    return { nextDueAt: nextDueAt, remaining: remaining, status: status, unit: 'miles', checkpoints: checkpoints };
+  }
+
+  function pmStatusColor(status) {
+    switch (status) {
+      case 'OVERDUE': return '#ff4d4d';
+      case 'CRITICAL': return '#ff0000';
+      case 'DUE SOON': return '#e8741c';
+      case 'OK': return '#4caf50';
+      default: return 'var(--muted)';
+    }
+  }
+
+  function showPMInfoEntry() {
+    const assets = loadAssetsFromLocalStorage();
+
+    if (assets.length === 0) {
+      // No assets: redirect to Assets category (user must add assets first)
+      selectCategory('assets');
+      return;
+    }
+
+    // Check if any asset has configured PM items
+    const hasPMConfigured = assets.some(asset => {
+      const pmItems = asset.data.pmItems || [];
+      return pmItems.length > 0;
+    });
+
+    if (!hasPMConfigured) {
+      showEmptyState('No PM tracking set up', 'Configure PM items for your assets in PM Info to track maintenance');
+      return;
+    }
+
+    // Check if mileage was already entered in this session
+    const mileageEnteredThisSession = sessionStorage.getItem('mileage_entered_session');
+
+    if (mileageEnteredThisSession === 'true') {
+      // Already entered in this session, show asset cards directly
+      showPMInfoCards();
+    } else {
+      // First time this session, show mileage entry form
+      showMileageEntryForm();
+    }
+  }
+
+  function showMileageEntryForm() {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+
+    header.innerHTML = `
+      <div class="demo-panel-header category-level-header">
+        <div>
+          <h2>PM Info - Update Readings</h2>
+          <p>Enter current mileage or hours for all assets</p>
+        </div>
+      </div>
+    `;
+
+    let formHtml = `
+      <div style='max-width: 600px; margin: 0 auto; padding: 16px;'>
+        <form onsubmit="event.preventDefault(); saveMileageReadings()">
+          <div style='display: grid; gap: 16px;'>
+    `;
+
+    assets.forEach((asset) => {
+      // Skip Trailer - tracked by date only (Annual DOT Inspection), not mileage/hours
+      if (asset.type === 'Trailer') return;
+
+      const unit = (asset.type === 'APU' || asset.type === 'Reefer') ? 'hrs' : 'mi';
+      formHtml += `
+        <div>
+          <label style='display: block; margin-bottom: 8px; font-weight: 600; color: var(--ink);'>${asset.label} (${unit})</label>
+          <input type='number' class='mileage-input' data-asset-index='${assets.indexOf(asset)}' value='${asset.data.currentReading || ''}' placeholder='Enter ${unit}' style='width: 100%; padding: 12px; background: var(--soft); border: 1px solid var(--line); border-radius: 6px; color: var(--ink);'>
+        </div>
+      `;
+    });
+
+    formHtml += `
+          </div>
+          <div style='display: flex; gap: 12px; margin-top: 24px;'>
+            <button type='submit' style='flex: 1; padding: 12px 24px; background: var(--orange); color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-weight: 600;'>Update & View Status</button>
+            <button type='button' onclick="showPMInfoCards()" style='padding: 12px 24px; background: transparent; color: var(--orange); border: 2px solid var(--orange); border-radius: 6px; cursor: pointer; font-weight: 600;'>Skip</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    panel.innerHTML = formHtml;
+  }
+
+  function saveMileageReadings() {
+    const assets = loadAssetsFromLocalStorage();
+    const inputs = document.querySelectorAll('.mileage-input');
+
+    inputs.forEach(input => {
+      const assetIndex = parseInt(input.dataset.assetIndex);
+      const reading = parseInt(input.value);
+      if (!isNaN(reading) && assets[assetIndex]) {
+        assets[assetIndex].data.currentReading = reading;
+      }
+    });
+
+    saveAssetsToLocalStorage(assets);
+    sessionStorage.setItem('mileage_entered_session', 'true');
+    showPMInfoCards();
+  }
+
+  function showPMInfoCards() {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+
+    header.innerHTML = `
+      <div class="demo-panel-header category-level-header">
+        <div>
+          <h2>PM Info</h2>
+          <p>Asset maintenance status overview</p>
+        </div>
+      </div>
+    `;
+
+    let html = `<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>`;
+    assets.forEach((asset, index) => {
+      html += `
+        <div onclick="selectAssetForPMInfo(${index})" style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;'>
+          <h3 style='margin: 0 0 12px; color: var(--orange); font-size: 1.1rem; border-bottom: 1px solid var(--line); padding-bottom: 8px;'>${asset.label}</h3>
+          <div style='font-size: 0.9rem;'>
+            ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
+            ${asset.data.make ? `<div><strong>Make:</strong> ${asset.data.make}</div>` : ""}
+            ${asset.data.model ? `<div><strong>Model:</strong> ${asset.data.model}</div>` : ""}
+            ${asset.data.unit ? `<div><strong>Unit #:</strong> ${asset.data.unit}</div>` : ""}
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    panel.innerHTML = html;
+  }
+
+  function selectAssetForPMInfo(index) {
+    window.pmInfoAssetIndex = index;
+    showPMReadingInput(index);
+  }
+
+  function showPMReadingInput(index) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    ensurePMItemsInitialized(asset);
+    saveAssetsToLocalStorage(assets);
+
+    const unitLabel = pmReadingUnit(asset.type);
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>${asset.label}</h2>
+          <p>Enter current ${unitLabel.toLowerCase()} for accurate tracking</p>
+        </div>
+        <button class="demo-back-btn" onclick="showPMInfoEntry()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); savePMReading(${index})">
+          <div class="demo-form-group">
+            <label>Current ${unitLabel}</label>
+            <input type="number" id="pmCurrentReading" placeholder="e.g., 590050" value="${asset.data.currentReading || ''}">
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save & Continue</button>
+            <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Skip</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function savePMReading(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    const value = document.getElementById('pmCurrentReading').value;
+    asset.data.currentReading = value;
+    saveAssetsToLocalStorage(assets);
+
+    showPMSchedule(index);
+  }
+
+  function showPMSchedule(index) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    ensurePMItemsInitialized(asset);
+    saveAssetsToLocalStorage(assets);
+
+    const unitLabel = pmReadingUnit(asset.type);
+    const currentReading = asset.data.currentReading;
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>${asset.label} - PM Schedule</h2>
+          <p>Current ${unitLabel}: ${currentReading || 'not set'}</p>
+        </div>
+        <button class="demo-back-btn" onclick="showPMInfoEntry()">← Back</button>
+      </div>
+    `;
+
+    let html = `<div style='padding: 16px;'>`;
+
+    html += `<div style='margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;'>
+      <button onclick="showPMReadingInput(${index})" style='padding: 10px 16px; background: var(--blue); color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-weight: 600;'>Update ${unitLabel} Reading</button>
+      <button onclick="showAddPMItemForm(${index})" style='padding: 10px 16px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-weight: 600;'>+ Add Maintenance Item</button>
+    </div>`;
+
+    // Tally counts for the collapsed summary line
+    let okCount = 0, dueSoonCount = 0, overdueCount = 0;
+    asset.data.pmItems.forEach((item) => {
+      const status = calculatePMStatus(item, currentReading).status;
+      if (status === 'OVERDUE') overdueCount++;
+      else if (status === 'DUE SOON') dueSoonCount++;
+      else if (status === 'OK') okCount++;
+    });
+
+    const isExpanded = window.pmListExpanded !== false; // default expanded
+
+    html += `<div style='background: var(--soft); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; max-width: 560px; width: 100%;'>
+      <div onclick="togglePMListExpanded(${index})" style='display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer; gap: 12px;'>
+        <div style='font-weight: 700;'>${asset.label} PM Items</div>
+        <div style='display: flex; align-items: center; gap: 12px;'>
+          <span style='font-size: 0.85rem; color: var(--muted);'>${okCount} OK · ${dueSoonCount} Due Soon · ${overdueCount} Overdue</span>
+          <span style='font-size: 1.1rem; font-weight: 700; width: 20px; text-align: center;'>${isExpanded ? '−' : '+'}</span>
+        </div>
+      </div>
+    </div>`;
+
+    if (isExpanded) {
+      html += `<div style='display: flex; flex-direction: column; gap: 10px; max-width: 560px;'>`;
+
+      asset.data.pmItems.forEach((item) => {
+        const calc = calculatePMStatus(item, currentReading);
+        const statusColor = pmStatusColor(calc.status);
+
+        html += `
+          <div onclick="showEditPMItemForm(${index}, '${item.id}')" style='background: var(--soft); border: 1px solid var(--line); border-left: 4px solid ${statusColor}; border-radius: 8px; padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%;'>
+            <div style='font-weight: 700; font-size: 1rem;'>${item.name}</div>
+            <span style='color: ${statusColor}; font-weight: 700; font-size: 0.85rem; white-space: nowrap;'>${calc.status}</span>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+    }
+
+    html += `</div>`;
+    panel.innerHTML = html;
+  }
+
+  function togglePMListExpanded(index) {
+    window.pmListExpanded = !(window.pmListExpanded !== false);
+    showPMSchedule(index);
+  }
+
+  function showAddPMItemForm(index) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    const unitLabel = pmReadingUnit(asset.type);
+    const defaultThreshold = pmDefaultThreshold(asset.type);
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Add Maintenance Item</h2>
+          <p>Track a new PM category for ${asset.label}</p>
+        </div>
+        <button class="demo-back-btn" onclick="showPMSchedule(${index})">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); savePMItem(${index})">
+          <div class="demo-form-group">
+            <label>Item Name</label>
+            <input type="text" id="pmItemName" placeholder="e.g., Oil Change" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Service Interval (${unitLabel})</label>
+            <input type="number" id="pmItemInterval" placeholder="e.g., 50000" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Date Last Completed</label>
+            <input type="date" id="pmItemDate">
+          </div>
+          <div class="demo-form-group">
+            <label>${unitLabel} at Completion</label>
+            <input type="number" id="pmItemReading" placeholder="e.g., 546912">
+          </div>
+          <div class="demo-form-group">
+            <label>Checkpoint 1 (${unitLabel}) - Optional</label>
+            <input type="number" id="pmItemCheckpoint1" placeholder="e.g., 60 (days) or 5000 (miles)">
+          </div>
+          <div class="demo-form-group">
+            <label>Checkpoint 2 (${unitLabel}) - Optional</label>
+            <input type="number" id="pmItemCheckpoint2" placeholder="e.g., 30 (days) or 2500 (miles)">
+          </div>
+          <div class="demo-form-group">
+            <label>Checkpoint 3 (${unitLabel}) - Optional</label>
+            <input type="number" id="pmItemCheckpoint3" placeholder="e.g., 15 (days) or 1000 (miles)">
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save Item</button>
+            <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Cancel</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function savePMItem(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    ensurePMItemsInitialized(asset);
+
+    const itemName = document.getElementById('pmItemName').value;
+    const intervalType = getItemIntervalType(itemName);
+
+    asset.data.pmItems.push({
+      id: 'pm-' + Date.now(),
+      name: itemName,
+      interval: document.getElementById('pmItemInterval').value,
+      dateCompleted: document.getElementById('pmItemDate').value,
+      readingAtCompletion: document.getElementById('pmItemReading').value,
+      checkpoint1: document.getElementById('pmItemCheckpoint1').value || null,
+      checkpoint2: document.getElementById('pmItemCheckpoint2').value || null,
+      checkpoint3: document.getElementById('pmItemCheckpoint3').value || null,
+      interval_type: intervalType
+    });
+
+    saveAssetsToLocalStorage(assets);
+    showPMSchedule(index);
+  }
+
+  function showEditPMItemForm(index, itemId) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    const item = (asset.data.pmItems || []).find(i => i.id === itemId);
+    if (!item) { showPMSchedule(index); return; }
+
+    const unitLabel = pmReadingUnit(asset.type);
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Edit Maintenance Item</h2>
+          <p>Update interval or mark as serviced</p>
+        </div>
+        <button class="demo-back-btn" onclick="showPMSchedule(${index})">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); updatePMItem(${index}, '${itemId}')">
+          <div class="demo-form-group">
+            <label>Item Name</label>
+            <input type="text" id="pmItemName" value="${item.name}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Service Interval (${unitLabel})</label>
+            <input type="number" id="pmItemInterval" value="${item.interval}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Date Last Completed</label>
+            <input type="date" id="pmItemDate" value="${item.dateCompleted}">
+          </div>
+          <div class="demo-form-group">
+            <label>${unitLabel} at Completion</label>
+            <input type="number" id="pmItemReading" value="${item.readingAtCompletion}">
+          </div>
+          <div class="demo-form-group">
+            <label>Warn "Due Soon" when remaining falls to (${unitLabel})</label>
+            <input type="number" id="pmItemDueSoonThreshold" value="${item.dueSoonThreshold}" required>
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save Changes</button>
+            <button type="button" class="demo-cancel-btn" onclick="showPMSchedule(${index})">Cancel</button>
+          </div>
+          <div class="demo-form-buttons" style="margin-top: 10px;">
+            <button type="button" onclick="confirmDeletePMItem(${index}, '${itemId}')" style='padding: 10px 16px; background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%;'>Delete Item</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function confirmDeletePMItem(index, itemId) {
+    const confirmed = confirm('Delete this maintenance item? This will permanently erase all PM data for this item (interval, dates, mileage history). This cannot be undone.');
+    if (confirmed) {
+      deletePMItem(index, itemId);
+    }
+  }
+
+  function updatePMItem(index, itemId) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    const item = (asset.data.pmItems || []).find(i => i.id === itemId);
+    if (!item) { showPMSchedule(index); return; }
+
+    item.name = document.getElementById('pmItemName').value;
+    item.interval = document.getElementById('pmItemInterval').value;
+    item.dateCompleted = document.getElementById('pmItemDate').value;
+    item.readingAtCompletion = document.getElementById('pmItemReading').value;
+    item.dueSoonThreshold = document.getElementById('pmItemDueSoonThreshold').value;
+
+    saveAssetsToLocalStorage(assets);
+    showPMSchedule(index);
+  }
+
+  function deletePMItem(index, itemId) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) { showPMInfoEntry(); return; }
+
+    asset.data.pmItems = (asset.data.pmItems || []).filter(i => i.id !== itemId);
+    saveAssetsToLocalStorage(assets);
+    showPMSchedule(index);
+  }
+
+  let viewAssetsFilter = 'all';
+
+  function filterViewAssets(filterType) {
+    viewAssetsFilter = filterType;
+    showViewAssets();
+  }
+
+  function showViewAssets() {
+    const header = document.getElementById("panel-header");
+    const panel = document.getElementById("panel-content");
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Saved Assets</h2>
+          <p>Your saved equipment and assets</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    const assets = loadAssetsFromLocalStorage();
+
+    if (assets.length === 0) {
+      panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet. Add assets to see them here.</div>";
+      return;
+    }
+
+    // Filter assets by type
+    const filteredAssets = viewAssetsFilter === 'all'
+      ? assets
+      : assets.filter(a => a.type === viewAssetsFilter);
+
+    // Tab buttons
+    let html = `
+      <div style='padding: 16px; border-bottom: 2px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap;'>
+        <button onclick="filterViewAssets('all')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'all' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'all' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>All Assets</button>
+        <button onclick="filterViewAssets('Truck')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'Truck' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'Truck' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Trucks</button>
+        <button onclick="filterViewAssets('Trailer')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'Trailer' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'Trailer' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Trailers</button>
+        <button onclick="filterViewAssets('APU')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'APU' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'APU' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>APUs</button>
+        <button onclick="filterViewAssets('Reefer')" style='padding: 8px 16px; background: ${viewAssetsFilter === 'Reefer' ? '#FFFF00' : 'transparent'}; color: ${viewAssetsFilter === 'Reefer' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Reefers</button>
+      </div>
+    `;
+
+    if (filteredAssets.length === 0) {
+      html += `<div style='padding: 40px; text-align: center; color: var(--muted);'>No ${viewAssetsFilter === 'all' ? 'assets' : viewAssetsFilter + 's'} saved yet.</div>`;
+      panel.innerHTML = html;
+      return;
+    }
+
+    html += "<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>";
+
+    filteredAssets.forEach((asset, index) => {
+      const originalIndex = assets.indexOf(asset);
+      html += `
+        <div style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; display: flex; flex-direction: column;'>
+          <h3 style='margin: 0 0 12px; color: var(--orange); font-size: 1.1rem; border-bottom: 1px solid var(--line); padding-bottom: 8px;'>${asset.label}</h3>
+          <div style='font-size: 0.9rem; flex: 1;'>
+            ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
+            ${asset.data.make ? `<div><strong>Make:</strong> ${asset.data.make}</div>` : ""}
+            ${asset.data.model ? `<div><strong>Model:</strong> ${asset.data.model}</div>` : ""}
+            ${asset.data.unit ? `<div><strong>Unit #:</strong> ${asset.data.unit}</div>` : ""}
+            ${asset.data.vin ? `<div><strong>VIN #:</strong> ${asset.data.vin}</div>` : ""}
+          </div>
+          <div style='margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;'>
+            <button onclick="editAsset(${originalIndex})" style='padding: 10px; background: var(--blue); border: 1px solid var(--blue); color: white; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;'>Edit</button>
+            <button onclick="logRepairForAsset(${originalIndex})" style='padding: 10px; background: var(--orange); border: 1px solid var(--orange); color: white; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;'>Log Repair</button>
+            <button onclick="deleteAsset(${originalIndex})" style='padding: 10px; background: var(--line); border: 1px solid #e74c3c; color: #e74c3c; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;'>Delete</button>
+          </div>
+        </div>
+      `;
+    });
+
+    html += "</div>";
+    panel.innerHTML = html;
+  }
+
+  function editAsset(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) return;
+
+    // Store the index being edited
+    window.editingAssetIndex = index;
+
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    const assetLabels = {
+      'Truck': 'Truck',
+      'APU': 'APU',
+      'Trailer': 'Trailer',
+      'Reefer': 'Reefer'
+    };
+
+    const assetLabel = assetLabels[asset.type] || 'Asset';
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Edit ${assetLabel}</h2>
+          <p>Update ${assetLabel.toLowerCase()} details</p>
+        </div>
+        <button class="demo-back-btn" onclick="showViewAssets()">← Back</button>
+      </div>
+    `;
+
+    panel.innerHTML = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); handleEditAssetSave('${asset.type}')">
+          <div class="demo-form-group">
+            <label>Year</label>
+            <input type="number" id="editYear" placeholder="2020" value="${asset.data.year || ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Make</label>
+            <input type="text" id="editMake" placeholder="e.g., Peterbilt" value="${asset.data.make || ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Model</label>
+            <input type="text" id="editModel" placeholder="e.g., 579" value="${asset.data.model || ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>VIN</label>
+            <input type="text" id="editVin" placeholder="Last 6 digits" value="${asset.data.vin || ''}" required>
+          </div>
+          <div class="demo-form-group">
+            <label>Unit #</label>
+            <input type="number" id="editUnit" placeholder="Unit number" value="${asset.data.unit || ''}" required>
+          </div>
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Update ${assetLabel}</button>
+            <button type="button" class="demo-cancel-btn" onclick="showViewAssets()">Back</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+
+  function handleEditAssetSave(assetType) {
+    const assets = loadAssetsFromLocalStorage();
+    const index = window.editingAssetIndex;
+
+    if (index === undefined || !assets[index]) return;
+
+    assets[index].data.make = document.getElementById('editMake').value;
+    assets[index].data.model = document.getElementById('editModel').value;
+    assets[index].data.year = document.getElementById('editYear').value;
+    assets[index].data.vin = document.getElementById('editVin').value;
+    assets[index].data.unit = document.getElementById('editUnit').value;
+
+    localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
+    window.editingAssetIndex = undefined;
+    alert('Asset updated successfully!');
+    showViewAssets();
+  }
+
+  let logRepairAssetFilter = 'all';
+
+  function filterRepairAssets(type) {
+    logRepairAssetFilter = type;
+    showLogRepairPM();
+  }
+
+  function selectAssetForRepair(index) {
+    window.preSelectedAssetIndex = index;
+    logRepairShowForm = true;
+    showLogRepairPM();
+  }
+
+  function logRepairForAsset(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) return;
+
+    // Store the asset index and open Log Repair/PM form
+    window.preSelectedAssetIndex = index;
+    logRepairShowForm = true;
+    showLogRepairPM();
+  }
+
+  function deleteAsset(index) {
+    const assets = loadAssetsFromLocalStorage();
+    const asset = assets[index];
+    if (!asset) return;
+
+    const message = `Delete "${asset.label}"?\n\nThe asset will be removed from inventory, but all repair and PM history will be retained for your records.`;
+
+    if (confirm(message)) {
+      assets.splice(index, 1);
+      localStorage.setItem("rigpmproAssets", JSON.stringify(assets));
+      showViewAssets();
+    }
+  }
+
+let logRepairShowForm = false;
+let logRepairAssetLocked = false; // True if coming from View Assets card click
+
+function populateRepairFormFromAsset(assetIndex) {
+  const assets = loadAssetsFromLocalStorage();
+  const asset = assets[assetIndex];
+
+  if (!asset || !asset.data) return;
+
+  // Pre-populate the asset info fields (Make, Model, Year, VIN, Unit #)
+  // These would be display-only or read-only fields
+  const data = asset.data;
+
+  // Store asset info for display (could be shown as read-only fields or labels)
+  window.selectedAssetData = {
+    index: assetIndex,
+    type: asset.type,
+    make: data.make || '',
+    model: data.model || '',
+    year: data.year || '',
+    vin: data.vin || '',
+    unit: data.unit || ''
+  };
+}
+
+  function updateAssetDropdown() {
+    const assetTypeSelect = document.getElementById("logAssetType");
+    const assetSelect = document.getElementById("logAsset");
+    const assetType = assetTypeSelect.value;
+
+    if (!assetType) {
+      assetSelect.innerHTML = '<option value="">Select which asset...</option>';
+      assetSelect.disabled = true;
+      return;
+    }
+
+    const assets = loadAssetsFromLocalStorage();
+    // Check both old and new asset formats for backward compatibility
+    const matchingAssets = assets.filter(a => a.type === assetType || a.data?.type === assetType);
+    
+    let html = '<option value="">Select which asset...</option>';
+    matchingAssets.forEach((asset, idx) => {
+      const actualIndex = assets.indexOf(asset);
+      const makeModel = asset.data.make && asset.data.model ? `${asset.data.make} ${asset.data.model}` : 'Unknown';
+      const unitNum = asset.data.unit ? `Unit ${asset.data.unit}` : 'No Unit';
+      const displayLabel = `${asset.type} - ${makeModel} - ${unitNum}`;
+      html += `<option value='${actualIndex}'>${displayLabel}</option>`;
+    });
+    
+    assetSelect.innerHTML = html;
+    assetSelect.disabled = false;
+  }
+
+  function showLogRepairPM() {
+    const header = document.getElementById("panel-header");
+    const panel = document.getElementById("panel-content");
+    const assets = loadAssetsFromLocalStorage();
+
+    if (assets.length === 0) {
+      header.innerHTML = `
+        <div class="demo-panel-header">
+          <div>
+            <h2>Log Repair/PM</h2>
+            <p>Record maintenance and repairs for your assets</p>
+          </div>
+          <button class="demo-back-btn" onclick="goBack()">← Back</button>
+        </div>
+      `;
+      panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet. Add assets first to log maintenance.</div>";
+      return;
+    }
+
+    // If no asset is pre-selected, show asset selection screen first
+    if (window.preSelectedAssetIndex === undefined && !logRepairShowForm) {
+      header.innerHTML = `
+        <div class="demo-panel-header">
+          <div>
+            <h2>Select Asset</h2>
+            <p>Choose an asset to log repair/PM</p>
+          </div>
+          <button class="demo-back-btn" onclick="goBack()">← Back</button>
+        </div>
+      `;
+
+      // Build asset selection screen (similar to View Assets)
+      let html = `<div style='padding: 16px; border-bottom: 2px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap;'>
+        <button onclick="filterRepairAssets('all')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'all' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'all' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>All Assets</button>
+        <button onclick="filterRepairAssets('Truck')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'Truck' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'Truck' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Trucks</button>
+        <button onclick="filterRepairAssets('Trailer')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'Trailer' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'Trailer' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Trailers</button>
+        <button onclick="filterRepairAssets('APU')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'APU' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'APU' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>APUs</button>
+        <button onclick="filterRepairAssets('Reefer')" style='padding: 8px 16px; background: ${logRepairAssetFilter === 'Reefer' ? '#FFFF00' : 'transparent'}; color: ${logRepairAssetFilter === 'Reefer' ? '#000' : '#FFFF00'}; border: 2px solid #FFFF00; border-radius: 4px; cursor: pointer; font-weight: 600;'>Reefers</button>
+      </div>`;
+
+      const filteredAssets = logRepairAssetFilter === 'all'
+        ? assets
+        : assets.filter(a => a.type === logRepairAssetFilter);
+
+      html += `<div style='padding: 16px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));'>`;
+
+      filteredAssets.forEach((asset, index) => {
+        const originalIndex = assets.indexOf(asset);
+        html += `
+          <div onclick="selectAssetForRepair(${originalIndex})" style='background: var(--soft); border: 2px solid #FFD700; border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s;'>
+            <h3 style='margin: 0 0 12px; color: var(--orange); font-size: 1.1rem; border-bottom: 1px solid var(--line); padding-bottom: 8px;'>${asset.label}</h3>
+            <div style='font-size: 0.9rem;'>
+              ${asset.data.year ? `<div><strong>Year:</strong> ${asset.data.year}</div>` : ""}
+              ${asset.data.make ? `<div><strong>Make:</strong> ${asset.data.make}</div>` : ""}
+              ${asset.data.model ? `<div><strong>Model:</strong> ${asset.data.model}</div>` : ""}
+              ${asset.data.unit ? `<div><strong>Unit #:</strong> ${asset.data.unit}</div>` : ""}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      panel.innerHTML = html;
+      return;
+    }
+
+    // If we get here, show the repair form
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Log Repair/PM</h2>
+          <p>Record maintenance and repairs for your assets</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    let html = `<div style='padding: 24px; display: flex; justify-content: center;'>`;
+
+    // Set flag to show form
+    logRepairShowForm = true;
+    
+    if (logRepairShowForm) {
+      // Show form to log repair - wider index card layout
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 16px; width: 100%; max-width: 100%;'>
+        <style>
+          @media (min-width: 900px) {
+            .log-card { max-width: 750px; }
+          }
+          @media (min-width: 768px) and (max-width: 899px) {
+            .log-card { max-width: 600px; }
+          }
+          @media (max-width: 767px) {
+            .log-card { max-width: 100%; }
+          }
+          
+          .log-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+          }
+          
+          @media (max-width: 767px) {
+            .log-row-2col {
+              grid-template-columns: 1fr;
+            }
+          }
+        </style>
+        <div class='log-card'>
+        <h3 style='margin: 0 0 20px 0; color: #FFFF00; font-size: 1.5rem; font-weight: 700;'>Log Repair/PM</h3>
+        
+        <form onsubmit="event.preventDefault(); saveMaintenanceLog()" style='display: flex; flex-direction: column; gap: 16px;'>
+          <div class='log-row-2col'>
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Asset Type</label>
+              <select id="logAssetType" onchange="updateAssetDropdown()" style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+                <option value=''>Select type...</option>
+                <option value='Truck'>Truck</option>
+                <option value='APU'>APU</option>
+                <option value='Trailer'>Trailer</option>
+                <option value='Reefer'>Reefer</option>
+              </select>
+              <small id="assetTypeLocked" style='display: none; color: #ff9d4f; font-size: 0.85rem; margin-top: 4px;'>Asset type locked (selected from card)</small>
+            </div>
+
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Which Asset</label>
+              <select id="logAsset" onchange="populateRepairFormFromAsset(this.value)" style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' disabled required>
+                <option value=''>Select specific asset...</option>
+              </select>
+            </div>
+          </div>
+
+          <div class='log-row-2col'>
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Type of Work</label>
+              <select id="logType" style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+                <option value=''>Select type...</option>
+                <option value='PM'>Preventive Maintenance (PM)</option>
+                <option value='Repair'>Repair</option>
+              </select>
+            </div>
+
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Mileage</label>
+              <input type='number' id="logMileage" placeholder='0' style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+            </div>
+          </div>
+
+          <div class='log-row-2col'>
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Vendor</label>
+              <input type='text' id="logVendor" placeholder='Repair shop name' style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+            </div>
+
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>City/State</label>
+              <input type='text' id="logCityState" placeholder='City, State' style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+            </div>
+          </div>
+
+          <div>
+            <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Description</label>
+            <input type='text' id="logDesc" placeholder='Oil change, brake service, etc.' style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+          </div>
+
+          <div class='log-row-2col'>
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Date</label>
+              <input type='date' id="logDate" style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;' required>
+            </div>
+
+            <div>
+              <label style='display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #FFFF00;'>Cost ($)</label>
+              <input type='number' id="logCost" placeholder='0.00' step='0.01' style='width: 100%; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 1rem;'>
+            </div>
+          </div>
+
+          <div style='display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;'>
+            <button type='button' onclick='showLogRepairPM()' style='padding: 8px 16px; background: transparent; color: #FFFF00; border: 2px solid #FFFF00; border-radius: 4px; font-weight: 700; cursor: pointer; flex: 0 0 auto;'>Cancel</button>
+            <button type='submit' style='padding: 8px 16px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; flex: 0 0 auto;'>Save</button>
+          </div>
+        </form>
+        </div>
+      </div>`;
+    } else {
+      // Show success message with option to add another
+      html += `<div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 20px; text-align: center; width: 100%; max-width: 100%;'>
+        <div class='log-card'>
+        <h3 style='margin: 0 0 12px; color: #FFFF00; font-size: 1.3rem;'>✓ Repair Logged</h3>
+        <p style='color: var(--muted); margin-bottom: 20px;'>Maintenance record saved successfully</p>
+        
+        <div style='display: flex; gap: 8px; flex-direction: column;'>
+          <button onclick='logRepairShowForm = true; showLogRepairPM();' style='padding: 12px 20px; background: #ff9d4f; color: #fff; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;'>Add Another Repair</button>
+          <button onclick='goBack()' style='padding: 12px 20px; background: transparent; color: #FFFF00; border: 2px solid #FFFF00; border-radius: 4px; font-weight: 600; cursor: pointer;'>Done</button>
+        </div>
+        </div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+    panel.innerHTML = html;
+
+    // Auto-select asset if one was pre-selected from View Assets
+    if (window.preSelectedAssetIndex !== undefined) {
+      logRepairAssetLocked = true;
+      setTimeout(() => {
+        const asset = assets[window.preSelectedAssetIndex];
+        if (asset) {
+          const typeField = document.getElementById("logAssetType");
+          const lockedMsg = document.getElementById("assetTypeLocked");
+
+          // Set asset type and lock it
+          typeField.value = asset.type;
+          typeField.disabled = true;
+          typeField.style.opacity = '0.6';
+          typeField.style.backgroundColor = '#f5f5f5';
+          typeField.style.cursor = 'not-allowed';
+          lockedMsg.style.display = 'block';
+
+          updateAssetDropdown();
+          setTimeout(() => {
+            const assetSelect = document.getElementById("logAsset");
+            assetSelect.value = window.preSelectedAssetIndex;
+            // Pre-populate the form with this asset's data
+            populateRepairFormFromAsset(window.preSelectedAssetIndex);
+          }, 100);
+        }
+        window.preSelectedAssetIndex = undefined; // Clear after use
+      }, 50);
+    }
+  }
+
+  function saveMaintenanceLog() {
+    const assetIndex = document.getElementById("logAsset").value;
+    const logType = document.getElementById("logType").value;
+    const logDesc = document.getElementById("logDesc").value;
+    const logDate = document.getElementById("logDate").value;
+    const logMileage = document.getElementById("logMileage").value;
+    const logVendor = document.getElementById("logVendor").value;
+    const logCityState = document.getElementById("logCityState").value;
+    const logCost = document.getElementById("logCost").value || '0';
+
+    if (!assetIndex || !logType || !logDesc || !logDate || !logMileage || !logVendor || !logCityState) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // Get or create maintenance logs
+    let logs = JSON.parse(localStorage.getItem("rigpmproMaintenanceLogs") || '[]');
+
+    logs.push({
+      assetIndex: parseInt(assetIndex),
+      type: logType,
+      description: logDesc,
+      date: logDate,
+      mileage: parseInt(logMileage),
+      vendor: logVendor,
+      cityState: logCityState,
+      cost: parseFloat(logCost),
+      savedAt: new Date().toISOString()
+    });
+
+    localStorage.setItem("rigpmproMaintenanceLogs", JSON.stringify(logs));
+    
+    // Show success and offer to add another
+    logRepairShowForm = false;
+    showLogRepairPM();
+  }
+
+  let maintenanceFilterState = {
+    assetFilter: 'all',
+    periodFilter: 'currentMonth',
+    monthFilter: new Date().getMonth(),
+    yearFilter: new Date().getFullYear(),
+    searchFilter: ''
+  };
+
+  function applyMaintenanceFilters() {
+    maintenanceFilterState.assetFilter = document.getElementById('mfAssetFilter')?.value || 'all';
+    maintenanceFilterState.periodFilter = document.getElementById('mfPeriodFilter').value;
+    maintenanceFilterState.monthFilter = parseInt(document.getElementById('mfMonthFilter').value);
+    maintenanceFilterState.yearFilter = parseInt(document.getElementById('mfYearFilter').value);
+    maintenanceFilterState.searchFilter = document.getElementById('mfSearchFilter')?.value || '';
+    showRepairHistory();
+  }
+
+  function showRepairHistory() {
+    const header = document.getElementById("panel-header");
+    const panel = document.getElementById("panel-content");
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Repair History</h2>
+          <p>View all repairs and maintenance by asset</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    const assets = loadAssetsFromLocalStorage();
+    const logs = JSON.parse(localStorage.getItem("rigpmproMaintenanceLogs") || '[]');
+    
+    if (assets.length === 0) {
+      panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet.</div>";
+      return;
+    }
+
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const currentYear = new Date().getFullYear();
+    
+    // Single-line filter controls with asset filter and apply button
+    let html = `<div style='padding: 12px 16px; background: var(--soft); border-bottom: 2px solid var(--line); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;'>
+      <select id='mfAssetFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        <option value='all' ${maintenanceFilterState.assetFilter === 'all' ? 'selected' : ''}>All Assets</option>
+        ${assets.map((asset, idx) => `<option value='${idx}' ${maintenanceFilterState.assetFilter === idx.toString() ? 'selected' : ''}>${asset.label}</option>`).join('')}
+      </select>
+      
+      <select id='mfPeriodFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        <option value='currentWeek' ${maintenanceFilterState.periodFilter === 'currentWeek' ? 'selected' : ''}>Current Week</option>
+        <option value='currentMonth' ${maintenanceFilterState.periodFilter === 'currentMonth' ? 'selected' : ''}>Current Month</option>
+        <option value='currentQuarter' ${maintenanceFilterState.periodFilter === 'currentQuarter' ? 'selected' : ''}>Current Quarter</option>
+        <option value='currentYear' ${maintenanceFilterState.periodFilter === 'currentYear' ? 'selected' : ''}>Current Year</option>
+      </select>
+      
+      <select id='mfMonthFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        ${months.map((m, i) => `<option value='${i}' ${maintenanceFilterState.monthFilter === i ? 'selected' : ''}>${m}</option>`).join('')}
+      </select>
+      
+      <select id='mfYearFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        ${Array.from({length: 16}, (_, i) => 2020 + i).map(y => `<option value='${y}' ${maintenanceFilterState.yearFilter === y ? 'selected' : ''}>${y}</option>`).join('')}
+      </select>
+      
+      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; width: 200px;'>
+      
+      <button onclick='applyMaintenanceFilters()' style='padding: 6px 16px; background: #ff9d4f; border: none; border-radius: 4px; color: var(--ink); font-weight: 700; font-size: 0.85rem; cursor: pointer;'>Apply Filters</button>
+    </div>`;
+
+    // Apply filters to logs
+    let filteredLogs = logs;
+    
+    // Asset filter
+    if (maintenanceFilterState.assetFilter !== 'all') {
+      filteredLogs = filteredLogs.filter(l => l.assetIndex === parseInt(maintenanceFilterState.assetFilter));
+    }
+    
+    // Date range filter
+    const today = new Date();
+    const year = maintenanceFilterState.yearFilter;
+    const month = maintenanceFilterState.monthFilter;
+    
+    if (maintenanceFilterState.periodFilter === 'currentWeek') {
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - today.getDay());
+      filteredLogs = filteredLogs.filter(l => new Date(l.date) >= weekStart && new Date(l.date) <= today);
+    } else if (maintenanceFilterState.periodFilter === 'currentMonth') {
+      filteredLogs = filteredLogs.filter(l => {
+        const d = new Date(l.date);
+        return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
+      });
+    } else if (maintenanceFilterState.periodFilter === 'currentQuarter') {
+      const quarter = Math.floor(today.getMonth() / 3);
+      filteredLogs = filteredLogs.filter(l => {
+        const d = new Date(l.date);
+        return d.getFullYear() === today.getFullYear() && Math.floor(d.getMonth() / 3) === quarter;
+      });
+    } else if (maintenanceFilterState.periodFilter === 'currentYear') {
+      filteredLogs = filteredLogs.filter(l => new Date(l.date).getFullYear() === today.getFullYear());
+    }
+    
+    // Search filter
+    if (maintenanceFilterState.searchFilter) {
+      const search = maintenanceFilterState.searchFilter.toLowerCase();
+      filteredLogs = filteredLogs.filter(l => 
+        l.description.toLowerCase().includes(search) || l.type.toLowerCase().includes(search)
+      );
+    }
+
+    // Display table
+    html += `<div style='padding: 16px;'>`;
+    
+    if (filteredLogs.length === 0) {
+      html += `<div style='color: var(--muted); text-align: center; padding: 20px;'>No maintenance logs match your filters.</div>`;
+    } else {
+      html += `<table style='width: 100%; border-collapse: collapse; font-size: 0.85rem;'>
+        <thead>
+          <tr style='border-bottom: 2px solid #FFFF00;'>
+            <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Date</th>
+            <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Asset</th>
+            <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Mileage</th>
+            <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Type</th>
+            <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Vendor</th>
+            <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>City/State</th>
+            <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Description</th>
+            <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+      
+      filteredLogs.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(log => {
+        const assetName = assets[log.assetIndex]?.label || 'Unknown';
+        html += `
+          <tr style='border-bottom: 1px solid rgba(255, 255, 0, 0.2);'>
+            <td style='padding: 8px;'>${formatDateMMDDYYYY(log.date)}</td>
+            <td style='padding: 8px;'>${assetName}</td>
+            <td style='padding: 8px; text-align: right;'>${log.mileage || '-'}</td>
+            <td style='padding: 8px; color: #FFFF00; font-weight: 700;'>${log.type}</td>
+            <td style='padding: 8px;'>${log.vendor || '-'}</td>
+            <td style='padding: 8px;'>${log.cityState || '-'}</td>
+            <td style='padding: 8px;'>${log.description}</td>
+            <td style='padding: 8px; text-align: right;'>$${parseFloat(log.cost).toFixed(2)}</td>
+          </tr>
+        `;
+      });
+      
+      html += `</tbody></table>`;
+    }
+    
+    html += `</div>`;
+    panel.innerHTML = html;
+  }
+
+    let totalCostsFilter = 0;
+
+  function filterTotalCosts(assetIndex) {
+    totalCostsFilter = assetIndex;
+    showTotalCosts();
+  }
+
+  function showTotalCosts() {
+    const header = document.getElementById("panel-header");
+    const panel = document.getElementById("panel-content");
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>Total Costs</h2>
+          <p>Summary of maintenance expenses by asset</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    const assets = loadAssetsFromLocalStorage();
+    const logs = JSON.parse(localStorage.getItem("rigpmproMaintenanceLogs") || '[]');
+    
+    if (assets.length === 0) {
+      panel.innerHTML = "<div style='padding: 40px; text-align: center; color: var(--muted);'>No assets saved yet.</div>";
+      return;
+    }
+
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const currentYear = new Date().getFullYear();
+    
+    // Single-line filter controls with asset filter and apply button
+    let html = `<div style='padding: 12px 16px; background: var(--soft); border-bottom: 2px solid var(--line); display: flex; gap: 12px; align-items: center; flex-wrap: wrap;'>
+      <select id='mfAssetFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        <option value='all' ${maintenanceFilterState.assetFilter === 'all' ? 'selected' : ''}>All Assets</option>
+        ${assets.map((asset, idx) => `<option value='${idx}' ${maintenanceFilterState.assetFilter === idx.toString() ? 'selected' : ''}>${asset.label}</option>`).join('')}
+      </select>
+      
+      <select id='mfPeriodFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        <option value='currentWeek' ${maintenanceFilterState.periodFilter === 'currentWeek' ? 'selected' : ''}>Current Week</option>
+        <option value='currentMonth' ${maintenanceFilterState.periodFilter === 'currentMonth' ? 'selected' : ''}>Current Month</option>
+        <option value='currentQuarter' ${maintenanceFilterState.periodFilter === 'currentQuarter' ? 'selected' : ''}>Current Quarter</option>
+        <option value='currentYear' ${maintenanceFilterState.periodFilter === 'currentYear' ? 'selected' : ''}>Current Year</option>
+      </select>
+      
+      <select id='mfMonthFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        ${months.map((m, i) => `<option value='${i}' ${maintenanceFilterState.monthFilter === i ? 'selected' : ''}>${m}</option>`).join('')}
+      </select>
+      
+      <select id='mfYearFilter' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem;'>
+        ${Array.from({length: 16}, (_, i) => 2020 + i).map(y => `<option value='${y}' ${maintenanceFilterState.yearFilter === y ? 'selected' : ''}>${y}</option>`).join('')}
+      </select>
+      
+      <input type='text' id='mfSearchFilter' placeholder='Search repairs...' style='padding: 6px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; color: var(--ink); font-size: 0.85rem; width: 200px;'>
+      
+      <button onclick='applyMaintenanceFilters()' style='padding: 6px 16px; background: #ff9d4f; border: none; border-radius: 4px; color: var(--ink); font-weight: 700; font-size: 0.85rem; cursor: pointer;'>Apply Filters</button>
+    </div>`;
+
+    // Apply same filters to logs
+    let filteredLogs = logs;
+    
+    // Asset filter
+    if (maintenanceFilterState.assetFilter !== 'all') {
+      filteredLogs = filteredLogs.filter(l => l.assetIndex === parseInt(maintenanceFilterState.assetFilter));
+    }
+    
+    // Date range filter
+    const today = new Date();
+    const year = maintenanceFilterState.yearFilter;
+    const month = maintenanceFilterState.monthFilter;
+    
+    if (maintenanceFilterState.periodFilter === 'currentWeek') {
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - today.getDay());
+      filteredLogs = filteredLogs.filter(l => new Date(l.date) >= weekStart && new Date(l.date) <= today);
+    } else if (maintenanceFilterState.periodFilter === 'currentMonth') {
+      filteredLogs = filteredLogs.filter(l => {
+        const d = new Date(l.date);
+        return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
+      });
+    } else if (maintenanceFilterState.periodFilter === 'currentQuarter') {
+      const quarter = Math.floor(today.getMonth() / 3);
+      filteredLogs = filteredLogs.filter(l => {
+        const d = new Date(l.date);
+        return d.getFullYear() === today.getFullYear() && Math.floor(d.getMonth() / 3) === quarter;
+      });
+    } else if (maintenanceFilterState.periodFilter === 'currentYear') {
+      filteredLogs = filteredLogs.filter(l => new Date(l.date).getFullYear() === today.getFullYear());
+    }
+    
+    // Search filter
+    if (maintenanceFilterState.searchFilter) {
+      const search = maintenanceFilterState.searchFilter.toLowerCase();
+      filteredLogs = filteredLogs.filter(l => 
+        l.description.toLowerCase().includes(search) || l.type.toLowerCase().includes(search)
+      );
+    }
+
+    // Calculate totals by asset and type
+    const totals = {};
+    const assetTotals = {};
+    let grandTotal = 0;
+
+    filteredLogs.forEach(log => {
+      const assetLabel = assets[log.assetIndex]?.label || 'Unknown';
+      const cost = parseFloat(log.cost) || 0;
+      
+      if (!assetTotals[assetLabel]) {
+        assetTotals[assetLabel] = 0;
+      }
+      assetTotals[assetLabel] += cost;
+      grandTotal += cost;
+      
+      const key = `${assetLabel}-${log.type}`;
+      if (!totals[key]) {
+        totals[key] = { asset: assetLabel, type: log.type, cost: 0, count: 0 };
+      }
+      totals[key].cost += cost;
+      totals[key].count += 1;
+    });
+
+    // Display totals summary
+    html += `<div style='padding: 16px;'>`;
+    
+    if (filteredLogs.length === 0) {
+      html += `<div style='color: var(--muted); text-align: center; padding: 20px;'>No maintenance logs match your filters.</div>`;
+    } else {
+      // Grand total card
+      html += `
+        <div style='background: var(--soft); border: 2px solid #FFFF00; border-radius: 8px; padding: 16px; margin-bottom: 20px;'>
+          <h3 style='color: #FFFF00; margin: 0 0 8px 0; font-size: 1.1rem;'>Grand Total</h3>
+          <div style='font-size: 2rem; color: #FFFF00; font-weight: 700;'>$${grandTotal.toFixed(2)}</div>
+          <div style='color: var(--muted); font-size: 0.85rem; margin-top: 8px;'>${filteredLogs.length} maintenance records</div>
+        </div>
+      `;
+
+      // By-asset totals
+      html += `
+        <div style='margin-bottom: 20px;'>
+          <h3 style='color: #FFFF00; font-size: 1rem; margin-bottom: 12px;'>By Asset</h3>
+          <table style='width: 100%; border-collapse: collapse; font-size: 0.85rem;'>
+            <thead>
+              <tr style='border-bottom: 2px solid #FFFF00;'>
+                <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Asset</th>
+                <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Total Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      
+      Object.entries(assetTotals).sort((a, b) => b[1] - a[1]).forEach(([asset, total]) => {
+        html += `
+          <tr style='border-bottom: 1px solid rgba(255, 255, 0, 0.2);'>
+            <td style='padding: 8px;'>${asset}</td>
+            <td style='padding: 8px; text-align: right;'>$${total.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+      
+      html += `</tbody></table></div>`;
+
+      // By-type breakdown
+      html += `
+        <div>
+          <h3 style='color: #FFFF00; font-size: 1rem; margin-bottom: 12px;'>By Maintenance Type</h3>
+          <table style='width: 100%; border-collapse: collapse; font-size: 0.85rem;'>
+            <thead>
+              <tr style='border-bottom: 2px solid #FFFF00;'>
+                <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Asset</th>
+                <th style='padding: 8px; text-align: left; color: #FFFF00; font-weight: 700;'>Type</th>
+                <th style='padding: 8px; text-align: center; color: #FFFF00; font-weight: 700;'>Count</th>
+                <th style='padding: 8px; text-align: right; color: #FFFF00; font-weight: 700;'>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      
+      Object.values(totals).sort((a, b) => b.cost - a.cost).forEach(row => {
+        html += `
+          <tr style='border-bottom: 1px solid rgba(255, 255, 0, 0.2);'>
+            <td style='padding: 8px;'>${row.asset}</td>
+            <td style='padding: 8px; color: #FFFF00; font-weight: 700;'>${row.type}</td>
+            <td style='padding: 8px; text-align: center;'>${row.count}</td>
+            <td style='padding: 8px; text-align: right;'>$${row.cost.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+      
+      html += `</tbody></table></div>`;
+    }
+    
+    html += `</div>`;
+    panel.innerHTML = html;
+  }
+
+  function clearAssetCard(assetIndex) {
+    document.querySelectorAll(`input[data-asset="${assetIndex}"]`).forEach(input => {
+      input.value = '';
+    });
+  }
+
+  function cancelAssetCard(assetIndex) {
+    assetFormState.completed[assetIndex] = false;
+    assetFormState.currentAsset = assetIndex - 1;
+    showMultiAssetForm();
+  }
+
+  function handleMultiAssetSave() {
+    // No longer used in new card-based flow
+  }
+
+  function openForm(action, title) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    if (action === 'add-asset' || action === 'edit-asset') {
+      if (window.innerWidth <= 767) {
+        currentAssetAction = action;
+        showChoicePage();
+      } else {
+        currentAssetAction = action;
+        showMultiAssetForm();
+      }
+      return;
+    }
+
+    if (action === 'view-assets') {
+      showViewAssets();
+      return;
+    }
+
+    if (action === 'log-repair') {
+      showLogRepairPM();
+      return;
+    }
+
+    if (action === 'repair-history') {
+      showRepairHistory();
+      return;
+    }
+
+    if (action === 'total-costs') {
+      showTotalCosts();
+      return;
+    }
+
+    header.innerHTML = `
+      <div class="demo-panel-header">
+        <div>
+          <h2>${title}</h2>
+          <p>Enter your information below</p>
+        </div>
+        <button class="demo-back-btn" onclick="goBack()">← Back</button>
+      </div>
+    `;
+
+    let formHtml = `
+      <div class="demo-form">
+        <form onsubmit="event.preventDefault(); alert('Data saved successfully!')">
+    `;
+
+    if (action === 'log-pm' || action === 'log-repair') {
+      formHtml += `
+        <div class="demo-form-group">
+          <label>Asset</label>
+          <select required>
+            <option>Select asset...</option>
+            <option>Truck - 2020 Peterbilt</option>
+            <option>Trailer - 2019 Wabash</option>
+            <option>APU - Thermo King</option>
+            <option>Reefer - Carrier</option>
+          </select>
+        </div>
+        <div class="demo-form-group">
+          <label>Task/Repair Description</label>
+          <input type="text" placeholder="Oil change, brake service, etc." required>
+        </div>
+        <div class="demo-form-group">
+          <label>Date Completed</label>
+          <input type="date" required>
+        </div>
+        <div class="demo-form-group">
+          <label>Cost</label>
+          <input type="number" placeholder="0.00" step="0.01" required>
+        </div>
+        <div class="demo-form-group">
+          <label>Notes</label>
+          <input type="text" placeholder="Additional notes (optional)">
+        </div>
+      `;
+    } else {
+      formHtml += `
+        <div class="demo-form-group">
+          <label>Information Field</label>
+          <input type="text" placeholder="Enter details" required>
+        </div>
+        <div class="demo-form-group">
+          <label>Additional Details</label>
+          <input type="text" placeholder="More information" required>
+        </div>
+      `;
+    }
+
+    formHtml += `
+          <div class="demo-form-buttons">
+            <button type="submit" class="demo-save-btn">Save</button>
+            <button type="button" class="demo-cancel-btn" onclick="goBack()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    panel.innerHTML = formHtml;
+  }
+
+  function goBack() {
+    // Reset form state when user backs out
+    assetFormState.initialized = false;
+    if (previousCategory) {
+      // Just go back to previous screen - don't auto-open the menu.
+      // Menu only opens via the explicit Open/Close toggle button.
+      if (previousCategory === 'pminfo') {
+        showPMInfoEntry();
+      } else {
+        showPlacards(previousCategory);
+      }
+    }
+  }
+
+  function exitDemo() {
+    window.location.href = '/';
+  }
+
+  // Swipe gesture to open menu
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  document.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const swipeDistance = touchEndX - touchStartX;
+
+    // Swipe from left edge to right (>50px) opens menu
+    if (touchStartX < 20 && swipeDistance > 50) {
+      showMenu();
+    }
+  });
+
+  window.addEventListener('load', () => {
+    initMenuState();
+    selectCategory('pminfo');
+  });
+</script>
+
+</body>
+</html>
+
