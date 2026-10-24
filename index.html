@@ -822,11 +822,17 @@
     const panel = document.getElementById('panel-content');
     const assets = loadAssetsFromLocalStorage();
 
+    // Customize description for Assets category when no assets exist
+    let displayDesc = content.desc;
+    if (cat === 'assets' && assets.length === 0) {
+      displayDesc = 'Enter your first asset to begin';
+    }
+
     header.innerHTML = `
       <div class="demo-panel-header category-level-header">
         <div>
           <h2>${content.title}</h2>
-          <p>${content.desc}</p>
+          <p>${displayDesc}</p>
         </div>
       </div>
     `;
