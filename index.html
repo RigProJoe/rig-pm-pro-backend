@@ -951,6 +951,8 @@
     }
 
     const assets = loadAssetsFromLocalStorage();
+    const wasFirstAsset = assets.length === 0;
+
     assets.push({
       type: assetLabel,
       label: assetLabel,
@@ -959,8 +961,36 @@
     });
     saveAssetsToLocalStorage(assets);
 
-    alert('Asset saved successfully!');
-    showChoicePage();
+    // Show post-save options
+    showAssetSaveOptions(wasFirstAsset);
+  }
+
+  function showAssetSaveOptions(wasFirstAsset) {
+    const header = document.getElementById('panel-header');
+    const panel = document.getElementById('panel-content');
+
+    header.innerHTML = `
+      <div class="demo-panel-header category-level-header">
+        <div>
+          <h2>Asset Saved!</h2>
+          <p>What would you like to do next?</p>
+        </div>
+      </div>
+    `;
+
+    const doneButtonText = wasFirstAsset ? 'Done → Go to PM Info' : 'Done → Back to Menu';
+    const doneOnClick = wasFirstAsset ? "showPMInfoEntry()" : "goBack()";
+
+    panel.innerHTML = `
+      <div style='max-width: 500px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;'>
+        <button onclick="showChoicePage()" style='padding: 14px 24px; background: var(--blue); color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1rem;'>
+          + Add Another Asset
+        </button>
+        <button onclick="${doneOnClick}" style='padding: 14px 24px; background: transparent; color: var(--orange); border: 2px solid var(--orange); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1rem;'>
+          ${doneButtonText}
+        </button>
+      </div>
+    `;
   }
 
   let assetFormState = {
@@ -1292,21 +1322,8 @@
     const assets = loadAssetsFromLocalStorage();
 
     if (assets.length === 0) {
-      const header = document.getElementById('panel-header');
-      const panel = document.getElementById('panel-content');
-      header.innerHTML = `
-        <div class="demo-panel-header category-level-header">
-          <div>
-            <h2>PM Info</h2>
-            <p>Check maintenance intervals and update readings</p>
-          </div>
-        </div>
-      `;
-      panel.innerHTML = `
-        <div style='padding: 40px; text-align: center; color: var(--muted);'>
-          No assets saved yet. Add an asset first to track its maintenance intervals.
-        </div>
-      `;
+      // New user: redirect to Add Asset instead of showing empty PM Info screen
+      showChoicePage();
       return;
     }
 
