@@ -223,14 +223,50 @@
 
   <section id="demo">
     <div class="wrap">
-      <h2>Try it before you sign up</h2>
-      <a class="fleet-card" href="index.html" style="margin-bottom:24px">
-        <h3>Try the live demo</h3>
-        <p>Free, no sign-up. Walk through the same screens you will use: add your truck, log work, see your totals, and export a file. Demo records are cleared when you leave or refresh the page.</p>
-        <span class="btn">Try the live demo</span>
+      <h2 id="demo-heading">Try it before you sign up</h2>
+      <a class="fleet-card" href="index.html" id="demo-link" style="margin-bottom:24px">
+        <h3 id="demo-title">Try the live demo</h3>
+        <p id="demo-description">Free, no sign-up. Walk through the same screens you will use: add your truck, log work, see your totals, and export a file. Demo records are saved locally so you can continue later.</p>
+        <span class="btn" id="demo-btn-text">Try the live demo</span>
       </a>
     </div>
   </section>
+
+  <script>
+    // Check if user has existing demo data in localStorage
+    function initializeDemoButton() {
+      try {
+        const storedAssets = localStorage.getItem("rigpmproAssets");
+        const hasExistingData = storedAssets && JSON.parse(storedAssets).length > 0;
+
+        const titleEl = document.getElementById("demo-title");
+        const descEl = document.getElementById("demo-description");
+        const btnEl = document.getElementById("demo-btn-text");
+
+        if (hasExistingData) {
+          // Returning user with existing data
+          titleEl.textContent = "Continue the live demo";
+          descEl.textContent = "Welcome back! Your assets and maintenance records are saved. Pick up where you left off.";
+          btnEl.textContent = "Continue the live demo";
+        } else {
+          // New user
+          titleEl.textContent = "Try the live demo";
+          descEl.textContent = "Free, no sign-up. Walk through the same screens you will use: add your truck, log work, see your totals, and more. Your data is saved locally.";
+          btnEl.textContent = "Try the live demo";
+        }
+      } catch (e) {
+        console.error("Error checking demo data:", e);
+        // Fall back to default "Try" state
+      }
+    }
+
+    // Initialize when page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeDemoButton);
+    } else {
+      initializeDemoButton();
+    }
+  </script>
 </main>
 
 <footer>
