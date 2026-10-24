@@ -1376,6 +1376,17 @@
       return;
     }
 
+    // Check if any asset has configured PM items
+    const hasPMConfigured = assets.some(asset => {
+      const pmItems = asset.data.pmItems || [];
+      return pmItems.length > 0;
+    });
+
+    if (!hasPMConfigured) {
+      showEmptyState('No PM tracking set up', 'Configure PM items for your assets in PM Info to track maintenance');
+      return;
+    }
+
     // Check if mileage was already entered in this session
     const mileageEnteredThisSession = sessionStorage.getItem('mileage_entered_session');
 
